@@ -1,23 +1,17 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/Nadim147c/rong/cmd/image"
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
+// Command is root command of the cli
+var Command = &cobra.Command{
 	Use:   "rong",
-	Short: "Short",
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	Short: "A material you color generator from image.",
 }
 
 func init() {
+	Command.Flags()
+	Command.AddCommand(image.Command)
 }

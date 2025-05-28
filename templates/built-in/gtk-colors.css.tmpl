@@ -1,3 +1,7 @@
+/*
+* This file has been generated using https://github.com/Nadim147c/rong
+*/
+
 {{ range .Colors -}}
-@define-color {{ .Name.Snake }} {{ .Color.HexRGB }};
+@define-color {{ .Name.Snake }} {{ .Color.HexRGB | lower }};
 {{ end }}

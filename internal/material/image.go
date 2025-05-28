@@ -1,7 +1,7 @@
 package material
 
 import (
-	"fmt"
+	"errors"
 	"image"
 
 	"github.com/Nadim147c/goyou/color"
@@ -11,7 +11,13 @@ import (
 	"github.com/Nadim147c/goyou/score"
 )
 
-func GenerateColorsFromImage(img image.Image, isDark bool) (map[string]color.ARGB, error) {
+var ErrNoColorFound = errors.New("no color found")
+
+// Colors is key and color
+type Colors = map[string]color.ARGB
+
+// GenerateColorsFromImage colors from an image.Image
+func GenerateColorsFromImage(img image.Image, isDark bool) (Colors, error) {
 	bounds := img.Bounds()
 	pixels := make([]color.ARGB, 0, bounds.Dx()*bounds.Dy())
 
@@ -23,14 +29,14 @@ func GenerateColorsFromImage(img image.Image, isDark bool) (map[string]color.ARG
 		}
 	}
 
-	quantized := quantizer.QuantizeCelebi(pixels, 4)
+	quantized := quantizer.QuantizeCelebi(pixels, 100)
 	if len(quantized) == 0 {
-		return map[string]color.ARGB{}, fmt.Errorf("No color found")
+		return Colors{}, ErrNoColorFound
 	}
 
 	scored := score.Score(quantized, score.ScoreOptions{Desired: 4, Fallback: score.FallbackColor})
 	if len(scored) == 0 {
-		return map[string]color.ARGB{}, fmt.Errorf("No color found")
+		return Colors{}, ErrNoColorFound
 	}
 
 	var primary, secondary, ternary *palettes.TonalPalette
@@ -44,7 +50,7 @@ func GenerateColorsFromImage(img image.Image, isDark bool) (map[string]color.ARG
 	}
 
 	scheme := dynamic.NewDynamicScheme(
-		scored[0].ToHct(), dynamic.Expressive, 0.5, isDark,
+		scored[0].ToHct(), dynamic.Expressive, 1, isDark,
 		dynamic.Phone, dynamic.V2021,
 		primary, secondary, ternary,
 		nil, nil, nil,
@@ -52,7 +58,7 @@ func GenerateColorsFromImage(img image.Image, isDark bool) (map[string]color.ARG
 
 	dcs := scheme.ToColorMap()
 
-	colorMap := make(map[string]color.ARGB)
+	colorMap := map[string]color.ARGB{}
 	for key, value := range dcs {
 		if value != nil {
 			colorMap[key] = value.GetArgb(scheme)
