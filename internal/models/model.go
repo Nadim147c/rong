@@ -6,12 +6,12 @@ import (
 	"unicode"
 
 	"github.com/Nadim147c/goyou/color"
-	"github.com/Nadim147c/rong/internal/material"
 )
 
+// Output contains all values that will execute templates
 type Output struct {
+	Material
 	Colors []Color
-	material.MaterialColor
 }
 
 // Color represents a named color with various color format representations.
@@ -71,9 +71,8 @@ type ColorValue struct {
 	Alpha uint8
 }
 
-func NewColor(key string, color color.ARGB) Color {
-	alpha, red, green, blue := color.Values()
-
+// NewColor creates a Color
+func NewColor(key string, rgb color.ARGB) Color {
 	// Convert snake_case to other cases
 	var name Case
 	name.Snake = key
@@ -81,8 +80,20 @@ func NewColor(key string, color color.ARGB) Color {
 	name.Kebab = strings.ReplaceAll(key, "_", "-")
 	name.Pascal = toCamelCase(key, true)
 
-	lf := func(c uint8) float64 { return float64(c) / 255.0 }
+	value := NewColorValue(rgb)
+	return Color{Name: name, Color: value}
+}
+
+func lf(c uint8) float64 { return float64(c) / 255.0 }
+
+// NewColorValue create a ColorValue
+func NewColorValue(rgb color.ARGB) ColorValue {
 	var value ColorValue
+	if rgb == 0 {
+		return value
+	}
+
+	alpha, red, green, blue := rgb.Values()
 
 	// Format color representations
 	value.HexRGB = fmt.Sprintf("#%02X%02X%02X", red, green, blue)
@@ -102,7 +113,8 @@ func NewColor(key string, color color.ARGB) Color {
 	value.Red = red
 	value.Green = green
 	value.Blue = blue
-	return Color{Name: name, Color: value}
+
+	return value
 }
 
 func toCamelCase(s string, pascal bool) string {

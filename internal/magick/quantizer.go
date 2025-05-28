@@ -9,6 +9,7 @@ import (
 	"github.com/Nadim147c/goyou/color"
 )
 
+// GenerateFromImage quantizes an image using magick
 func GenerateFromImage(path string, count int) ([]color.ARGB, error) {
 	cmd := exec.Command(
 		"magick", path,
@@ -39,8 +40,8 @@ func GenerateFromImage(path string, count int) ([]color.ARGB, error) {
 			slog.Debug("Failed to parse color", "field", fields[2], "line", line)
 			continue
 		}
-		color := color.NewARGB(a, r, g, b)
-		colors = append(colors, color)
+		rgb := color.NewARGB(a, r, g, b)
+		colors = append(colors, rgb)
 	}
 
 	return colors, nil
