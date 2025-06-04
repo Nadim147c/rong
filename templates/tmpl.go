@@ -2,7 +2,7 @@ package templates
 
 import (
 	"embed"
-	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"slices"
@@ -28,7 +28,7 @@ func Execute(color models.Output) {
 	defer link()
 
 	if err := os.MkdirAll(config.CacheDir, 755); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create app cache directory: %v\n", err)
+		slog.Error("Failed to create app cache directory", "error", err)
 		return
 	}
 
@@ -36,7 +36,7 @@ func Execute(color models.Output) {
 
 	tmpls, err := defaultTmpl.ParseFS(templates, "built-in/*.tmpl")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse templates: %v\n", err)
+		slog.Error("Failed to parse templates", "error", err)
 		return
 	}
 
@@ -48,13 +48,17 @@ func Execute(color models.Output) {
 
 	templatePath, err := filepath.Glob(templateRoot + "/*.tmpl")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed find template: %v\n", err)
+		slog.Error("Failed to find template", "error", err)
+		return
+	}
+
+	if len(templatePath) == 0 {
 		return
 	}
 
 	tmpls, err = defaultTmpl.ParseFiles(templatePath...)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse templates: %v\n", err)
+		slog.Error("Failed to parse templates", "error", err)
 		return
 	}
 
@@ -70,29 +74,23 @@ func link() {
 
 	for src, paths := range config.Global.Link {
 		if _, ok := success[src]; !ok {
-			fmt.Fprintf(os.Stderr, "Skiping %s. %s doesn't exists\n", src, src)
+			slog.Warn("Skipping source, it doesn't exist", "src", src)
 			continue
 		}
 		if !success[src] {
-			fmt.Fprintf(os.Stderr, "Skiping %s. %s failed\n", src, src)
+			slog.Warn("Skipping source, it previously failed", "src", src)
 			continue
 		}
 
 		for path := range slices.Values(paths) {
 			path, err := config.FindPath(config.ConfigDir, path)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Failed to find path: %v\n", err)
+				slog.Error("Failed to find path", "error", err)
 				return
 			}
 
 			srcDir := filepath.Join(config.CacheDir, src)
-			err = hardlinkOrCopy(srcDir, path)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Failed to HardlinkOrCopy: %v", err)
-				continue
-			}
-
-			fmt.Fprintf(os.Stderr, "Linked %s -> %s", srcDir, path)
+			hardlinkOrCopy(srcDir, path)
 		}
 	}
 }
@@ -106,7 +104,7 @@ func execute(tmpl *template.Template, color models.Output) {
 
 	file, err := os.Create(outputPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error creating file %s: %v\n", outputPath, err)
+		slog.Error("Error creating file", "file", outputPath, "error", err)
 		success[saveFile] = false
 		return
 	}
@@ -114,11 +112,11 @@ func execute(tmpl *template.Template, color models.Output) {
 	err = tmpl.Execute(file, color)
 	file.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error executing template %s: %v\n", name, err)
+		slog.Error("Error executing template", "template", name, "error", err)
 		success[saveFile] = false
 		return
 	}
 
 	success[saveFile] = true
-	fmt.Printf("Template %s written to %s\n", name, outputPath)
+	slog.Info("Template written", "template", name, "path", outputPath)
 }

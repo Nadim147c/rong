@@ -15,7 +15,7 @@ type Config struct {
 	Dark       NullBool   `toml:"dark"`    // true
 	Version    NullInt    `toml:"version"` // 2021/2025
 	MagickPath NullString `toml:"magick_path"`
-	Link       Link       `toml:"copy"`
+	Link       Link       `toml:"link"`
 }
 
 // Global config holds the
