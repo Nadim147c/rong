@@ -32,6 +32,7 @@ func hardlinkOrCopy(src, dst string) error {
 				slog.Error("Failed to update", "file", dst)
 			}
 			slog.Info("Updated", "source", src, "destination", dst)
+			return err
 		}
 
 		// Remove existing file
