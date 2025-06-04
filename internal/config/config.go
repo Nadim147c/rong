@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -32,16 +32,29 @@ func defaultConfig() Config {
 
 // LoadConfig parses the TOML config and merges it with defaults
 func LoadConfig(path string) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return
+	}
+
+	path, err = FindPath(cwd, path)
+	if err != nil {
+		slog.Error("Failed to find config file", "error", err)
+		return
+	}
+
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "config file not found: %s", path)
+		slog.Error("Config file doesn't exists", "error", err)
+		return
 	}
 
 	parsed := &Config{}
 	if _, err := toml.DecodeFile(path, parsed); err != nil {
-		fmt.Fprintf(os.Stderr, "parse error: %v", err)
+		slog.Error("Failed to load config file", "error", err)
 	}
 
 	mergeConfig(&Global, parsed)
+	slog.Debug("Config", "config", Global)
 }
 
 // mergeConfig merges non-zero values from `src` into `dst`
@@ -51,5 +64,9 @@ func mergeConfig(dst, src *Config) {
 	}
 	if !src.Version.Null {
 		dst.Version = src.Version
+	}
+
+	if src.Link != nil {
+		dst.Link = src.Link
 	}
 }
