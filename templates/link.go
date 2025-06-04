@@ -3,6 +3,7 @@ package templates
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"time"
 )
@@ -26,7 +27,11 @@ func hardlinkOrCopy(src, dst string) error {
 		// If already hardlinked, just update mod time
 		if os.SameFile(srcInfo, dstInfo) {
 			now := time.Now()
-			return os.Chtimes(dst, now, now)
+			err := os.Chtimes(dst, now, now)
+			if err != nil {
+				slog.Error("Failed to update", "file", dst)
+			}
+			slog.Info("Updated", "source", src, "destination", dst)
 		}
 
 		// Remove existing file
@@ -37,11 +42,17 @@ func hardlinkOrCopy(src, dst string) error {
 
 	// Try to create a hardlink
 	if err := os.Link(src, dst); err == nil {
+		slog.Info("Linked", "source", src, "destination", dst)
 		return nil
 	}
 
 	// Fall back to copying
-	return copyFile(src, dst)
+	err = copyFile(src, dst)
+	if err != nil {
+		slog.Error("Failed to copy", "source", src, "destination", dst)
+	}
+	slog.Info("Copied", "source", src, "destination", dst)
+	return err
 }
 
 func copyFile(src, dst string) error {
