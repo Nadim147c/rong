@@ -15,11 +15,6 @@ import (
 
 var success = map[string]bool{}
 
-var funcs = template.FuncMap{
-	"upper": strings.ToUpper,
-	"lower": strings.ToLower,
-}
-
 //go:embed built-in/*.tmpl
 var templates embed.FS
 

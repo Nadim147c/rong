@@ -1,0 +1,10 @@
+/*
+* This file has been generated using https://github.com/Nadim147c/rong
+*/
+
+:root {
+  --image: {{ .Image | qoute }};
+{{ range .Colors }}  --{{ .Name.Kebab }}: {{ .Color.HexRGB }};
+{{ end -}}
+}
+
