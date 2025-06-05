@@ -11,6 +11,7 @@ import (
 // Output contains all values that will execute templates
 type Output struct {
 	Material
+	Image  string
 	Colors []Color
 }
 

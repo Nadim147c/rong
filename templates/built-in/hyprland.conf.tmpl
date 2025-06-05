@@ -1,0 +1,9 @@
+# This file has been generated using https://github.com/Nadim147c/rong
+
+$image = {{ .Image }}
+
+{{ range .Colors -}}
+${{ .Name.Snake }} = rgba({{ .Color.TrimmedHexRGBA }})
+${{ .Name.Snake -}}_hex = #{{ .Color.HexRGB }}
+{{ end -}}
+

@@ -11,10 +11,12 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
+	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
+
 	// for webp encoding
 	_ "golang.org/x/image/webp"
 )
@@ -32,6 +34,12 @@ var Command = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(_ *cobra.Command, args []string) error {
 		imagePath := args[0]
+
+		cwd, _ := os.Getwd()
+		imagePath, err := config.FindPath(cwd, imagePath)
+		if err != nil {
+			return fmt.Errorf("failed to find image path: %w", err)
+		}
 
 		file, err := os.Open(imagePath)
 		if err != nil {
@@ -61,6 +69,7 @@ var Command = &cobra.Command{
 		})
 
 		output := models.Output{
+			Image:    imagePath,
 			Colors:   colors,
 			Material: material,
 		}
