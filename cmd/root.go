@@ -30,10 +30,10 @@ var Command = &cobra.Command{
 		opts.TimeFormat = time.Kitchen
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{
-			slog.LevelDebug: color.New(color.FgGreen).Sprint("DEBUG"),
-			slog.LevelInfo:  color.New(color.FgCyan).Sprint("INFO "),
-			slog.LevelWarn:  color.New(color.FgYellow).Sprint("WARN "),
-			slog.LevelError: color.New(color.FgRed).Sprint("ERROR"),
+			slog.LevelDebug: color.New(color.FgGreen).Sprint("DBG"),
+			slog.LevelInfo:  color.New(color.FgCyan).Sprint("INF"),
+			slog.LevelWarn:  color.New(color.FgYellow).Sprint("WRN"),
+			slog.LevelError: color.New(color.FgRed).Sprint("ERR"),
 		}
 
 		verbose, err := cmd.Flags().GetBool("verbose")
