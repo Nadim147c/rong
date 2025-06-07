@@ -6,10 +6,13 @@ import (
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/fatih/color"
 )
 
-// hardlinkOrCopy tries to hardlink src to dst, or falls back to copying. If dst already exists and is hardlinked to src, it updates the mod time.
-// If dst is a directory, it is removed before proceeding.
+// hardlinkOrCopy tries to hardlink src to dst, or falls back to copying. If dst
+// already exists and is hardlinked to src, it updates the mod time. If dst is a
+// directory, it is removed before proceeding.
 func hardlinkOrCopy(src, dst string) error {
 	// Check if destination exists
 	dstInfo, err := os.Lstat(dst)
@@ -31,7 +34,7 @@ func hardlinkOrCopy(src, dst string) error {
 			if err != nil {
 				slog.Error("Failed to update", "file", dst)
 			}
-			slog.Info("Updated", "source", src, "destination", dst)
+			slog.Info(color.GreenString("Updated"), "source", src, "destination", dst)
 			return err
 		}
 
@@ -43,7 +46,7 @@ func hardlinkOrCopy(src, dst string) error {
 
 	// Try to create a hardlink
 	if err := os.Link(src, dst); err == nil {
-		slog.Info("Linked", "source", src, "destination", dst)
+		slog.Info(color.BlueString("Linked"), "source", src, "destination", dst)
 		return nil
 	}
 
@@ -52,7 +55,7 @@ func hardlinkOrCopy(src, dst string) error {
 	if err != nil {
 		slog.Error("Failed to copy", "source", src, "destination", dst)
 	}
-	slog.Info("Copied", "source", src, "destination", dst)
+	slog.Info(color.YellowString("Copied"), "source", src, "destination", dst)
 	return err
 }
 
