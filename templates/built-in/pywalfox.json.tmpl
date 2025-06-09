@@ -2,7 +2,7 @@
   This file has been copied from https://github.com/InioX/matugen-themes
 */}}
 {
-  "wallpaper": "{{ .Image }}",
+  "wallpaper": {{ .Image | json }},
   "alpha": "100",
   "colors": {
     "color0": "{{ .Background.HexRGB }}",
