@@ -50,7 +50,7 @@ func GenerateColorsFromImage(img image.Image, isDark bool) (Colors, error) {
 	}
 
 	scheme := dynamic.NewDynamicScheme(
-		scored[0].ToHct(), dynamic.Expressive, 1, isDark,
+		scored[0].ToHct(), dynamic.Expressive, 0, isDark,
 		dynamic.Phone, dynamic.V2021,
 		primary, secondary, ternary,
 		nil, nil, nil,
