@@ -8,10 +8,11 @@ import (
 )
 
 var funcs = template.FuncMap{
-	"upper": strings.ToUpper,
-	"lower": strings.ToLower,
-	"qoute": qoute,
-	"json":  jsonString,
+	"upper":   strings.ToUpper,
+	"lower":   strings.ToLower,
+	"replace": strings.ReplaceAll,
+	"qoute":   qoute,
+	"json":    jsonString,
 }
 
 func qoute(s any) string {
