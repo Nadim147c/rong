@@ -22,7 +22,7 @@ var templates embed.FS
 func Execute(color models.Output) {
 	defer link()
 
-	if err := os.MkdirAll(config.CacheDir, 755); err != nil {
+	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return
 	}

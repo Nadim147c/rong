@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/fatih/color"
@@ -44,6 +45,11 @@ func hardlinkOrCopy(src, dst string) error {
 		}
 	}
 
+	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+		slog.Error("Failed to create parent directory", "for", dst)
+		return err
+	}
+
 	// Try to create a hardlink
 	if err := os.Link(src, dst); err == nil {
 		slog.Info(color.BlueString("Linked"), "source", src, "destination", dst)
@@ -53,7 +59,8 @@ func hardlinkOrCopy(src, dst string) error {
 	// Fall back to copying
 	err = copyFile(src, dst)
 	if err != nil {
-		slog.Error("Failed to copy", "source", src, "destination", dst)
+		slog.Error("Failed to copy", "error", err, "source", src, "destination", dst)
+		return err
 	}
 	slog.Info(color.YellowString("Copied"), "source", src, "destination", dst)
 	return err
