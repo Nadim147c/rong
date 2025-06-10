@@ -138,3 +138,7 @@ func capitalize(s string) string {
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
 }
+
+func (cv ColorValue) String() string {
+	return cv.HexRGB
+}
