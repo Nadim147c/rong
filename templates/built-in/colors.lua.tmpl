@@ -1,0 +1,7 @@
+local colors = {}
+
+{{ range .Colors -}}
+colors.{{ .Name.Snake }} = "{{ .Color }}"
+{{end}}
+
+return colors
