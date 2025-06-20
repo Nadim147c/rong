@@ -44,7 +44,7 @@ var Command = &cobra.Command{
 
 		cmd := exec.Command("ffmpeg",
 			"-i", videoPath,
-			"-vf", "fps=0.1,scale=500x500",
+			"-vframes", "1", // Limit to 1 frame
 			"-f", "rawvideo",
 			"-pix_fmt", "rgb24",
 			"-")
