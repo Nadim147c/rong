@@ -22,7 +22,7 @@ var templates embed.FS
 func Execute(color models.Output) {
 	defer link()
 
-	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
+	if err := os.MkdirAll(config.StateDir, 0755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return
 	}
@@ -84,7 +84,7 @@ func link() {
 				return
 			}
 
-			srcDir := filepath.Join(config.CacheDir, src)
+			srcDir := filepath.Join(config.StateDir, src)
 			hardlinkOrCopy(srcDir, path)
 		}
 	}
@@ -95,7 +95,7 @@ func execute(tmpl *template.Template, color models.Output) {
 	name := tmpl.Name()
 
 	saveFile := strings.TrimSuffix(name, ".tmpl")
-	outputPath := filepath.Join(config.CacheDir, saveFile)
+	outputPath := filepath.Join(config.StateDir, saveFile)
 
 	file, err := os.Create(outputPath)
 	if err != nil {
