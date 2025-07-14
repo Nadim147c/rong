@@ -5,7 +5,7 @@ go 1.24.3
 require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/MatusOllah/slogcolor v1.6.0
-	github.com/Nadim147c/goyou v0.0.3-a
+	github.com/Nadim147c/material v0.0.5-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/fatih/color v1.18.0
 	github.com/spf13/cobra v1.9.1
@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

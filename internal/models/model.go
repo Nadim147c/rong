@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Nadim147c/goyou/color"
+	"github.com/Nadim147c/material/color"
 )
 
 // Output contains all values that will execute templates

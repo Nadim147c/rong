@@ -8,7 +8,6 @@ import (
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/image"
-	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -16,7 +15,7 @@ import (
 
 func init() {
 	Command.AddCommand(image.Command)
-	Command.AddCommand(video.Command)
+	// Command.AddCommand(video.Command)
 
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
@@ -25,9 +24,10 @@ func init() {
 
 // Command is root command of the cli
 var Command = &cobra.Command{
-	Use:   "rong",
-	Short: "A material you color generator from image.",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	Use:          "rong",
+	Short:        "A material you color generator from image.",
+	SilenceUsage: true,
+	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 		opts := slogcolor.DefaultOptions
 		opts.TimeFormat = time.Kitchen
 		opts.SrcFileMode = 0
