@@ -72,6 +72,11 @@ type ColorValue struct {
 	Alpha uint8
 }
 
+// String is useful when using .NameValue. It will be converted to "#XXXXXX".
+func (cv ColorValue) String() string {
+	return cv.HexRGB
+}
+
 // NewColor creates a Color
 func NewColor(key string, rgb color.ARGB) Color {
 	// Convert snake_case to other cases
@@ -137,8 +142,4 @@ func capitalize(s string) string {
 	runes := []rune(s)
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
-}
-
-func (cv ColorValue) String() string {
-	return cv.HexRGB
 }

@@ -1,0 +1,5 @@
+$env.RONG = {
+  {{- range .Colors }}
+  {{ .Name.Snake | upper }}: "{{ .Color }}",
+  {{- end}}
+}
