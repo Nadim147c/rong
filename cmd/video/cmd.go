@@ -7,18 +7,22 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Nadim147c/goyou/color"
+	"github.com/Nadim147c/material"
+	"github.com/Nadim147c/material/color"
+	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/internal/config"
-	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
+	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
 )
 
-var light = false
-
 func init() {
-	Command.Flags().BoolVarP(&light, "light", "l", light, "use light theme")
+	Command.Flags().Bool("light", false, "generate light color palette")
+	Command.Flags().String("variant", string(dynamic.TonalSpot), "variant to use (e.g., tonal_spot, vibrant, expressive)")
+	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
+	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
+	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
 }
 
 // Command is the image command
@@ -26,7 +30,10 @@ var Command = &cobra.Command{
 	Use:   "video [flags] <image>",
 	Short: "Generate color from a video",
 	Args:  cobra.ExactArgs(1),
-	RunE: func(_ *cobra.Command, args []string) error {
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return shared.ValidateGeneratorFlags(cmd)
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
 		videoPath := args[0]
 
 		cwd, err := os.Getwd()
@@ -42,14 +49,14 @@ var Command = &cobra.Command{
 			return err
 		}
 
-		cmd := exec.Command("ffmpeg",
+		ffmpeg := exec.Command("ffmpeg",
 			"-i", videoPath,
-			"-vframes", "1", // Limit to 1 frame
+			"-vframes", "5", // Limit to 1 frame
 			"-f", "rawvideo",
 			"-pix_fmt", "rgb24",
 			"-")
 
-		out, err := cmd.Output()
+		out, err := ffmpeg.Output()
 		if err != nil {
 			return err
 		}
@@ -62,9 +69,18 @@ var Command = &cobra.Command{
 			pixels = append(pixels, c)
 		}
 
-		colorMap, err := material.GenerateColorsFromPixels(pixels, !light)
+		variant, _ := cmd.Flags().GetString("variant")
+		light, _ := cmd.Flags().GetBool("light")
+		contrast, _ := cmd.Flags().GetFloat64("contrast")
+		platform, _ := cmd.Flags().GetString("platform")
+		version, _ := cmd.Flags().GetInt("version")
+
+		colorMap, err := material.GenerateFromPixels(pixels,
+			dynamic.Variant(variant), !light, contrast,
+			dynamic.Platform(platform), dynamic.Version(version),
+		)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
 		material := models.MaterialFromMap(colorMap)

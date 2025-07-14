@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Nadim147c/goyou/color"
+	"github.com/Nadim147c/material/color"
 )
 
 // Material contains all material colors
