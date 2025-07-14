@@ -36,7 +36,7 @@ var Command = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		return shared.ValidateGeneratorFlags(cmd)
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		imagePath := args[0]
 
 		cwd, _ := os.Getwd()
@@ -56,15 +56,10 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to decode image: %w", err)
 		}
 
-		variant, _ := cmd.Flags().GetString("variant")
-		light, _ := cmd.Flags().GetBool("light")
-		contrast, _ := cmd.Flags().GetFloat64("contrast")
-		platform, _ := cmd.Flags().GetString("platform")
-		version, _ := cmd.Flags().GetInt("version")
-
 		colorMap, err := material.GenerateFromImage(img,
-			dynamic.Variant(variant), !light, contrast,
-			dynamic.Platform(platform), dynamic.Version(version),
+			config.Global.Variant, !config.Global.Light,
+			config.Global.Constrast, config.Global.Platform,
+			config.Global.Version,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to generate colors: %w", err)
