@@ -63,11 +63,11 @@ func Execute(color models.Output) {
 }
 
 func link() {
-	if config.Global.Link == nil {
+	if config.Global.Links == nil {
 		return
 	}
 
-	for src, paths := range config.Global.Link {
+	for src, paths := range config.Global.Links {
 		if _, ok := success[src]; !ok {
 			slog.Warn("Skipping source, it doesn't exist", "src", src)
 			continue

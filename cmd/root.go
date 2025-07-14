@@ -8,6 +8,7 @@ import (
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/image"
+	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -15,7 +16,7 @@ import (
 
 func init() {
 	Command.AddCommand(image.Command)
-	// Command.AddCommand(video.Command)
+	Command.AddCommand(video.Command)
 
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
