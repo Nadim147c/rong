@@ -10,9 +10,9 @@ import (
 
 // Output contains all values that will execute templates
 type Output struct {
-	Material
-	Image  string
-	Colors []Color
+	Material `json:"material"`
+	Image    string  `json:"image"`
+	Colors   []Color `json:"colors"`
 }
 
 // Color represents a named color with various color format representations.

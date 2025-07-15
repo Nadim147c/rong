@@ -2,6 +2,7 @@ package video
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"slices"
@@ -10,6 +11,7 @@ import (
 	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
@@ -45,9 +47,13 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		if err != nil {
-			return err
+		cached, err := cache.LoadCache(videoPath)
+		if err == nil {
+			templates.Execute(cached)
+			return nil
 		}
+		slog.Info("Couldn't load colors from cache", "error", err)
+		slog.Info("Generating colors from source")
 
 		ffmpeg := exec.Command("ffmpeg",
 			"-i", videoPath,
@@ -93,6 +99,10 @@ var Command = &cobra.Command{
 			Image:    videoPath,
 			Colors:   colors,
 			Material: material,
+		}
+
+		if err := cache.SaveCache(videoPath, output); err != nil {
+			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
 		templates.Execute(output)
