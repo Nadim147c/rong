@@ -3,21 +3,24 @@ package image
 import (
 	"fmt"
 	"image"
+	"log/slog"
 	"os"
 	"slices"
 	"strings"
 
 	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
 
+	_ "image/jpeg" // for jpeg encoding
+	_ "image/png"  // for png encoding
+
 	_ "golang.org/x/image/webp" // for webp encoding
-	_ "image/jpeg"              // for jpeg encoding
-	_ "image/png"               // for png encoding
 )
 
 func init() {
@@ -44,6 +47,14 @@ var Command = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
+
+		cached, err := cache.LoadCache(imagePath)
+		if err == nil {
+			templates.Execute(cached)
+			return nil
+		}
+		slog.Info("Couldn't load colors from cache", "error", err)
+		slog.Info("Generating colors from source")
 
 		file, err := os.Open(imagePath)
 		if err != nil {
@@ -80,6 +91,10 @@ var Command = &cobra.Command{
 			Image:    imagePath,
 			Colors:   colors,
 			Material: material,
+		}
+
+		if err := cache.SaveCache(imagePath, output); err != nil {
+			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
 		templates.Execute(output)

@@ -15,6 +15,7 @@ var separator = regexp.MustCompile(`[/\\]+`)
 var (
 	// ConfigDir is the rong config directory
 	ConfigDir = filepath.Clean(filepath.Join(xdg.ConfigHome, app))
+	CacheDir  = filepath.Clean(filepath.Join(xdg.CacheHome, app))
 	StateDir  = filepath.Clean(filepath.Join(xdg.StateHome, app))
 )
 
