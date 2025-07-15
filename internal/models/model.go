@@ -18,58 +18,58 @@ type Output struct {
 // Color represents a named color with various color format representations.
 type Color struct {
 	// Name represents the key of the color in various case styles.
-	Name Case
+	Name Case `json:"name"`
 	// Color contains the different representations of the color value.
-	Color ColorValue
+	Color ColorValue `json:"value"`
 }
 
 // Case holds different case variations of a color name.
 type Case struct {
 	// Snake case format (e.g., on_primary)
-	Snake string
+	Snake string `json:"snake"`
 	// Camel case format (e.g., onPrimary)
-	Camel string
+	Camel string `json:"camel"`
 	// Kebab case format (e.g., on-primary)
-	Kebab string
+	Kebab string `json:"kebab"`
 	// Pascal case format (e.g., OnPrimary)
-	Pascal string
+	Pascal string `json:"pascal"`
 }
 
 // ColorValue stores a color in multiple string and numeric formats.
 type ColorValue struct {
 	// HexRGB is the RGB hexadecimal representation with '#' prefix (e.g., #FF0000)
-	HexRGB string
+	HexRGB string `json:"hex_rgb"`
 	// TrimmedHexRGB is the RGB hexadecimal representation without '#' (e.g., FF0000)
-	TrimmedHexRGB string
+	TrimmedHexRGB string `json:"trimmed_hex_rgb"`
 	// HexRGBA is the RGBA hexadecimal representation with '#' prefix (e.g., #FF0000FF)
-	HexRGBA string
+	HexRGBA string `json:"hex_rgba"`
 	// TrimmedHexRGBA is the RGBA hexadecimal representation without '#' (e.g., FF0000FF)
-	TrimmedHexRGBA string
+	TrimmedHexRGBA string `json:"trimmed_hex_rgba"`
 	// RGB is the RGB string format with values 0–255 (e.g., rgb(0, 255, 0))
-	RGB string
+	RGB string `json:"rgb"`
 	// TrimmedRGB is the comma-separated RGB values 0–255 without the "rgb(...)" wrapper (e.g., 0, 255, 0)
-	TrimmedRGB string
+	TrimmedRGB string `json:"trimmed_rgb"`
 	// RGBA is the RGBA string format with values 0–255 (e.g., rgba(0, 255, 0, 255))
-	RGBA string
+	RGBA string `json:"rgba"`
 	// TrimmedRGBA is the comma-separated RGBA values 0–255 without the "rgba(...)" wrapper (e.g., 0, 255, 0, 255)
-	TrimmedRGBA string
+	TrimmedRGBA string `json:"trimmed_rgba"`
 	// LinearRGB is the RGB string format with values in 0–1 range (e.g., rgb(0, 1, 0))
-	LinearRGB string
+	LinearRGB string `json:"linear_rgb"`
 	// TrimmedLinearRGB is the comma-separated RGB values in 0–1 range (e.g., 0, 1, 0)
-	TrimmedLinearRGB string
+	TrimmedLinearRGB string `json:"trimmed_linear_rgb"`
 	// LinearRGBA is the RGBA string format with values in 0–1 range (e.g., rgba(0, 1, 0, 1))
-	LinearRGBA string
+	LinearRGBA string `json:"linear_rgba"`
 	// TrimmedLinearRGBA is the comma-separated RGBA values in 0–1 range (e.g., 0, 1, 0, 1)
-	TrimmedLinearRGBA string
+	TrimmedLinearRGBA string `json:"trimmed_linear_rgba"`
 
 	// Red channel value (0–255)
-	Red uint8
+	Red uint8 `json:"red"`
 	// Green channel value (0–255)
-	Green uint8
+	Green uint8 `json:"green"`
 	// Blue channel value (0–255)
-	Blue uint8
+	Blue uint8 `json:"blue"`
 	// Alpha channel value (0–255)
-	Alpha uint8
+	Alpha uint8 `json:"alpha"`
 }
 
 // String is useful when using .NameValue. It will be converted to "#XXXXXX".
