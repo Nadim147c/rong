@@ -12,23 +12,40 @@ import (
 	"github.com/cespare/xxhash"
 )
 
-// LoadCache tries to load cached colors for this image
-func LoadCache(image string) (models.Output, error) {
-	var output models.Output
-
-	file, err := os.Open(image)
+func hash(path string) (string, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return output, err
+		return "", err
 	}
 	defer file.Close()
 
 	h := xxhash.New()
 	if _, err := io.Copy(h, file); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprint(h.Sum64()), nil
+}
+
+// IsCached checks if the file is colors is cached or not
+func IsCached(file string) bool {
+	_, err := LoadCache(file)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+// LoadCache tries to load cached colors for this image
+func LoadCache(file string) (models.Output, error) {
+	var output models.Output
+
+	name, err := hash(file)
+	if err != nil {
 		return output, err
 	}
 
-	hash := fmt.Sprint(h.Sum64())
-	path := filepath.Join(config.CacheDir, hash+".json")
+	path := filepath.Join(config.CacheDir, name+".json")
 
 	cache, err := os.Open(path)
 	if err != nil {
@@ -44,23 +61,16 @@ func LoadCache(image string) (models.Output, error) {
 
 // SaveCache saves output colors to cache dir
 func SaveCache(image string, output models.Output) error {
-	file, err := os.Open(image)
+	name, err := hash(image)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
-	h := xxhash.New()
-	if _, err := io.Copy(h, file); err != nil {
-		return err
-	}
-	hash := fmt.Sprint(h.Sum64())
+	path := filepath.Join(config.CacheDir, name+".json")
 
 	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
 		return err
 	}
-
-	path := filepath.Join(config.CacheDir, hash+".json")
 
 	cache, err := os.Create(path)
 	if err != nil {
