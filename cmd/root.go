@@ -28,7 +28,7 @@ func init() {
 // Command is root command of the cli
 var Command = &cobra.Command{
 	Use:          "rong",
-	Short:        "A material you color generator from image.",
+	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 		opts := slogcolor.DefaultOptions
