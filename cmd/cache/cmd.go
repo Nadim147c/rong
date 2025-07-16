@@ -24,7 +24,7 @@ func init() {
 
 // Command is cache command
 var Command = &cobra.Command{
-	Use:   "cache [flags] <image>",
+	Use:   "cache [flags] ...<image|video|directory>",
 	Short: "Generate color cache from a image/video",
 	Args:  cobra.MinimumNArgs(1),
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
