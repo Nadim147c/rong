@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -13,6 +14,22 @@ type Output struct {
 	Material `json:"material"`
 	Image    string  `json:"image"`
 	Colors   []Color `json:"colors"`
+}
+
+// NewOutput create output struct for templates execution
+func NewOutput(source string, colorMap map[string]color.ARGB) Output {
+	colors := make([]Color, 0, len(colorMap))
+	for key, value := range colorMap {
+		colors = append(colors, NewColor(key, value))
+	}
+
+	slices.SortFunc(colors, func(a, b Color) int {
+		return strings.Compare(a.Name.Snake, b.Name.Snake)
+	})
+
+	material := NewMaterial(colorMap)
+
+	return Output{Image: source, Colors: colors, Material: material}
 }
 
 // Color represents a named color with various color format representations.
