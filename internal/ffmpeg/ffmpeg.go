@@ -1,10 +1,81 @@
-package cache
+package ffmpeg
 
 import (
 	"encoding/json"
+	"fmt"
+	"math"
 	"os/exec"
 	"strconv"
+
+	"github.com/Nadim147c/material/color"
 )
+
+// GetPixels decodes media using ffmpeg and returns slices of pixels for given
+// maxFrames numbers
+func GetPixels(path string, maxFrames int) ([]color.ARGB, error) {
+	var pixels []color.ARGB
+
+	meta, err := CheckMediaType(path)
+	if err != nil {
+		return pixels, fmt.Errorf("Failed to get media metadata: %w", err)
+	}
+
+	if meta.Type != "image" && meta.Type != "video" {
+		return pixels, fmt.Errorf("Invalid media type: %s", meta.Type)
+	}
+
+	if meta.Type == "image" {
+		ffmpeg := exec.Command("ffmpeg",
+			"-i", path,
+			"-vframes", "1",
+			"-f", "rawvideo",
+			"-pix_fmt", "rgb24",
+			"-")
+
+		out, err := ffmpeg.Output()
+		if err != nil {
+			return pixels, fmt.Errorf("failed to get pixels from ffmpeg command: %w", err)
+		}
+
+		totalBytes := len(out)
+
+		pixels := make([]color.ARGB, 0, totalBytes/3)
+		for i := 0; i+2 < totalBytes; i += 3 {
+			c := color.ARGBFromRGB(out[i], out[i+1], out[i+2])
+			pixels = append(pixels, c)
+		}
+
+		return pixels, nil
+	}
+
+	fps := float64(maxFrames) / meta.Duration
+
+	if math.Floor(meta.Duration) < float64(maxFrames) {
+		fps = 1
+	}
+
+	ffmpeg := exec.Command("ffmpeg",
+		"-i", path,
+		"-vf", fmt.Sprintf("fps=%.8f", fps),
+		"-f", "rawvideo",
+		"-pix_fmt", "rgb24",
+		"-")
+
+	out, err := ffmpeg.Output()
+	if err != nil {
+		return pixels, fmt.Errorf("failed to process image: %w", err)
+	}
+
+	totalBytes := len(out)
+
+	pixels = make([]color.ARGB, 0, totalBytes/3)
+	for i := 0; i+2 < totalBytes; i += 3 {
+		c := color.ARGBFromRGB(out[i], out[i+1], out[i+2])
+		pixels = append(pixels, c)
+	}
+
+	return pixels, nil
+}
 
 // MediaInfo holds the file type and duration
 type MediaInfo struct {

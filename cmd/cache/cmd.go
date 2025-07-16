@@ -1,17 +1,15 @@
 package cache
 
 import (
-	"fmt"
 	"log/slog"
-	"os/exec"
 	"slices"
 	"strings"
 
 	"github.com/Nadim147c/material"
-	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
+	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/spf13/cobra"
@@ -45,64 +43,11 @@ var Command = &cobra.Command{
 				continue
 			}
 
-			meta, err := CheckMediaType(path)
+			frames, _ := cmd.Flags().GetInt("frames")
+			pixels, err := ffmpeg.GetPixels(path, frames)
 			if err != nil {
-				slog.Error("Failed to parse media metadata", "path", path, "error", err)
+				slog.Error("Failed to get pixels from media", "path", path, "error", err)
 				continue
-			}
-
-			if meta.Type != "image" && meta.Type != "video" {
-				slog.Error("Unknown media type", "path", path)
-				continue
-			}
-
-			var pixels []color.ARGB
-
-			if meta.Type == "image" {
-				ffmpeg := exec.Command("ffmpeg",
-					"-i", path,
-					"-vframes", "1",
-					"-f", "rawvideo",
-					"-pix_fmt", "rgb24",
-					"-")
-
-				out, err := ffmpeg.Output()
-				if err != nil {
-					slog.Error("Failed to process image", "path", path)
-					continue
-				}
-
-				totalBytes := len(out)
-
-				pixels = make([]color.ARGB, 0, totalBytes/3)
-				for i := 0; i+2 < totalBytes; i += 3 {
-					c := color.ARGBFromRGB(out[i], out[i+1], out[i+2])
-					pixels = append(pixels, c)
-				}
-			} else {
-				frames, _ := cmd.Flags().GetInt("frames")
-				fps := float64(frames) / meta.Duration
-
-				ffmpeg := exec.Command("ffmpeg",
-					"-i", path,
-					"-vf", fmt.Sprintf("fps=%.2f", fps),
-					"-f", "rawvideo",
-					"-pix_fmt", "rgb24",
-					"-")
-
-				out, err := ffmpeg.Output()
-				if err != nil {
-					slog.Error("Failed to process image", "path", path)
-					continue
-				}
-
-				totalBytes := len(out)
-
-				pixels = make([]color.ARGB, 0, totalBytes/3)
-				for i := 0; i+2 < totalBytes; i += 3 {
-					c := color.ARGBFromRGB(out[i], out[i+1], out[i+2])
-					pixels = append(pixels, c)
-				}
 			}
 
 			colorMap, err := material.GenerateFromPixels(pixels,
