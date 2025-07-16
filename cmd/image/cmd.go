@@ -5,8 +5,6 @@ import (
 	"image"
 	"log/slog"
 	"os"
-	"slices"
-	"strings"
 
 	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/dynamic"
@@ -17,10 +15,9 @@ import (
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
 
-	_ "image/jpeg" // for jpeg encoding
-	_ "image/png"  // for png encoding
-
 	_ "golang.org/x/image/webp" // for webp encoding
+	_ "image/jpeg"              // for jpeg encoding
+	_ "image/png"               // for png encoding
 )
 
 func init() {
@@ -76,22 +73,7 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
-		material := models.MaterialFromMap(colorMap)
-
-		colors := make([]models.Color, 0, len(colorMap))
-		for key, value := range colorMap {
-			colors = append(colors, models.NewColor(key, value))
-		}
-
-		slices.SortFunc(colors, func(a, b models.Color) int {
-			return strings.Compare(a.Name.Snake, b.Name.Snake)
-		})
-
-		output := models.Output{
-			Image:    imagePath,
-			Colors:   colors,
-			Material: material,
-		}
+		output := models.NewOutput(imagePath, colorMap)
 
 		if err := cache.SaveCache(imagePath, output); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)

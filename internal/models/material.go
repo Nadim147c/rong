@@ -57,10 +57,10 @@ type Material struct {
 	TertiaryFixedDim        ColorValue `json:"tertiary_fixed_dim" toml:"tertiary_fixed_dim"`
 }
 
-// MaterialFromMap return material color type
-func MaterialFromMap(dcs map[string]color.ARGB) Material {
+// NewMaterial return material color type
+func NewMaterial(colorMap map[string]color.ARGB) Material {
 	get := func(name string) ColorValue {
-		if dc, ok := dcs[name]; ok {
+		if dc, ok := colorMap[name]; ok {
 			return NewColorValue(dc)
 		}
 		return NewColorValue(0) // default ARGB (fully transparent black)

@@ -2,8 +2,6 @@ package cache
 
 import (
 	"log/slog"
-	"slices"
-	"strings"
 
 	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/dynamic"
@@ -60,18 +58,7 @@ var Command = &cobra.Command{
 				continue
 			}
 
-			material := models.MaterialFromMap(colorMap)
-
-			colors := make([]models.Color, 0, len(colorMap))
-			for key, value := range colorMap {
-				colors = append(colors, models.NewColor(key, value))
-			}
-
-			slices.SortFunc(colors, func(a, b models.Color) int {
-				return strings.Compare(a.Name.Snake, b.Name.Snake)
-			})
-
-			output := models.Output{Image: path, Colors: colors, Material: material}
+			output := models.NewOutput(path, colorMap)
 
 			if err = cache.SaveCache(path, output); err != nil {
 				slog.Error("Failed to save cache", "path", path, "error", err)
