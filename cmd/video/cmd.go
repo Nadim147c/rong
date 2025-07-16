@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"os/exec"
 	"slices"
 	"strings"
 
 	"github.com/Nadim147c/material"
-	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
+	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/Nadim147c/rong/templates"
@@ -25,6 +24,7 @@ func init() {
 	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
 	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
+	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 }
 
 // Command is the image command
@@ -35,7 +35,7 @@ var Command = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		return shared.ValidateGeneratorFlags(cmd)
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		videoPath := args[0]
 
 		cwd, err := os.Getwd()
@@ -55,24 +55,10 @@ var Command = &cobra.Command{
 		slog.Info("Couldn't load colors from cache", "error", err)
 		slog.Info("Generating colors from source")
 
-		ffmpeg := exec.Command("ffmpeg",
-			"-i", videoPath,
-			"-vframes", "5", // Limit to 1 frame
-			"-f", "rawvideo",
-			"-pix_fmt", "rgb24",
-			"-")
-
-		out, err := ffmpeg.Output()
+		frames, _ := cmd.Flags().GetInt("frames")
+		pixels, err := ffmpeg.GetPixels(videoPath, frames)
 		if err != nil {
-			return err
-		}
-
-		totalBytes := len(out)
-
-		pixels := make([]color.ARGB, 0, totalBytes/3)
-		for i := 0; i+2 < totalBytes; i += 3 {
-			c := color.ARGBFromRGB(out[i], out[i+1], out[i+2])
-			pixels = append(pixels, c)
+			return fmt.Errorf("Failed to get pixels from media: %w", err)
 		}
 
 		colorMap, err := material.GenerateFromPixels(pixels,
