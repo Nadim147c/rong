@@ -6,52 +6,6 @@
 **Rong** is a CLI that extracts a **Material You** color palette from an image or
 video, and applies it across your system using configurable template mappings.
 
----
-
-### 🔧 Configuration (`config.toml`)
-
-Rong uses a `[link]` table to map template outputs to destination files, allowing you
-to theme multiple apps consistently from a single palette.
-
-```toml
-[link]
-"colors.lua" = "~/.config/wezterm/colors.lua"
-"colors.scss" = "~/.config/eww/colors.scss"
-"spicetify-sleek.ini" = "~/.config/spicetify/Themes/Sleek/color.ini"
-"kitty.conf" = "~/.config/kitty/colors.conf"
-"pywalfox.json" = "~/.cache/wal/colors.json"
-"gtk-css.css" = [
-  "~/.config/waybar/colors.css",
-  "~/.config/swaync/colors.css",
-  "~/.config/wlogout/colors.css",
-]
-"midnight-discord.css" = [
-  "~/.config/equibop/settings/quickCss.css",
-  "~/.config/vesktop/settings/quickCss.css",
-]
-```
-
-### 🔧 Templates (`~/.config/rong/templates/colors.gotmpl`)
-
-Rong uses go's [text/template](https://pkg.go.dev/text/template) to generate theme
-files.
-
-```gotemplate
-// Auto-generated Material You color scheme
-$primary: {{ .Primary }};
-$on-primary: {{ .OnPrimary }};
-```
-
-This will output SCSS-compatible variables like:
-
-```scss
-$primary: #6750A4;
-$on-primary: #FFFFFF;
-...
-```
-
-For more example checkout built-in [templates](./templates/built-in/).
-
 ### 🎨 Features
 
 - Extracts color palettes from **images** or **videos**
@@ -65,6 +19,8 @@ For more example checkout built-in [templates](./templates/built-in/).
 ```sh
 rong image ~/Pictures/wallpaper.jpg
 ```
+
+Check out the [wiki](https://github.com/Nadim147c/rong/wiki).
 
 ## License and Credit
 
