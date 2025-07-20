@@ -8,14 +8,16 @@ import (
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/cache"
+	"github.com/Nadim147c/rong/cmd/color"
 	"github.com/Nadim147c/rong/cmd/image"
 	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/config"
-	"github.com/fatih/color"
+	termcolor "github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 func init() {
+	Command.AddCommand(color.Command)
 	Command.AddCommand(image.Command)
 	Command.AddCommand(video.Command)
 	Command.AddCommand(cache.Command)
@@ -35,10 +37,10 @@ var Command = &cobra.Command{
 		opts.TimeFormat = time.Kitchen
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{
-			slog.LevelDebug: color.New(color.FgGreen).Sprint("DBG"),
-			slog.LevelInfo:  color.New(color.FgCyan).Sprint("INF"),
-			slog.LevelWarn:  color.New(color.FgYellow).Sprint("WRN"),
-			slog.LevelError: color.New(color.FgRed).Sprint("ERR"),
+			slog.LevelDebug: termcolor.New(termcolor.FgGreen).Sprint("DBG"),
+			slog.LevelInfo:  termcolor.New(termcolor.FgCyan).Sprint("INF"),
+			slog.LevelWarn:  termcolor.New(termcolor.FgYellow).Sprint("WRN"),
+			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ERR"),
 		}
 
 		verbose, err := cmd.Flags().GetBool("verbose")

@@ -31,7 +31,7 @@ func init() {
 // Command is the image command
 var Command = &cobra.Command{
 	Use:   "image [flags] <image>",
-	Short: "Generate color from a image",
+	Short: "Generate colors from a image",
 	Args:  cobra.ExactArgs(1),
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		return shared.ValidateGeneratorFlags(cmd)
