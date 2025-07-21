@@ -22,7 +22,7 @@ ls ~/.local/state/rong/
 
 This command will show list of generate theme file ready to be used in your desired
 applications. To automatically copy/link these theme files to any desired location,
-check out [links](./configuration#Links) in configuration files
+check out [links](./configuration#linking-generated-files) in configuration files
 
 ## Custom Templates
 
