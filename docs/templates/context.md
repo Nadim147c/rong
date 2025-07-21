@@ -106,7 +106,7 @@ You can use these suffixes on any `ColorValue` field (Material fields or `.Color
 
 ## Colors Looping Example
 
-```gotemplate
+```go
 {{ range .Colors }}
 ## {{ .Name.Pascal }} Color
 - All cases:
@@ -125,7 +125,7 @@ You can use these suffixes on any `ColorValue` field (Material fields or `.Color
 
 ## Example Template
 
-```gotemplate
+```go
 {{/* Rong theme example */}}
 
 primary = "{{ .Primary }}"
