@@ -1,2 +1,5 @@
 rong
 Makefile.local
+node_modules
+docs/.vitepress/dist
+docs/.vitepress/cache
