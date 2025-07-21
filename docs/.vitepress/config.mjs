@@ -7,7 +7,10 @@ export default defineConfig({
   description: "A Material You color generator from image or video",
   themeConfig: {
     siteTitle: "Rong",
-    nav: [{ text: "Home", link: "/" }],
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "Configuration", link: "/configuration" },
+    ],
     sidebar: [
       {
         text: "Introduction",
@@ -26,11 +29,28 @@ export default defineConfig({
           { text: "Configuraion", link: "/configuration" },
         ],
       },
+      {
+        text: "Themes",
+        items: [
+          { text: "Eww", link: "/themes/eww" },
+          { text: "Hyprland", link: "/themes/hyprland" },
+          { text: "Hyprlock", link: "/themes/hyprlock" },
+          { text: "SwayNC", link: "/themes/swaync" },
+          { text: "Waybar", link: "/themes/waybar" },
+          { text: "Wlogout", link: "/themes/wlogout" },
+        ],
+      },
     ],
     search: {
       provider: "local",
     },
-    lastUpdated: true,
+    lastUpdated: {
+      formatOptions: {
+        forceLocale: true,
+        dateStyle: "long",
+        timeStyle: "short",
+      },
+    },
     socialLinks: [
       { icon: "github", link: "https://github.com/Nadim147c/rong" },
       {
