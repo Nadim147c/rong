@@ -6,11 +6,17 @@ hero:
   text: A Material You color generator
   actions:
     - theme: brand
+      text: What is Rong?
+      link: /what-is-rong
+    - theme: alt
       text: Get Started
       link: /getting-started
     - theme: alt
       text: Templates
       link: /templates
+  image:
+    src: ./logo.svg
+    alt: Rong
 
 features:
   - icon: 🎨

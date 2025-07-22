@@ -5,7 +5,11 @@ export default defineConfig({
   title: "rong",
   base: "/rong/",
   description: "A Material You color generator from image or video",
+  lang: "en-US",
+  head: [["link", { rel: "icon", href: "/rong/logo.svg" }]],
+
   themeConfig: {
+    logo: "/logo.svg",
     siteTitle: "Rong",
     nav: [
       { text: "Home", link: "/" },
