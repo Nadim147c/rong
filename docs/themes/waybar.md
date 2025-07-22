@@ -1,7 +1,8 @@
 # Waybar
 
-Waybar is a status bar for Wayland compositors. It uses `gtk-css` for styling,
-allowing the use of `@define-color` via a built-in `gtk-css.css` file.
+Waybar is a status bar for Wayland compositors. It uses `GTK-CSS` for styling.
+
+<!--@include: ./_gtk-issue.md-->
 
 ## Link
 

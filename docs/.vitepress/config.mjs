@@ -32,12 +32,19 @@ export default defineConfig({
       {
         text: "Themes",
         items: [
-          { text: "Eww", link: "/themes/eww" },
-          { text: "Hyprland", link: "/themes/hyprland" },
-          { text: "Hyprlock", link: "/themes/hyprlock" },
-          { text: "SwayNC", link: "/themes/swaync" },
-          { text: "Waybar", link: "/themes/waybar" },
-          { text: "Wlogout", link: "/themes/wlogout" },
+          {
+            text: "Applications",
+            collapsed: false,
+            items: [
+              { text: "Eww", link: "/themes/eww" },
+              { text: "Hyprland", link: "/themes/hyprland" },
+              { text: "Hyprlock", link: "/themes/hyprlock" },
+              { text: "SwayNC", link: "/themes/swaync" },
+              { text: "Waybar", link: "/themes/waybar" },
+              { text: "Wlogout", link: "/themes/wlogout" },
+            ],
+          },
+          { text: "SCSS For GTK", link: "/scss-for-gtk" },
         ],
       },
     ],
