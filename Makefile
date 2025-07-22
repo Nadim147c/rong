@@ -14,3 +14,6 @@ install:
 
 lint:
 	$(REVIVE) -config revive.toml -formatter friendly ./...
+
+docs-dev:
+	bun run dev
