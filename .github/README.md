@@ -20,7 +20,7 @@ video, and applies it across your system using configurable template mappings.
 rong image ~/Pictures/wallpaper.jpg
 ```
 
-Check out the [wiki](https://github.com/Nadim147c/rong/wiki).
+Check out the [documentation](https://nadim147c.github.io/rong).
 
 ## License and Credit
 
