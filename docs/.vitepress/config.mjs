@@ -40,6 +40,7 @@ export default defineConfig({
             text: "Applications",
             collapsed: false,
             items: [
+              { text: "Discord", link: "/themes/discord" },
               { text: "Eww", link: "/themes/eww" },
               { text: "Hyprland", link: "/themes/hyprland" },
               { text: "Hyprlock", link: "/themes/hyprlock" },
