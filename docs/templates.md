@@ -26,12 +26,15 @@ check out [links](./configuration#linking-generated-files) in configuration file
 
 ## Custom Templates
 
-As built-in templates might not be enough for all kinds of use case, you can write
-you own template. To create template you have to use Go’s `text/template` syntax. You
-can learn about go templates from [offical docs](https://pkg.go.dev/text/template) or
-[here](./templates/basic). Templates are executed with a data called execution
-context. Learn about rong's templates execution context from
-[here](./templates/context). After learn about the template follow these steps:
+Built-in templates might not cover all use cases, so you can define your own using
+Go’s `text/template` syntax. You can learn more about Go templates from the [official
+docs](https://pkg.go.dev/text/template) or [here](./templates/basic).
+
+Templates are rendered using a data structure called the execution context. You can
+learn about Rong’s execution context [here](./templates/context).
+
+Once you're familiar with the template syntax and execution context, follow these
+steps:
 
 1. **Create a file**
 

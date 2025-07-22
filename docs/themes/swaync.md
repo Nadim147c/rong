@@ -1,8 +1,9 @@
 # SwayNC
 
-SwayNC is a notification daemon for Wayland compositors. It supports `gtk-css` for
-theming, allowing you to style notifications using `@define-color` and similar
-syntax.
+SwayNC is a notification daemon for Wayland compositors. It supports `GTK-CSS` for
+theming, allowing you to style notifications css.
+
+<!--@include: ./_gtk-issue.md-->
 
 ## Link
 

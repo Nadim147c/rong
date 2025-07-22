@@ -1,7 +1,9 @@
 # Wlogout
 
-Wlogout is a customizable logout menu for Wayland environments. It uses `gtk-css` for
-styling, supporting `@define-color` and other GTK theming syntax.
+Wlogout is a customizable logout menu for Wayland environments. It uses `GTK-CSS` for
+styling.
+
+<!--@include: ./_gtk-issue.md-->
 
 ## Link
 
