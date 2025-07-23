@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "rong",
+  title: "Rong",
   base: "/rong/",
   description: "A Material You color generator from image or video",
   lang: "en-US",
