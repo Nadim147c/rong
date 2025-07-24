@@ -43,6 +43,7 @@ export default defineConfig({
             items: [
               { text: "Discord", link: "discord" },
               { text: "Eww", link: "eww" },
+              { text: "GTK", link: "gtk" },
               { text: "Hyprland", link: "hyprland" },
               { text: "Hyprlock", link: "hyprlock" },
               { text: "Spotify", link: "spotify" },
