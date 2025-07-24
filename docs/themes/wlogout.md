@@ -18,6 +18,8 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 ]
 ```
 
+<!--@include: ./_regen.md-->
+
 ## Apply
 
 Create the Wlogout style file at `~/.config/wlogout/style.css` with the following

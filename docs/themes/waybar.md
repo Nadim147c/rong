@@ -17,6 +17,8 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 ]
 ```
 
+<!--@include: ./_regen.md-->
+
 ## Apply
 
 Create a Waybar style file at `~/.config/waybar/style.css` with the following content:

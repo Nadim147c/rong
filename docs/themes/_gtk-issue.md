@@ -1,3 +1,7 @@
+---
+pagefind-indexed: false
+---
+
 ::: details Common Issue with GTK-CSS {close}
 GTK's CSS implementation supports many features of standard (vanilla) CSS used in web
 development; however, some features are not available or behave differently. The

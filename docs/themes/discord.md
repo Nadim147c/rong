@@ -42,6 +42,8 @@ Add the following lines to the
 > [InioX/matugen-themes](https://github.com/InioX/matugen-themes) for creating the
 > original template.
 
+<!--@include: ./_regen.md-->
+
 ## Quick CSS
 
 For **Vesktop** and **Equibop**, you need to enable `quickCss`. Go to `User Settings`

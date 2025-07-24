@@ -13,6 +13,8 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 "hyprland.conf" = "~/.config/hypr/colors.conf"
 ```
 
+<!--@include: ./_regen.md-->
+
 ## Apply
 
 In your main config file (`~/.config/hypr/hyprlock.conf`), source the theme file and
