@@ -1,7 +1,11 @@
 import { defineConfig } from "vitepress";
+import { pagefindPlugin } from "vitepress-plugin-pagefind";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  vite: {
+    plugins: [pagefindPlugin()],
+  },
   title: "Rong",
   base: "/rong/",
   description: "A Material You color generator from image or video",
