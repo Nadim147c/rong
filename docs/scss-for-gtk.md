@@ -8,6 +8,19 @@ A concise guide to using SCSS for GTK styling, including compiler installation,
 variable usage, and compiling SCSS to GTK-compatible CSS. Includes a shell script for
 easy compilation and watch mode.
 
+## Why?
+
+SCSS supports `@import` and variables. This is important because, after compilation,
+the output CSS will be a single file with all variables hardcoded. Many applications
+do not support CSS variables or importing additional files, so this approach ensures
+compatibility.
+
+Additionally, SCSS supports nesting, which makes the code easier to understand and
+helps restrict the styling scope. While adding a compilation step can decrease
+efficiency when modifying or creating new styles, this page addresses that issue by
+using scripts that automatically compile SCSS on change. This allows you to enjoy the
+features and flexibility of SCSS along with the efficiency of standard `GTK-CSS`.
+
 ## Install SCSS Compiler
 
 On Arch-based systems, install the SCSS compiler using:
