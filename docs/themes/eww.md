@@ -16,6 +16,8 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 ]
 ```
 
+<!--@include: ./_regen.md-->
+
 ## Apply
 
 Create the Eww style file at `~/.config/eww/eww.scss` and import your color

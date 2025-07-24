@@ -27,6 +27,8 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 "spicetify-sleek.ini" = "~/.config/spicetify/Themes/Sleek/color.ini"
 ```
 
+<!--@include: ./_regen.md-->
+
 ## Apply
 
 Download `Sleek` theme from spicetify GitHub repository:
