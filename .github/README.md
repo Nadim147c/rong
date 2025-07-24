@@ -22,6 +22,16 @@ rong image ~/Pictures/wallpaper.jpg
 
 Check out the [documentation](https://nadim147c.github.io/rong).
 
+## Contribution Guide
+
+You're welcome to contribute in the following ways:
+
+1. **Code (Go)** – Add features, fix bugs, or improve code. Stick to existing patterns and open a clear PR.
+
+2. **Templates** – Add custom templates for any app using Go's `template` engine. Keep them clean and reusable.
+
+3. **Docs** – Write or improve docs (VitePress Markdown). New pages, typo fixes, or better explanations all help.
+
 ## License and Credit
 
 Rong is licensed under [GNU GPL-3.0](./LICENSE). This cli uses [material](https://github.com/Nadim147c/material)
