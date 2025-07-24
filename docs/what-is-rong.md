@@ -4,12 +4,25 @@ title: What is Rong?
 
 # What is Rong?
 
-**Rong** (রং) is a command-line tool that generates **Material You-compatible color palettes** from images and videos. It processes visual input and extracts color values following the [Material Design 3 (Material You)](https://m3.material.io/) specification.
-
-This is useful for dynamically theming desktop environments, applications, or any system that supports Material You or customizable color schemes.
-
 ::: danger WARNING
-🧪 Rong is an experimental tool. Expect breaking changes and unstable behavior as development progresses.
+🧪 Rong is an experimental tool. Expect breaking changes and unstable behavior as
+development progresses.
+:::
+
+**Rong** (রং) is a command-line tool that generates **Material You-compatible color
+palettes** from images and videos. It processes visual input and extracts color
+values following the [Material Design 3 (Material You)](https://m3.material.io/)
+specification.
+
+This is useful for dynamically theming desktop environments, applications, or any
+system that supports Material You or customizable color schemes.
+
+### Preview
+
+<video src="./preview.mp4" autoplay loop />
+
+::: warning NOTICE
+I don't own any of this image displayed here and the wallpaper changer is `swww`.
 :::
 
 ## Features
