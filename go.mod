@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	github.com/BurntSushi/toml v1.5.0
-	github.com/MatusOllah/slogcolor v1.6.0
+	github.com/MatusOllah/slogcolor v1.6.1-0.20250724162453-fdeedbe72977
 	github.com/Nadim147c/material v0.0.5-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/fatih/color v1.18.0

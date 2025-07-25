@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/cache"
@@ -34,7 +33,7 @@ var Command = &cobra.Command{
 	SilenceUsage: true,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 		opts := slogcolor.DefaultOptions
-		opts.TimeFormat = time.Kitchen
+		opts.NoTime = true
 		opts.SrcFileMode = 0
 		opts.LevelTags = map[slog.Level]string{
 			slog.LevelDebug: termcolor.New(termcolor.FgGreen).Sprint("DBG"),
