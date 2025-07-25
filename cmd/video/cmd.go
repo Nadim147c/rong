@@ -23,6 +23,7 @@ func init() {
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
 	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
+	Command.Flags().BoolP("json", "j", false, "print generated colors as json")
 }
 
 // Command is the image command
@@ -45,11 +46,17 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		cached, err := cache.LoadCache(videoPath)
-		if err == nil {
+		if cached, jsonb, err := cache.LoadCache(videoPath); err == nil {
+			slog.Info("Loading color from cache")
+
+			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+				os.Stdout.Write(jsonb)
+			}
+
 			templates.Execute(cached)
 			return nil
 		}
+
 		slog.Info("Couldn't load colors from cache", "error", err)
 		slog.Info("Generating colors from source")
 
@@ -70,8 +77,13 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(videoPath, colorMap)
 
-		if err := cache.SaveCache(videoPath, output); err != nil {
+		jsonb, err := cache.SaveCache(videoPath, output)
+		if err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
+		}
+
+		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+			os.Stdout.Write(jsonb)
 		}
 
 		templates.Execute(output)
