@@ -24,6 +24,7 @@ func init() {
 	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 	Command.Flags().BoolP("json", "j", false, "print generated colors as json")
+	Command.Flags().Bool("dry-run", false, "generate colors without applying templates")
 }
 
 // Command is the image command
@@ -53,7 +54,9 @@ var Command = &cobra.Command{
 				os.Stdout.Write(jsonb)
 			}
 
-			templates.Execute(cached)
+			if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
+				templates.Execute(cached)
+			}
 			return nil
 		}
 
@@ -86,7 +89,9 @@ var Command = &cobra.Command{
 			os.Stdout.Write(jsonb)
 		}
 
-		templates.Execute(output)
+		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
+			templates.Execute(output)
+		}
 		return nil
 	},
 }

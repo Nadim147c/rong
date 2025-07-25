@@ -25,6 +25,7 @@ func init() {
 	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
 	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
+	Command.Flags().Bool("dry-run", false, "generate colors without applying templates")
 }
 
 // Command is the image command
@@ -65,7 +66,9 @@ var Command = &cobra.Command{
 			json.NewEncoder(os.Stdout).Encode(output)
 		}
 
-		templates.Execute(output)
+		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
+			templates.Execute(output)
+		}
 		return nil
 	},
 }
