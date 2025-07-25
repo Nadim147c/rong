@@ -22,8 +22,10 @@ func init() {
 	Command.AddCommand(cache.Command)
 
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
+	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
 	Command.PersistentFlags().StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.toml", "path to config (.toml) file")
+	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
 // Command is root command of the cli
@@ -42,9 +44,14 @@ var Command = &cobra.Command{
 			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ERR"),
 		}
 
-		verbose, err := cmd.Flags().GetBool("verbose")
-		if err == nil && verbose {
+		verbose, _ := cmd.Flags().GetBool("verbose")
+		if verbose {
 			opts.Level = slog.LevelDebug
+		}
+
+		quiet, _ := cmd.Flags().GetBool("quiet")
+		if quiet {
+			opts.Level = slog.Level(100)
 		}
 
 		logFilePath, err := cmd.Flags().GetString("log-file")
