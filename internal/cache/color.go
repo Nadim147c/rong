@@ -29,7 +29,7 @@ func hash(path string) (string, error) {
 
 // IsCached checks if the file is colors is cached or not
 func IsCached(file string) bool {
-	_, err := LoadCache(file)
+	_, _, err := LoadCache(file)
 	if err != nil {
 		return false
 	}
@@ -37,46 +37,49 @@ func IsCached(file string) bool {
 }
 
 // LoadCache tries to load cached colors for this image
-func LoadCache(file string) (models.Output, error) {
+func LoadCache(file string) (models.Output, []byte, error) {
+	var jsonb []byte
 	var output models.Output
 
 	name, err := hash(file)
 	if err != nil {
-		return output, err
+		return output, jsonb, err
 	}
 
 	path := filepath.Join(config.CacheDir, name+".json")
 
-	cache, err := os.Open(path)
+	cache, err := os.ReadFile(path)
 	if err != nil {
-		return output, err
+		return output, jsonb, err
 	}
-	defer cache.Close()
 
-	if err := json.NewDecoder(cache).Decode(&output); err != nil {
-		return output, err
+	if err := json.Unmarshal(cache, &output); err != nil {
+		return output, cache, err
 	}
-	return output, nil
+	return output, cache, nil
 }
 
 // SaveCache saves output colors to cache dir
-func SaveCache(image string, output models.Output) error {
+func SaveCache(image string, output models.Output) ([]byte, error) {
+	var jsonb []byte
+
 	name, err := hash(image)
 	if err != nil {
-		return err
+		return jsonb, err
 	}
 
 	path := filepath.Join(config.CacheDir, name+".json")
 
 	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
-		return err
+		return jsonb, err
 	}
 
-	cache, err := os.Create(path)
+	jsonb, err = json.Marshal(output)
 	if err != nil {
-		return err
+		return jsonb, err
 	}
-	defer cache.Close()
 
-	return json.NewEncoder(cache).Encode(output)
+	err = os.WriteFile(path, jsonb, 0644)
+
+	return jsonb, err
 }

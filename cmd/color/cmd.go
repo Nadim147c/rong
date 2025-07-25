@@ -1,6 +1,9 @@
 package color
 
 import (
+	"encoding/json"
+	"os"
+
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/material/palettes"
@@ -32,7 +35,7 @@ var Command = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		return shared.ValidateGeneratorFlags(cmd)
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		source, err := color.ARGBFromHex(args[0])
 		if err != nil {
 			return err
@@ -57,6 +60,10 @@ var Command = &cobra.Command{
 		}
 
 		output := models.NewOutput("", colorMap)
+
+		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+			json.NewEncoder(os.Stdout).Encode(output)
+		}
 
 		templates.Execute(output)
 		return nil

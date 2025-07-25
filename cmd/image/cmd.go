@@ -1,6 +1,7 @@
 package image
 
 import (
+	"bufio"
 	"fmt"
 	"image"
 	"log/slog"
@@ -15,9 +16,10 @@ import (
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
 
+	_ "image/jpeg" // for jpeg encoding
+	_ "image/png"  // for png encoding
+
 	_ "golang.org/x/image/webp" // for webp encoding
-	_ "image/jpeg"              // for jpeg encoding
-	_ "image/png"               // for png encoding
 )
 
 func init() {
@@ -26,6 +28,7 @@ func init() {
 	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
 	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
+	Command.Flags().BoolP("json", "j", false, "print generated colors as json")
 }
 
 // Command is the image command
@@ -36,7 +39,7 @@ var Command = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		return shared.ValidateGeneratorFlags(cmd)
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		imagePath := args[0]
 
 		cwd, _ := os.Getwd()
@@ -45,12 +48,18 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		cached, err := cache.LoadCache(imagePath)
-		if err == nil {
+		if cached, jsonb, err := cache.LoadCache(imagePath); err == nil {
+			slog.Info("Loading color from cache")
+
+			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+				slog.Info("Loading color from cache")
+				bufio.NewWriter(os.Stdout).Write(jsonb)
+			}
+
 			templates.Execute(cached)
 			return nil
 		}
-		slog.Info("Couldn't load colors from cache", "error", err)
+
 		slog.Info("Generating colors from source")
 
 		file, err := os.Open(imagePath)
@@ -75,8 +84,13 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, colorMap)
 
-		if err := cache.SaveCache(imagePath, output); err != nil {
+		jsonb, err := cache.SaveCache(imagePath, output)
+		if err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
+		}
+
+		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+			os.Stdout.Write(jsonb)
 		}
 
 		templates.Execute(output)
