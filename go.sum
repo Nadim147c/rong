@@ -2,6 +2,8 @@ github.com/BurntSushi/toml v1.5.0 h1:W5quZX/G/csjUnuI8SUYlsHs9M38FC7znL0lIO+DvMg
 github.com/BurntSushi/toml v1.5.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/MatusOllah/slogcolor v1.6.0 h1:JAKer0xj5l1jYTXyQvs5ggqmJqYDuLnxgR9jfMAd+sI=
 github.com/MatusOllah/slogcolor v1.6.0/go.mod h1:5y1H50XuQIBvuYTJlmokWi+4FuPiJN5L7Z0jM4K4bYA=
+github.com/MatusOllah/slogcolor v1.6.1-0.20250724162453-fdeedbe72977 h1:0Id4qyvAXj5uZv+srv+AJqMfXdtESUNbi5aSlCF+59I=
+github.com/MatusOllah/slogcolor v1.6.1-0.20250724162453-fdeedbe72977/go.mod h1:5y1H50XuQIBvuYTJlmokWi+4FuPiJN5L7Z0jM4K4bYA=
 github.com/Nadim147c/material v0.0.5-alpha h1:VI0aSaaACPOf2+lHD9szMkkmrUozlxgODNDvD5nuEPI=
 github.com/Nadim147c/material v0.0.5-alpha/go.mod h1:BajMGn1eBGRQHFiA+spkPhukRRvpbq21EOc7hTv/wB4=
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
