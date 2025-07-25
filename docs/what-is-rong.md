@@ -19,7 +19,10 @@ system that supports Material You or customizable color schemes.
 
 ### Preview
 
-<video src="./preview.mp4" autoplay loop />
+<video autoplay controls loop muted playsinline>
+  <source src="./preview.webm" type="video/webm">
+  <source src="./preview.mp4" type="video/mp4">
+</video>
 
 ::: warning NOTICE
 I don't own any of this image displayed here and the wallpaper changer is `swww`.
