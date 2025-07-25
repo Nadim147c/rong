@@ -35,6 +35,7 @@ export default defineConfig({
             ],
           },
           { text: "Configuraion", link: "/configuration" },
+          { text: "Integration", link: "/integration" },
         ],
       },
       {

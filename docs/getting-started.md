@@ -49,12 +49,14 @@ rong video /path/to/video
 
 ::: info
 
-This command internally uses `ffmpeg` to extract frames. Only **5 frames** are sampled by default to ensure a balance between performance and accuracy. These frames are **evenly distributed** across the video duration—not just the first 5.
+This command internally uses `ffmpeg` to extract frames. Only **5 frames** are
+sampled by default to ensure a balance between performance and accuracy. These frames
+are **evenly distributed** across the video duration—not just the first 5.
 
 :::
 
-The generated colors will be used to create theme files using built-in templates
-(or user-defined templates). These files will be stored in
+The generated colors will be used to create theme files using built-in templates (or
+user-defined templates). These files will be stored in
 [`$XDG_STATE_DIR/rong/`](https://specifications.freedesktop.org/basedir-spec/latest/#variables)
 (usually `~/.local/state/rong/`):
 
@@ -70,7 +72,9 @@ See the [templates page](./templates.md).
 
 ::: tip
 
-If you're not sure whether the file is an image or video—or if you want to use both—you can use the `video` command, as `ffmpeg` supports both image and video inputs:
+If you're not sure whether the file is an image or video—or if you want to use
+both—you can use the `video` command, as `ffmpeg` supports both image and video
+inputs:
 
 ```bash
 rong video /path/to/image/or/video
