@@ -62,21 +62,21 @@ type ColorValue struct {
 	HexRGBA string `json:"hex_rgba"`
 	// TrimmedHexRGBA is the RGBA hexadecimal representation without '#' (e.g., FF0000FF)
 	TrimmedHexRGBA string `json:"trimmed_hex_rgba"`
-	// RGB is the RGB string format with values 0–255 (e.g., rgb(0, 255, 0))
+	// RGB is the RGB string format with values 0–255 (e.g., rgb(0,255,0))
 	RGB string `json:"rgb"`
-	// TrimmedRGB is the comma-separated RGB values 0–255 without the "rgb(...)" wrapper (e.g., 0, 255, 0)
+	// TrimmedRGB is the comma-separated RGB values 0–255 without the "rgb(...)" wrapper (e.g., 0,255,0)
 	TrimmedRGB string `json:"trimmed_rgb"`
-	// RGBA is the RGBA string format with values 0–255 (e.g., rgba(0, 255, 0, 255))
+	// RGBA is the RGBA string format with values 0–255 (e.g., rgba(0,255,0,255))
 	RGBA string `json:"rgba"`
-	// TrimmedRGBA is the comma-separated RGBA values 0–255 without the "rgba(...)" wrapper (e.g., 0, 255, 0, 255)
+	// TrimmedRGBA is the comma-separated RGBA values 0–255 without the "rgba(...)" wrapper (e.g., 0,255,0,255)
 	TrimmedRGBA string `json:"trimmed_rgba"`
-	// LinearRGB is the RGB string format with values in 0–1 range (e.g., rgb(0, 1, 0))
+	// LinearRGB is the RGB string format with values in 0–1 range (e.g., rgb(0,1,0))
 	LinearRGB string `json:"linear_rgb"`
-	// TrimmedLinearRGB is the comma-separated RGB values in 0–1 range (e.g., 0, 1, 0)
+	// TrimmedLinearRGB is the comma-separated RGB values in 0–1 range (e.g., 0,1,0)
 	TrimmedLinearRGB string `json:"trimmed_linear_rgb"`
-	// LinearRGBA is the RGBA string format with values in 0–1 range (e.g., rgba(0, 1, 0, 1))
+	// LinearRGBA is the RGBA string format with values in 0–1 range (e.g., rgba(0,1,0,1))
 	LinearRGBA string `json:"linear_rgba"`
-	// TrimmedLinearRGBA is the comma-separated RGBA values in 0–1 range (e.g., 0, 1, 0, 1)
+	// TrimmedLinearRGBA is the comma-separated RGBA values in 0–1 range (e.g., 0,1,0,1)
 	TrimmedLinearRGBA string `json:"trimmed_linear_rgba"`
 
 	// Red channel value (0–255)
@@ -123,14 +123,14 @@ func NewColorValue(rgb color.ARGB) ColorValue {
 	value.TrimmedHexRGB = fmt.Sprintf("%02X%02X%02X", red, green, blue)
 	value.HexRGBA = fmt.Sprintf("#%02X%02X%02X%02X", red, green, blue, alpha)
 	value.TrimmedHexRGBA = fmt.Sprintf("%02X%02X%02X%02X", red, green, blue, alpha)
-	value.RGB = fmt.Sprintf("rgb(%d, %d, %d)", red, green, blue)
-	value.TrimmedRGB = fmt.Sprintf("%d, %d, %d", red, green, blue)
-	value.RGBA = fmt.Sprintf("rgba(%d, %d, %d, %d)", red, green, blue, alpha)
-	value.TrimmedRGBA = fmt.Sprintf("%d, %d, %d, %d", red, green, blue, alpha)
-	value.LinearRGB = fmt.Sprintf("rgb(%.3f, %.3f, %.3f)", lf(red), lf(green), lf(blue))
-	value.TrimmedLinearRGB = fmt.Sprintf("%.3f, %.3f, %.3f", lf(red), lf(green), lf(blue))
-	value.LinearRGBA = fmt.Sprintf("rgba(%.3f, %.3f, %.3f, %.3f)", lf(red), lf(green), lf(blue), lf(alpha))
-	value.TrimmedLinearRGBA = fmt.Sprintf("%.3f, %.3f, %.3f, %.3f", lf(red), lf(green), lf(blue), lf(alpha))
+	value.RGB = fmt.Sprintf("rgb(%d,%d,%d)", red, green, blue)
+	value.TrimmedRGB = fmt.Sprintf("%d,%d,%d", red, green, blue)
+	value.RGBA = fmt.Sprintf("rgba(%d,%d,%d,%d)", red, green, blue, alpha)
+	value.TrimmedRGBA = fmt.Sprintf("%d,%d,%d,%d", red, green, blue, alpha)
+	value.LinearRGB = fmt.Sprintf("rgb(%.3f,%.3f,%.3f)", lf(red), lf(green), lf(blue))
+	value.TrimmedLinearRGB = fmt.Sprintf("%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue))
+	value.LinearRGBA = fmt.Sprintf("rgba(%.3f,%.3f,%.3f,%.3f)", lf(red), lf(green), lf(blue), lf(alpha))
+	value.TrimmedLinearRGBA = fmt.Sprintf("%.3f,%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue), lf(alpha))
 
 	value.Alpha = alpha
 	value.Red = red
