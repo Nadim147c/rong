@@ -138,6 +138,6 @@ You're good to go. Run the script with or without an argument to set the theme a
 wallpaper:
 
 ```bash
-wallpaper.sh                      random wallpaper
-wallpaper.sh path/to/image.png    specific wallpaper
+wallpaper.sh                    # random wallpaper
+wallpaper.sh path/to/image.png  # specific wallpaper
 ```
