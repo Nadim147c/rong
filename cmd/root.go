@@ -13,6 +13,7 @@ import (
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/carapace-sh/carapace"
 	termcolor "github.com/fatih/color"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
 
@@ -61,6 +62,11 @@ var Command = &cobra.Command{
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+		tty := os.Getenv("TERM") != "dumb" &&
+			(isatty.IsTerminal(os.Stderr.Fd()) ||
+				isatty.IsCygwinTerminal(os.Stderr.Fd()))
+		termcolor.NoColor = !tty
+
 		opts := slogcolor.DefaultOptions
 		opts.NoTime = true
 		opts.SrcFileMode = 0
