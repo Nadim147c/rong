@@ -20,7 +20,7 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 In your main config file (`~/.config/hypr/hyprland.conf`), source the theme file and
 define your layout:
 
-```kdl{1,5,6}
+```txt{1,5,6}
 source = colors.conf
 
 general {
