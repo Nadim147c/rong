@@ -2,62 +2,45 @@
 title: SCSS For GTK
 ---
 
-# SCSS For GTK
+# SCSS for GTK
 
-A concise guide to using SCSS for GTK styling, including compiler installation,
-variable usage, and compiling SCSS to GTK-compatible CSS. Includes a shell script for
-easy compilation and watch mode.
+A concise guide to using SCSS for GTK styling: install a compiler, use variables, and
+compile SCSS into GTK-compatible CSS. Includes a shell script for automatic
+compilation and watch mode.
 
-## Why?
+## Why SCSS?
 
-SCSS supports `@import` and variables. This is important because, after compilation,
-the output CSS will be a single file with all variables hardcoded. Many applications
-do not support CSS variables or importing additional files, so this approach ensures
-compatibility.
+SCSS supports `@use` and variables, which are useful because—after compilation—the
+output CSS becomes a single, flat file with all variables resolved. While GTK itself
+supports CSS imports via `@import`, many applications (such as wofi) do not handle
+relative paths correctly.
 
-Additionally, SCSS supports nesting, which makes the code easier to understand and
-helps restrict the styling scope. While adding a compilation step can decrease
-efficiency when modifying or creating new styles, this page addresses that issue by
-using scripts that automatically compile SCSS on change. This allows you to enjoy the
-features and flexibility of SCSS along with the efficiency of standard `GTK-CSS`.
+## Install the SCSS Compiler
 
-## Install SCSS Compiler
-
-On Arch-based systems, install the SCSS compiler using:
+On Arch-based systems, install the SCSS compiler with:
 
 ```bash
-sudo pacman -S ruby-sass
+sudo pacman -S dart-sass
 ```
 
 ## Link
 
-Add the following line to the [configuration](/configuration#linking-generated-files):
+Add the following line to the
+[configuration](/configuration#linking-generated-files):
 
-```toml{5}
+```toml
 [links]
-# ...
 "colors.scss" = [
-  # ...
   "~/.config/<app-name>/colors.scss"
 ]
 ```
 
 ## Writing SCSS Using Variables
 
-Create a `style.scss` file in your configuration directory. For waybar, it should be
-in `~/.config/waybar/style.scss`.
-
-::: warning STOP
-Create a backup for the original `style.css` file.
-
-```bash
-mv ~/.config/waybar/style.css ~/.config/waybar/style.css.bak
-```
-
-:::
+Create `~/.config/waybar/style.scss`:
 
 ```scss
-@import "colors";
+@use "colors.scss" as *;
 
 .module {
   color: $onBackground;
@@ -65,9 +48,19 @@ mv ~/.config/waybar/style.css ~/.config/waybar/style.css.bak
 }
 ```
 
-## Create SCSS Compilation Script
+::: warning
 
-Save the following script as `compile-scss.sh`:
+Backup the original `style.css` before replacing it:
+
+```bash
+mv ~/.config/waybar/style.css ~/.config/waybar/style.css.bak
+```
+
+:::
+
+## SCSS Compilation Script
+
+Save this as `compile-scss.sh`:
 
 ```sh
 #!/bin/sh
@@ -94,7 +87,7 @@ if [ ! -f "$INPUT" ]; then
 fi
 
 if ! command -v sass >/dev/null 2>&1; then
-    echo "Error: 'sass' command not found. Please install Ruby Sass."
+    echo "Error: 'sass' command not found. Please install Dart Sass."
     exit 1
 fi
 
@@ -108,19 +101,7 @@ compile_scss() {
     local DIR="$(dirname "$INPUT")"
     local BASE="$(basename "$INPUT" .scss)"
     local OUTPUT="$DIR/$BASE.css"
-    local TMPFILE="$(mktemp "$DIR/$BASE.XXXXXX.css")"
-
-    # Compile SCSS to a temporary file
-    if sass --no-cache --sourcemap=none "$INPUT" "$TMPFILE"; then
-        # Use install to safely move the file (preserves permissions, atomic)
-        install -m 644 "$TMPFILE" "$OUTPUT"
-        echo "Compiled $INPUT -> $OUTPUT"
-        rm -f "$TMPFILE"
-    else
-        echo "SCSS compilation failed."
-        rm -f "$TMPFILE"
-        return 1
-    fi
+    sass --no-source-map --verbose "$INPUT":"$OUTPUT"
 }
 
 # Initial compilation
@@ -135,7 +116,9 @@ if $WATCH_MODE; then
 fi
 ```
 
-## Make the Script Executable and Accessible
+## Install Script and Update PATH
+
+Make the script executable and move it to a directory in your `PATH`:
 
 ```bash
 chmod +x compile-scss.sh
@@ -143,34 +126,23 @@ mkdir -p ~/.local/bin
 mv compile-scss.sh ~/.local/bin/compile-scss
 ```
 
-Make sure `~/.local/bin` is in your `PATH`. Add this to your `.bashrc`, `.zshrc`,
-or `.profile` if needed:
+If `~/.local/bin` isn't already in your `PATH`, add it:
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc  # or .zshrc / .profile
 ```
 
 ## Compile Your SCSS
 
-Run once:
-
-```bash
-compile-scss path/to/style.scss
-# It compiles path/to/style.scss -> path/to/style.css
-```
-
-For waybar:
+To compile once:
 
 ```bash
 compile-scss ~/.config/waybar/style.scss
-# It compiles ~/.config/waybar/style.scss -> ~/.config/waybar/style.css
+# Output: ~/.config/waybar/style.css
 ```
 
-::: tip
-You can use `--watch` flag to watch for change and automatically compile.
+To watch for changes and auto-compile:
 
 ```bash
-compile-scss --watch path/to/style.scss
+compile-scss --watch ~/.config/waybar/style.scss
 ```
-
-:::
