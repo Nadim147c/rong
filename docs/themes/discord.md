@@ -50,6 +50,8 @@ For **Vesktop** and **Equibop**, you need to enable `quickCss`. Go to `User Sett
 \> `VENCORD/QUICORD` and check `Enable Custom CSS`. The new theme will be
 automatically applied. If it doesn't, restart Discord.
 
+![Quick CSS](./discord.jpg)
+
 ## Reload
 
 All three of these clients support automatic live reloading without any action from the user.
