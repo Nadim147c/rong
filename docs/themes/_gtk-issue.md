@@ -17,6 +17,6 @@ There are two common ways to handle this:
 1. **Ignore editor warnings**: You can safely ignore these errors.
 2. **Use SCSS preprocessing**: Define your variables in SCSS and compile it into
    standard CSS with hardcoded values. This avoids editor errors while maintaining
-   maintainability in your source stylesheets. [Learn more](/scss-for-gtk).
+   maintainability in your source stylesheets. [Learn more](/tricks/scss-for-gtk).
 
 :::
