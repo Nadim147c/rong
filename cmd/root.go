@@ -11,6 +11,7 @@ import (
 	"github.com/Nadim147c/rong/cmd/image"
 	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/config"
+	"github.com/carapace-sh/carapace"
 	termcolor "github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,32 @@ func init() {
 	Command.AddCommand(image.Command)
 	Command.AddCommand(video.Command)
 	Command.AddCommand(cache.Command)
+
+	actions := carapace.ActionMap{
+		"variant": carapace.ActionValues(
+			"monochrome", "neutral", "tonal_spot",
+			"vibrant", "expressive", "fidelity",
+			"content", "rainbow", "fruit_salad",
+		),
+		"version":  carapace.ActionValues("2021", "2025"),
+		"platform": carapace.ActionValues("phone", "watch"),
+	}
+
+	carapace.Gen(color.Command).FlagCompletion(actions)
+
+	imageCara := carapace.Gen(image.Command)
+	imageCara.FlagCompletion(actions)
+	imageCara.PositionalAnyCompletion(carapace.ActionFiles())
+
+	videoCara := carapace.Gen(video.Command)
+	videoCara.FlagCompletion(actions)
+	videoCara.PositionalAnyCompletion(carapace.ActionFiles())
+
+	cacheCara := carapace.Gen(cache.Command)
+	cacheCara.FlagCompletion(actions)
+	cacheCara.PositionalAnyCompletion(carapace.ActionFiles())
+
+	carapace.Gen(Command).Standalone()
 
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
