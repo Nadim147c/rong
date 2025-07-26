@@ -65,7 +65,7 @@ access and modification.
 ```bash
 post_hooks() {
     # Compile SCSS files for Waybar (see GTK/SCSS theming docs)
-    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR1 kitty
+    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR2 waybar
 
     # Reload dunst without resetting pause level
     local dunst_level=$(dunstctl get-pause-level)
@@ -92,7 +92,7 @@ WALLPAPER_DIR="$HOME/Pictures/Wallpapers/"
 
 # Post-configuration hook
 post_hooks() {
-    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR1 kitty
+    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR2 waybar
 
     local dunst_level=$(dunstctl get-pause-level)
     dunstctl reload && dunstctl set-pause-level "$dunst_level"
