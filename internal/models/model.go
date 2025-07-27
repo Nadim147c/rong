@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding"
 	"fmt"
 	"slices"
 	"strings"
@@ -52,6 +53,32 @@ type Case struct {
 	Pascal string `json:"pascal"`
 }
 
+var (
+	_ encoding.TextMarshaler   = (*Case)(nil)
+	_ encoding.TextUnmarshaler = (*Case)(nil)
+	_ fmt.Stringer             = (*Case)(nil)
+)
+
+// MarshalText implements encoding.TextMarshaler
+func (c Case) MarshalText() ([]byte, error) {
+	return []byte(c.Snake), nil
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler
+func (c *Case) UnmarshalText(b []byte) error {
+	key := string(b)
+	c.Snake = key
+	c.Camel = toCamelCase(key, false)
+	c.Kebab = strings.ReplaceAll(key, "_", "-")
+	c.Pascal = toCamelCase(key, true)
+	return nil
+}
+
+// String implements fmt.Stringer
+func (c Case) String() string {
+	return c.Snake
+}
+
 // ColorValue stores a color in multiple string and numeric formats.
 type ColorValue struct {
 	// HexRGB is the RGB hexadecimal representation with '#' prefix (e.g., #FF0000)
@@ -88,6 +115,8 @@ type ColorValue struct {
 	// Alpha channel value (0–255)
 	Alpha uint8 `json:"alpha"`
 }
+
+var _ fmt.Stringer = (*ColorValue)(nil)
 
 // String is useful when using .NameValue. It will be converted to "#XXXXXX".
 func (cv ColorValue) String() string {

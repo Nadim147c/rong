@@ -1,6 +1,7 @@
 package video
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"os"
@@ -47,11 +48,15 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		if cached, jsonb, err := cache.LoadCache(videoPath); err == nil {
+		if cached, err := cache.LoadCache(videoPath); err == nil {
 			slog.Info("Loading color from cache")
 
+			cached.Image = videoPath
+
 			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-				os.Stdout.Write(jsonb)
+				if err := json.NewEncoder(os.Stdout).Encode(cached); err != nil {
+					slog.Error("Failed to encode output", "error", err)
+				}
 			}
 
 			if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
@@ -80,13 +85,14 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(videoPath, colorMap)
 
-		jsonb, err := cache.SaveCache(videoPath, output)
-		if err != nil {
+		if err := cache.SaveCache(output); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
 		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-			os.Stdout.Write(jsonb)
+			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
+				slog.Error("Failed to encode output", "error", err)
+			}
 		}
 
 		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
