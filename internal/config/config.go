@@ -1,12 +1,15 @@
 package config
 
 import (
+	"errors"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	"github.com/BurntSushi/toml"
 	"github.com/Nadim147c/material/dynamic"
+	"github.com/goccy/go-yaml"
 )
 
 // Links is map all file the will be linked after generating color
@@ -22,17 +25,17 @@ type Config struct {
 	Links     Links
 }
 
-// tomlConfig is the config used during toml parse
-type tomlConfig struct {
-	Light     *bool             `toml:"light"`
-	Constrast *float64          `toml:"constrast"`
-	Version   *dynamic.Version  `toml:"version"`
-	Variant   *dynamic.Variant  `toml:"variant"`
-	Platform  *dynamic.Platform `toml:"platform"`
-	Links     tomlLinks         `toml:"links"`
+// parsedConfig is the config used during toml parse
+type parsedConfig struct {
+	Light     *bool             `toml:"light" yaml:"light"`
+	Constrast *float64          `toml:"constrast" yaml:"constrast"`
+	Version   *dynamic.Version  `toml:"version" yaml:"version"`
+	Variant   *dynamic.Variant  `toml:"variant" yaml:"variant"`
+	Platform  *dynamic.Platform `toml:"platform" yaml:"platform"`
+	Links     parseLinks        `toml:"links" yaml:"links"`
 }
 
-type tomlLinks map[string]StringSlice
+type parseLinks map[string]StringSlice
 
 // Global config holds the
 var Global = defaultConfig()
@@ -47,30 +50,36 @@ func defaultConfig() Config {
 }
 
 // LoadConfig parses the TOML config and merges it with defaults
-func LoadConfig(path string) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return
-	}
-
-	path, err = FindPath(cwd, path)
-	if err != nil {
-		slog.Error("Failed to find config file", "error", err)
-		return
-	}
-
+func LoadConfig(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		slog.Error("Config file doesn't exists", "error", err)
-		return
+		return err
 	}
 
-	parsed := &tomlConfig{}
-	if _, err := toml.DecodeFile(path, parsed); err != nil {
-		slog.Error("Failed to load config file", "error", err)
+	parsed := parsedConfig{}
+
+	switch filepath.Ext(path) {
+	case ".yaml", ".yml":
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		if err := yaml.NewDecoder(file).Decode(&parsed); err != nil {
+			return err
+		}
+	case ".toml":
+		if _, err := toml.DecodeFile(path, &parsed); err != nil {
+			return err
+		}
+	default:
+		return errors.New("Invalid config extention")
 	}
 
-	mergeConfig(&Global, parsed)
+	slog.Debug("Parsed", "config", parsed)
+
+	mergeConfig(&Global, &parsed)
 	slog.Debug("Config", "config", Global)
+	return nil
 }
 
 var validVariants = map[dynamic.Variant]bool{
@@ -80,7 +89,7 @@ var validVariants = map[dynamic.Variant]bool{
 }
 
 // mergeConfig merges non-zero values from `src` into `dst`
-func mergeConfig(dst *Config, src *tomlConfig) {
+func mergeConfig(dst *Config, src *parsedConfig) {
 	dstVal := reflect.ValueOf(dst).Elem()
 	srcVal := reflect.ValueOf(src).Elem()
 

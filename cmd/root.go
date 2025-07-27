@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/cache"
@@ -62,6 +63,10 @@ var Command = &cobra.Command{
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+		if cmd.Name() == "_carapace" {
+			return
+		}
+
 		tty := os.Getenv("TERM") != "dumb" &&
 			(isatty.IsTerminal(os.Stderr.Fd()) ||
 				isatty.IsCygwinTerminal(os.Stderr.Fd()))
@@ -107,10 +112,39 @@ var Command = &cobra.Command{
 			}
 		}
 
-		cfgFile, err := cmd.Flags().GetString("config")
-		if err != nil {
-			cfgFile = "$XDG_CONFIG_HOME/rong/config.toml"
+		cfgFiles := []string{
+			"/etc/rong/config.toml",
+			"/etc/rong/config.yaml",
+			"/etc/rong/config.yml",
+			"$HOME/.rong.toml",
+			"$HOME/.rong.yaml",
+			"$HOME/.rong.yml",
+			"$XDG_CONFIG_HOME/rong/config.toml",
+			"$XDG_CONFIG_HOME/rong/config.yaml",
+			"$XDG_CONFIG_HOME/rong/config.yml",
 		}
-		config.LoadConfig(cfgFile)
+
+		cfgFile, err := cmd.Flags().GetString("config")
+		if err == nil {
+			cfgFiles = append(cfgFiles, cfgFile)
+		}
+
+		cwd, _ := os.Getwd()
+		for _, cfg := range slices.Backward(cfgFiles) {
+			path, err := config.FindPath(cwd, cfg)
+			if err != nil {
+				continue
+			}
+
+			if err := config.LoadConfig(path); err != nil {
+				if !os.IsNotExist(err) {
+					slog.Error("Failed to load config", "error", err)
+				}
+				continue
+			}
+
+			slog.Info("Loaded config", "path", path)
+			break
+		}
 	},
 }
