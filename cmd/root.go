@@ -48,12 +48,17 @@ func init() {
 	cacheCara.FlagCompletion(actions)
 	cacheCara.PositionalAnyCompletion(carapace.ActionFiles())
 
-	carapace.Gen(Command).Standalone()
+	rootCara := carapace.Gen(Command)
+	rootCara.Standalone()
+	rootCara.FlagCompletion(carapace.ActionMap{
+		"config":   carapace.ActionFiles(),
+		"log-file": carapace.ActionFiles(),
+	})
 
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
-	Command.PersistentFlags().StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.toml", "path to config (.toml) file")
+	Command.PersistentFlags().StringP("config", "c", "", "path to config (.toml|.yaml|.yml) file")
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
