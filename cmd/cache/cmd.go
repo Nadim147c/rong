@@ -60,7 +60,7 @@ var Command = &cobra.Command{
 
 			output := models.NewOutput(path, colorMap)
 
-			if _, err = cache.SaveCache(path, output); err != nil {
+			if err := cache.SaveCache(output); err != nil {
 				slog.Error("Failed to save cache", "path", path, "error", err)
 				continue
 			}

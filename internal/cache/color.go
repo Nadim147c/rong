@@ -1,8 +1,9 @@
 package cache
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -19,17 +20,20 @@ func hash(path string) (string, error) {
 	}
 	defer file.Close()
 
-	h := xxhash.New()
-	if _, err := io.Copy(h, file); err != nil {
+	sum := xxhash.New()
+	if _, err := io.Copy(sum, file); err != nil {
 		return "", err
 	}
 
-	return fmt.Sprint(h.Sum64()), nil
+	result := make([]byte, 8)
+	binary.BigEndian.PutUint64(result, sum.Sum64())
+
+	return base64.RawURLEncoding.EncodeToString(result), nil
 }
 
 // IsCached checks if the file is colors is cached or not
 func IsCached(file string) bool {
-	_, _, err := LoadCache(file)
+	_, err := LoadCache(file)
 	if err != nil {
 		return false
 	}
@@ -37,49 +41,44 @@ func IsCached(file string) bool {
 }
 
 // LoadCache tries to load cached colors for this image
-func LoadCache(file string) (models.Output, []byte, error) {
-	var jsonb []byte
+func LoadCache(source string) (models.Output, error) {
 	var output models.Output
 
-	name, err := hash(file)
+	name, err := hash(source)
 	if err != nil {
-		return output, jsonb, err
+		return output, err
 	}
 
 	path := filepath.Join(config.CacheDir, name+".json")
 
-	cache, err := os.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
-		return output, jsonb, err
+		return output, err
 	}
+	defer file.Close()
 
-	if err := json.Unmarshal(cache, &output); err != nil {
-		return output, cache, err
-	}
-	return output, cache, nil
+	err = json.NewDecoder(file).Decode(&output)
+	return output, err
 }
 
 // SaveCache saves output colors to cache dir
-func SaveCache(image string, output models.Output) ([]byte, error) {
-	var jsonb []byte
-
-	name, err := hash(image)
+func SaveCache(output models.Output) error {
+	name, err := hash(output.Image)
 	if err != nil {
-		return jsonb, err
+		return err
 	}
 
 	path := filepath.Join(config.CacheDir, name+".json")
 
 	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
-		return jsonb, err
+		return err
 	}
 
-	jsonb, err = json.Marshal(output)
+	file, err := os.Create(path)
 	if err != nil {
-		return jsonb, err
+		return err
 	}
+	defer file.Close()
 
-	err = os.WriteFile(path, jsonb, 0644)
-
-	return jsonb, err
+	return json.NewEncoder(file).Encode(output)
 }

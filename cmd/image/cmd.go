@@ -1,7 +1,7 @@
 package image
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
 	"image"
 	"log/slog"
@@ -49,12 +49,15 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		if cached, jsonb, err := cache.LoadCache(imagePath); err == nil {
+		if cached, err := cache.LoadCache(imagePath); err == nil {
 			slog.Info("Loading color from cache")
 
+			cached.Image = imagePath
+
 			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-				slog.Info("Loading color from cache")
-				bufio.NewWriter(os.Stdout).Write(jsonb)
+				if err := json.NewEncoder(os.Stdout).Encode(cached); err != nil {
+					slog.Error("Failed to encode output", "error", err)
+				}
 			}
 
 			if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
@@ -88,13 +91,14 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, colorMap)
 
-		jsonb, err := cache.SaveCache(imagePath, output)
-		if err != nil {
+		if err := cache.SaveCache(output); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
 		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-			os.Stdout.Write(jsonb)
+			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
+				slog.Error("Failed to encode output", "error", err)
+			}
 		}
 
 		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
