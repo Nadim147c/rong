@@ -1,3 +1,17 @@
+# NixOS or Home Manager
+
+As `Rong` is very experimental, this hasn't been added to nixpkgs. You have create a
+custom package.
+
+I'm currently working on creating modules for NixOS and Home Manager. For now, you
+can use this following package snippet to create an overlay.
+
+::: info
+If you know how to create NixOS modules, consider contributing to the [GitHub
+repository](https://github.com/Nadim147c/rong).
+:::
+
+```nix
 {
   lib,
   buildGoModule,
@@ -36,3 +50,8 @@ buildGoModule {
     mainProgram = "rong";
   };
 }
+```
+
+::: info
+Update the **hash** and **revision** to latest commit for up-to-date features.
+:::
