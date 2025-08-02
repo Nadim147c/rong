@@ -10,5 +10,6 @@ pkgs.mkShell {
     revive
     gnumake
     bun
+    prettier
   ];
 }
