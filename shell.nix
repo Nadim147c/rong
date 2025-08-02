@@ -9,5 +9,6 @@ pkgs.mkShell {
     gofumpt
     revive
     gnumake
+    bun
   ];
 }
