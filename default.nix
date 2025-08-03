@@ -23,10 +23,10 @@ buildGoModule {
   nativeBuildInputs = [installShellFiles];
 
   postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
-    installShellCompletion --cmd $out/bin/rong \
-        --bash <(echo "$bashComp") \
-        --fish <(echo "$fishComp") \
-        --zsh <(echo "$zshComp")
+    installShellCompletion --cmd rong \
+        --bash <($out/bin/rong _carapace bash) \
+        --fish <($out/bin/rong _carapace fish) \
+        --zsh <($out/bin/rong _carapace zsh)
   '';
 
   meta = {
