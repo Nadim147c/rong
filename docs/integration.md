@@ -85,7 +85,7 @@ Now put everything together into a single executable script—e.g.,
 `~/.local/bin/wallpaper.sh`:
 
 ```bash
-!/bin/bash
+#!/bin/bash
 
 WALLPAPER=$1
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers/"
