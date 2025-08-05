@@ -1,9 +1,11 @@
 {
-  lib,
   buildGoModule,
-  installShellFiles,
   fetchFromGitHub,
+  ffmpeg,
+  installShellFiles,
+  lib,
   stdenv,
+  makeWrapper,
 }:
 buildGoModule {
   pname = "rong";
@@ -20,13 +22,17 @@ buildGoModule {
 
   ldflags = ["-s" "-w"];
 
-  nativeBuildInputs = [installShellFiles];
+  nativeBuildInputs = [installShellFiles makeWrapper];
+  propagatedBuildInputs = [ffmpeg];
 
   postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd rong \
-        --bash <($out/bin/rong _carapace bash) \
-        --fish <($out/bin/rong _carapace fish) \
-        --zsh <($out/bin/rong _carapace zsh)
+      --bash <($out/bin/rong _carapace bash) \
+      --fish <($out/bin/rong _carapace fish) \
+      --zsh <($out/bin/rong _carapace zsh)
+
+    wrapProgram $out/bin/rong \
+      --prefix PATH : ${lib.makeBinPath [ffmpeg]}
   '';
 
   meta = {

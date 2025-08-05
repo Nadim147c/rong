@@ -2,12 +2,13 @@
   description = "A Materal You color generator";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default-linux";
   };
   outputs = {
     self,
+    systems,
     nixpkgs,
   }: let
-    systems = ["aarch64-darwin" "aarch64-linux" "x86_64-darwin" "x86_64-linux"];
     forAllSystems = nixpkgs.lib.genAttrs (import systems);
     pkgsFor = nixpkgs.legacyPackages;
   in {
