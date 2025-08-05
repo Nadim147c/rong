@@ -51,6 +51,7 @@ export default defineConfig({
           { text: "Hyprlock", link: "hyprlock" },
           { text: "Spotify", link: "spotify" },
           { text: "SwayNC", link: "swaync" },
+          { text: "QT", link: "qtct" },
           { text: "Waybar", link: "waybar" },
           { text: "Wlogout", link: "wlogout" },
         ],
