@@ -12,6 +12,10 @@ import (
 func ValidateGeneratorFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 
+	if flags.Changed("light") {
+		config.Global.Light, _ = flags.GetBool("light")
+	}
+
 	// Validate version
 	if flags.Changed("version") {
 		version, _ := flags.GetInt("version")
