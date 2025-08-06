@@ -7,10 +7,11 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
+	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/Nadim147c/rong/templates"
@@ -80,7 +81,7 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to decode image: %w", err)
 		}
 
-		colorMap, err := material.GenerateFromImage(img,
+		colorMap, wu, err := material.GenerateFromImage(img,
 			config.Global.Variant, !config.Global.Light,
 			config.Global.Constrast, config.Global.Platform,
 			config.Global.Version,
@@ -89,7 +90,10 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
-		output := models.NewOutput(imagePath, colorMap)
+		fg, bg := colorMap["on_background"], colorMap["background"]
+		based := base16.Generate(fg, bg, !config.Global.Light, wu)
+
+		output := models.NewOutput(imagePath, based, colorMap)
 
 		if err := cache.SaveCache(output); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
