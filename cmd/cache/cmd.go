@@ -3,11 +3,12 @@ package cache
 import (
 	"log/slog"
 
-	"github.com/Nadim147c/material"
 	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/ffmpeg"
+	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/spf13/cobra"
@@ -48,7 +49,7 @@ var Command = &cobra.Command{
 				continue
 			}
 
-			colorMap, err := material.GenerateFromPixels(pixels,
+			colorMap, wu, err := material.GenerateFromPixels(pixels,
 				config.Global.Variant, !config.Global.Light,
 				config.Global.Constrast, config.Global.Platform,
 				config.Global.Version,
@@ -58,7 +59,10 @@ var Command = &cobra.Command{
 				continue
 			}
 
-			output := models.NewOutput(path, colorMap)
+			fg, bg := colorMap["on_background"], colorMap["background"]
+			based := base16.Generate(fg, bg, !config.Global.Light, wu)
+
+			output := models.NewOutput(path, based, colorMap)
 
 			if err := cache.SaveCache(output); err != nil {
 				slog.Error("Failed to save cache", "path", path, "error", err)

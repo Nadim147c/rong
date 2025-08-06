@@ -13,13 +13,18 @@ import (
 // Output contains all values that will execute templates
 type Output struct {
 	Material `json:"material"`
+	Base16   `json:"base16"`
 	Image    string  `json:"image"`
 	Colors   []Color `json:"colors"`
 }
 
 // NewOutput create output struct for templates execution
-func NewOutput(source string, colorMap map[string]color.ARGB) Output {
-	colors := make([]Color, 0, len(colorMap))
+func NewOutput(source string, base16 map[string]color.ARGB, colorMap map[string]color.ARGB) Output {
+	colors := make([]Color, 0, len(colorMap)+16)
+
+	for key, value := range base16 {
+		colors = append(colors, NewColor(key, value))
+	}
 	for key, value := range colorMap {
 		colors = append(colors, NewColor(key, value))
 	}
@@ -29,8 +34,14 @@ func NewOutput(source string, colorMap map[string]color.ARGB) Output {
 	})
 
 	material := NewMaterial(colorMap)
+	based := NewBase16(base16)
 
-	return Output{Image: source, Colors: colors, Material: material}
+	return Output{
+		Material: material,
+		Base16:   based,
+		Image:    source,
+		Colors:   colors,
+	}
 }
 
 // Color represents a named color with various color format representations.
@@ -114,6 +125,8 @@ type ColorValue struct {
 	Blue uint8 `json:"blue"`
 	// Alpha channel value (0–255)
 	Alpha uint8 `json:"alpha"`
+
+	Int color.ARGB
 }
 
 var _ fmt.Stringer = (*ColorValue)(nil)
@@ -165,6 +178,7 @@ func NewColorValue(rgb color.ARGB) ColorValue {
 	value.Red = red
 	value.Green = green
 	value.Blue = blue
+	value.Int = rgb
 
 	return value
 }

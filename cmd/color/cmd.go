@@ -7,6 +7,7 @@ import (
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/material/palettes"
+	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/shared"
@@ -60,7 +61,10 @@ var Command = &cobra.Command{
 			}
 		}
 
-		output := models.NewOutput("", colorMap)
+		fg, bg := colorMap["on_background"], colorMap["background"]
+		based := base16.GenerateRandom(fg, bg, !config.Global.Light)
+
+		output := models.NewOutput("", based, colorMap)
 
 		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
 			json.NewEncoder(os.Stdout).Encode(output)
