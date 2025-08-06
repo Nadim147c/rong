@@ -10,6 +10,24 @@ import (
 	"github.com/Nadim147c/material/score"
 )
 
+// Quantized is quantized colors
+type Quantized struct {
+	Celebi map[color.ARGB]int `json:"celebi"`
+	Wu     []color.ARGB       `json:"wu"`
+}
+
+// Quantize quantizes list of pixels
+func Quantize(pixels []color.ARGB) Quantized {
+	wu := quantizer.QuantizeWu(pixels, 100)
+	colors := make([]color.Lab, len(wu))
+	for i, c := range wu {
+		colors[i] = c.ToLab()
+	}
+
+	celebi := quantizer.QuantizeWsMeans(pixels, colors, 4)
+	return Quantized{celebi, wu}
+}
+
 // ErrNoColorFound is a error
 var ErrNoColorFound = errors.New("no color found")
 
@@ -25,20 +43,24 @@ func GenerateFromPixels(
 	platform dynamic.Platform,
 	version dynamic.Version,
 ) (Colors, []color.ARGB, error) {
-	quantizedWu := quantizer.QuantizeWu(pixels, 100)
-	colors := make([]color.Lab, len(quantizedWu))
-	for i, c := range quantizedWu {
-		colors[i] = c.ToLab()
-	}
+	q := Quantize(pixels)
+	return GenerateFromQuantized(q, variant, dark, constrast, platform, version)
+}
 
-	quantized := quantizer.QuantizeWsMeans(pixels, colors, 4)
-	if len(quantized) == 0 {
-		return Colors{}, quantizedWu, ErrNoColorFound
-	}
+// GenerateFromQuantized generates color from a cached quantized
+func GenerateFromQuantized(
+	quantized Quantized,
+	variant dynamic.Variant,
+	dark bool,
+	constrast float64,
+	platform dynamic.Platform,
+	version dynamic.Version,
+) (Colors, []color.ARGB, error) {
+	celebi, wu := quantized.Celebi, quantized.Wu
 
-	scored := score.Score(quantized, score.ScoreOptions{Desired: 4, Fallback: score.FallbackColor})
+	scored := score.Score(celebi, score.ScoreOptions{Desired: 4, Fallback: score.FallbackColor})
 	if len(scored) == 0 {
-		return Colors{}, quantizedWu, ErrNoColorFound
+		return Colors{}, wu, ErrNoColorFound
 	}
 
 	primary := palettes.NewFromARGB(scored[0])
@@ -57,5 +79,5 @@ func GenerateFromPixels(
 			colorMap[key] = value.GetArgb(scheme)
 		}
 	}
-	return colorMap, quantizedWu, nil
+	return colorMap, wu, nil
 }

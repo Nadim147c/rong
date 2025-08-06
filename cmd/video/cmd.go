@@ -49,33 +49,24 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		if cached, err := cache.LoadCache(videoPath); err == nil {
-			slog.Info("Loading color from cache")
-
-			cached.Image = videoPath
-
-			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-				if err := json.NewEncoder(os.Stdout).Encode(cached); err != nil {
-					slog.Error("Failed to encode output", "error", err)
-				}
+		quantized, err := cache.LoadCache(videoPath)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				slog.Error("Failed to load cache", "error", err)
 			}
 
-			if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
-				templates.Execute(cached)
+			frames, _ := cmd.Flags().GetInt("frames")
+			pixels, err := ffmpeg.GetPixels(videoPath, frames)
+			if err != nil {
+				return fmt.Errorf("Failed to get pixels from media: %w", err)
 			}
-			return nil
+			quantized = material.Quantize(pixels)
 		}
 
 		slog.Info("Couldn't load colors from cache", "error", err)
 		slog.Info("Generating colors from source")
 
-		frames, _ := cmd.Flags().GetInt("frames")
-		pixels, err := ffmpeg.GetPixels(videoPath, frames)
-		if err != nil {
-			return fmt.Errorf("Failed to get pixels from media: %w", err)
-		}
-
-		colorMap, wu, err := material.GenerateFromPixels(pixels,
+		colorMap, wu, err := material.GenerateFromQuantized(quantized,
 			config.Global.Variant, !config.Global.Light,
 			config.Global.Constrast, config.Global.Platform,
 			config.Global.Version,
@@ -89,7 +80,7 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(videoPath, based, colorMap)
 
-		if err := cache.SaveCache(output); err != nil {
+		if err := cache.SaveCache(videoPath, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
