@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/Nadim147c/rong/internal/config"
-	"github.com/Nadim147c/rong/internal/models"
+	"github.com/Nadim147c/rong/internal/material"
 	"github.com/cespare/xxhash"
 )
 
@@ -41,8 +41,8 @@ func IsCached(file string) bool {
 }
 
 // LoadCache tries to load cached colors for this image
-func LoadCache(source string) (models.Output, error) {
-	var output models.Output
+func LoadCache(source string) (material.Quantized, error) {
+	var output material.Quantized
 
 	name, err := hash(source)
 	if err != nil {
@@ -62,8 +62,8 @@ func LoadCache(source string) (models.Output, error) {
 }
 
 // SaveCache saves output colors to cache dir
-func SaveCache(output models.Output) error {
-	name, err := hash(output.Image)
+func SaveCache(source string, output material.Quantized) error {
+	name, err := hash(source)
 	if err != nil {
 		return err
 	}

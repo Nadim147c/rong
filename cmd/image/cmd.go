@@ -50,38 +50,28 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
-		if cached, err := cache.LoadCache(imagePath); err == nil {
-			slog.Info("Loading color from cache")
-
-			cached.Image = imagePath
-
-			if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
-				if err := json.NewEncoder(os.Stdout).Encode(cached); err != nil {
-					slog.Error("Failed to encode output", "error", err)
-				}
+		quantized, err := cache.LoadCache(imagePath)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				slog.Error("Failed to load cache", "error", err)
 			}
 
-			if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
-				templates.Execute(cached)
+			file, err := os.Open(imagePath)
+			if err != nil {
+				return fmt.Errorf("failed to open image file: %w", err)
+			}
+			defer file.Close()
+
+			img, _, err := image.Decode(file)
+			if err != nil {
+				return fmt.Errorf("failed to decode image: %w", err)
 			}
 
-			return nil
+			pixels := material.GetPixelsFromImage(img)
+			quantized = material.Quantize(pixels)
 		}
 
-		slog.Info("Generating colors from source")
-
-		file, err := os.Open(imagePath)
-		if err != nil {
-			return fmt.Errorf("failed to open image file: %w", err)
-		}
-		defer file.Close()
-
-		img, _, err := image.Decode(file)
-		if err != nil {
-			return fmt.Errorf("failed to decode image: %w", err)
-		}
-
-		colorMap, wu, err := material.GenerateFromImage(img,
+		colorMap, wu, err := material.GenerateFromQuantized(quantized,
 			config.Global.Variant, !config.Global.Light,
 			config.Global.Constrast, config.Global.Platform,
 			config.Global.Version,
@@ -95,7 +85,7 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, based, colorMap)
 
-		if err := cache.SaveCache(output); err != nil {
+		if err := cache.SaveCache(imagePath, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 

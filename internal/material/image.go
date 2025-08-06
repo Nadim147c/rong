@@ -7,15 +7,8 @@ import (
 	"github.com/Nadim147c/material/dynamic"
 )
 
-// GenerateFromImage colors from an image.Image
-func GenerateFromImage(
-	img image.Image,
-	variant dynamic.Variant,
-	dark bool,
-	constrast float64,
-	platform dynamic.Platform,
-	version dynamic.Version,
-) (Colors, []color.ARGB, error) {
+// GetPixelsFromImage returns pixels from image.Imaget interface
+func GetPixelsFromImage(img image.Image) []color.ARGB {
 	bounds := img.Bounds()
 	pixels := make([]color.ARGB, 0, bounds.Dx()*bounds.Dy())
 
@@ -27,5 +20,18 @@ func GenerateFromImage(
 		}
 	}
 
+	return pixels
+}
+
+// GenerateFromImage colors from an image.Image
+func GenerateFromImage(
+	img image.Image,
+	variant dynamic.Variant,
+	dark bool,
+	constrast float64,
+	platform dynamic.Platform,
+	version dynamic.Version,
+) (Colors, []color.ARGB, error) {
+	pixels := GetPixelsFromImage(img)
 	return GenerateFromPixels(pixels, variant, dark, constrast, platform, version)
 }
