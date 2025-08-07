@@ -105,33 +105,29 @@ func randomHct() color.Hct {
 	}
 }
 
-func tc(c color.Hct, tone float64, chroma ...float64) color.ARGB {
-	cm := 1.0
-	if len(chroma) > 1 {
-		cm = chroma[0]
-	}
+func tc(c color.Hct, tone float64, chromaMultipler float64) color.ARGB {
 	c.Tone = tone
-	c.Chroma = num.Clamp(0, 100, c.Chroma*cm)
+	c.Chroma = num.Clamp(0, 100, c.Chroma*chromaMultipler)
 	return c.ToARGB()
 }
 
 func fixfg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 100), tc(c, 90)
+		return tc(c, 100, 1.7), tc(c, 90, 1.7)
 	}
 	return tc(c, 20, 2), tc(c, 35, 2)
 }
 
 func fixbg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 20), tc(c, 35)
+		return tc(c, 20, 1.7), tc(c, 35, 1.7)
 	}
 	return tc(c, 100, 2), tc(c, 90, 2)
 }
 
 func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 50), tc(c, 70)
+		return tc(c, 50, 1.7), tc(c, 70, 1.7)
 	}
 	return tc(c, 35, 2), tc(c, 25, 2)
 }
