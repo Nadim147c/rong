@@ -116,6 +116,10 @@ type ColorValue struct {
 	LinearRGBA string `json:"linear_rgba"`
 	// TrimmedLinearRGBA is the comma-separated RGBA values in 0–1 range (e.g., 0,1,0,1)
 	TrimmedLinearRGBA string `json:"trimmed_linear_rgba"`
+	// AnsiColor is the terminals ansi sequence without the escape character (e.g., 38;2;1;2;3)
+	AnsiForeground string `json:"ansi_foreground"`
+	// AnsiColor is the terminals ansi sequence without the escape character (e.g., 48;2;1;2;3)
+	AnsiBackground string `json:"ansi_background"`
 
 	// Red channel value (0–255)
 	Red uint8 `json:"red"`
@@ -173,6 +177,8 @@ func NewColorValue(rgb color.ARGB) ColorValue {
 	value.TrimmedLinearRGB = fmt.Sprintf("%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue))
 	value.LinearRGBA = fmt.Sprintf("rgba(%.3f,%.3f,%.3f,%.3f)", lf(red), lf(green), lf(blue), lf(alpha))
 	value.TrimmedLinearRGBA = fmt.Sprintf("%.3f,%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue), lf(alpha))
+	value.AnsiForeground = fmt.Sprintf("38;2;%d;%d;%d", red, green, blue)
+	value.AnsiBackground = fmt.Sprintf("48;2;%d;%d;%d", red, green, blue)
 
 	value.Alpha = alpha
 	value.Red = red
