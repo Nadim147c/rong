@@ -48,7 +48,7 @@ in {
         description = "Theme version";
       };
 
-      light = mkOption {
+      dark = mkOption {
         type = types.bool;
         default = false;
         description = "Light or dark theme";
