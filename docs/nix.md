@@ -1,57 +1,104 @@
-# NixOS or Home Manager
+# Home Manager
 
-As `Rong` is very experimental, this hasn't been added to nixpkgs. You have create a
-custom package.
+Rong has a experimental `Home-Manager` module. You can get this by flake.
 
-I'm currently working on creating modules for NixOS and Home Manager. For now, you
-can use this following package snippet to create an overlay.
-
-::: info
-If you know how to create NixOS modules, consider contributing to the [GitHub
-repository](https://github.com/Nadim147c/rong).
+::: warning
+As Rong is experimental and module also have experimental issue.
 :::
 
-```nix
+# Input
+
+Add Rong flake to you flake input.
+
+```nix{9,10,23}
 {
-  lib,
-  buildGoModule,
-  installShellFiles,
-  fetchFromGitHub,
-  stdenv,
-}:
-buildGoModule {
-  pname = "rong";
-  version = "0-unstable-2025-07-27";
+    inputs = {
+        nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+        home-manager = {
+            url = "github:nix-community/home-manager";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
 
-  src = fetchFromGitHub {
-    owner = "Nadim147c";
-    repo = "rong";
-    rev = "9752a110a88d79242b77143474216ede75204a48";
-    hash = "sha256-CFrnMc1sUMEsBnMcmxszqMIea87A2pbZXsa6V3ackmI=";
-  };
+        rong.url = "github:Nadim147c/rong";
+        rong.inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-  vendorHash = "sha256-gT5iAYcUif2PQO6lVJRfUjddeAJc5ZrHg5hmkLkZeME=";
-
-  ldflags = ["-s" "-w"];
-
-  nativeBuildInputs = [installShellFiles];
-
-  postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
-    installShellCompletion --cmd $out/bin/rong \
-        --bash <(echo "$bashComp") \
-        --fish <(echo "$fishComp") \
-        --zsh <(echo "$zshComp")
-  '';
-
-  meta = {
-    description = "A Material You color generator";
-    homepage = "https://github.com/Nadim147c/rong";
-    license = lib.licenses.gpl3Only;
-    mainProgram = "rong";
-  };
+    outputs = {
+        rong,
+        ...
+    }: let
+        system = "x86_64-linux";
+        pkgs = import nixpkgs { inherit system; };
+    in {
+        homeConfigurations."<username>" = home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            modules = [
+                rong.homeModules.default
+                ./home
+            ];
+        };
+    };
 }
 ```
 
-::: info
-Update the **hash** and **revision** to latest commit for up-to-date features.
-:::
+# Module
+
+Now, use this module anywhere in your configuration.
+
+```nix
+{...}: {
+    programs.rong = {
+        enable = true;
+        settings = {
+            variant = "expressive";
+            version = 2021;
+            dark = true;
+            links = {
+                "hyprland.conf" = "~/.config/hypr/colors.conf";
+                "colors.lua" = "~/.config/wezterm/colors.lua";
+                "spicetify-sleek.ini" = "~/.config/spicetify/Themes/Sleek/color.ini";
+                "kitty-full.conf" = "~/.config/kitty/colors.conf";
+                "pywalfox.json" = "~/.cache/wal/colors.json";
+                "gtk-css.css" = "~/.config/wlogout/colors.css";
+                "rofi.rasi" = "~/.config/rofi/config.rasi";
+                "ghostty" = "~/.config/ghostty/colors";
+                "dunstrc" = "~/.config/dunst/dunstrc";
+                "cava.ini" = "~/.config/cava/themes/rong.ini";
+
+                "gtk.css" = [
+                    "~/.config/gtk-3.0/gtk.css"
+                    "~/.config/gtk-4.0/gtk.css"
+                ];
+            };
+        };
+
+
+        # Create or overwrite templates
+        templates = {
+            "cava.ini" = /* gotmpl */ ''
+                  [color]
+                  ; background = '{{ .Background }}'
+                  background = 'default'
+
+                  ; gradient = 0
+                  gradient = 1
+                  gradient_color_1 = '{{ .Color1 }}'
+                  gradient_color_2 = '{{ .Color2 }}'
+                  gradient_color_3 = '{{ .Color3 }}'
+                  gradient_color_4 = '{{ .Color4 }}'
+                  gradient_color_5 = '{{ .Color5 }}'
+                  gradient_color_6 = '{{ .Color6 }}'
+
+                  ; horizontal_gradient = 0
+                  horizontal_gradient = 1
+                  horizontal_gradient_color_1 = '{{ .Color1 }}'
+                  horizontal_gradient_color_2 = '{{ .Color2 }}'
+                  horizontal_gradient_color_3 = '{{ .Color3 }}'
+                  horizontal_gradient_color_4 = '{{ .Color4 }}'
+                  horizontal_gradient_color_5 = '{{ .Color5 }}'
+                  horizontal_gradient_color_6 = '{{ .Color6 }}'
+              '';
+        };
+    };
+}
+```
