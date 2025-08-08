@@ -4,7 +4,7 @@ import (
 	"image"
 
 	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/rong/internal/config"
 )
 
 // GetPixelsFromImage returns pixels from image.Imaget interface
@@ -26,12 +26,8 @@ func GetPixelsFromImage(img image.Image) []color.ARGB {
 // GenerateFromImage colors from an image.Image
 func GenerateFromImage(
 	img image.Image,
-	variant dynamic.Variant,
-	dark bool,
-	constrast float64,
-	platform dynamic.Platform,
-	version dynamic.Version,
+	cfg config.GeneratorConfig,
 ) (Colors, []color.ARGB, error) {
 	pixels := GetPixelsFromImage(img)
-	return GenerateFromPixels(pixels, variant, dark, constrast, platform, version)
+	return GenerateFromPixels(pixels, cfg)
 }

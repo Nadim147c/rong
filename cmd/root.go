@@ -4,18 +4,18 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
 	"github.com/Nadim147c/rong/cmd/image"
 	"github.com/Nadim147c/rong/cmd/video"
-	"github.com/Nadim147c/rong/internal/config"
+	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	termcolor "github.com/fatih/color"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -67,9 +67,9 @@ var Command = &cobra.Command{
 	Use:          "rong",
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
-	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 		if cmd.Name() == "_carapace" {
-			return
+			return nil
 		}
 
 		tty := os.Getenv("TERM") != "dumb" &&
@@ -117,39 +117,17 @@ var Command = &cobra.Command{
 			}
 		}
 
-		cfgFiles := []string{
-			"/etc/rong/config.toml",
-			"/etc/rong/config.yaml",
-			"/etc/rong/config.yml",
-			"$HOME/.rong.toml",
-			"$HOME/.rong.yaml",
-			"$HOME/.rong.yml",
-			"$XDG_CONFIG_HOME/rong/config.toml",
-			"$XDG_CONFIG_HOME/rong/config.yaml",
-			"$XDG_CONFIG_HOME/rong/config.yml",
-		}
+		viper.AddConfigPath("/etc/rong")
+		viper.AddConfigPath(pathutil.ConfigDir)
+		viper.SetConfigType("yaml")
+		viper.SetEnvPrefix("rong")
+		viper.AutomaticEnv()
 
 		cfgFile, err := cmd.Flags().GetString("config")
 		if err == nil {
-			cfgFiles = append(cfgFiles, cfgFile)
+			viper.SetConfigFile(cfgFile)
 		}
 
-		cwd, _ := os.Getwd()
-		for _, cfg := range slices.Backward(cfgFiles) {
-			path, err := config.FindPath(cwd, cfg)
-			if err != nil {
-				continue
-			}
-
-			if err := config.LoadConfig(path); err != nil {
-				if !os.IsNotExist(err) {
-					slog.Error("Failed to load config", "error", err)
-				}
-				continue
-			}
-
-			slog.Info("Loaded config", "path", path)
-			break
-		}
+		return viper.ReadInConfig()
 	},
 }

@@ -13,13 +13,14 @@ import (
 	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
-	"github.com/Nadim147c/rong/internal/shared"
+	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
-	Command.Flags().Bool("light", false, "generate light color palette")
+	Command.Flags().Bool("dark", false, "generate dark color palette")
 	Command.Flags().String("variant", string(dynamic.TonalSpot), "variant to use (e.g., tonal_spot, vibrant, expressive)")
 	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
@@ -34,8 +35,8 @@ var Command = &cobra.Command{
 	Use:   "video [flags] <image>",
 	Short: "Generate colors from a video",
 	Args:  cobra.ExactArgs(1),
-	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		return shared.ValidateGeneratorFlags(cmd)
+	PreRun: func(cmd *cobra.Command, _ []string) {
+		viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		videoPath := args[0]
@@ -44,7 +45,8 @@ var Command = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		videoPath, err = config.FindPath(cwd, videoPath)
+
+		videoPath, err = pathutil.FindPath(cwd, videoPath)
 		if err != nil {
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
@@ -66,17 +68,17 @@ var Command = &cobra.Command{
 		slog.Info("Couldn't load colors from cache", "error", err)
 		slog.Info("Generating colors from source")
 
-		colorMap, wu, err := material.GenerateFromQuantized(quantized,
-			config.Global.Variant, !config.Global.Light,
-			config.Global.Constrast, config.Global.Platform,
-			config.Global.Version,
-		)
+		cfg, err := config.GetGeneratorConfig()
+		if err != nil {
+			return err
+		}
+		colorMap, wu, err := material.GenerateFromQuantized(quantized, cfg)
 		if err != nil {
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
 		fg, bg := colorMap["on_background"], colorMap["background"]
-		based := base16.Generate(fg, bg, !config.Global.Light, wu)
+		based := base16.Generate(fg, bg, wu)
 
 		output := models.NewOutput(videoPath, based, colorMap)
 
