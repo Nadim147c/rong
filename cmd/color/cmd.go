@@ -10,9 +10,9 @@ import (
 	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/models"
-	"github.com/Nadim147c/rong/internal/shared"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	_ "image/jpeg" // for jpeg encoding
 	_ "image/png"  // for png encoding
@@ -21,7 +21,7 @@ import (
 )
 
 func init() {
-	Command.Flags().Bool("light", false, "generate light color palette")
+	Command.Flags().Bool("dark", false, "generate dark color palette")
 	Command.Flags().String("variant", string(dynamic.TonalSpot), "variant to use (e.g., tonal_spot, vibrant, expressive)")
 	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
@@ -34,8 +34,8 @@ var Command = &cobra.Command{
 	Use:   "color [flags] <image>",
 	Short: "Generate colors from a color",
 	Args:  cobra.ExactArgs(1),
-	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		return shared.ValidateGeneratorFlags(cmd)
+	PreRun: func(cmd *cobra.Command, _ []string) {
+		viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		source, err := color.ARGBFromHex(args[0])
@@ -45,10 +45,13 @@ var Command = &cobra.Command{
 
 		primary := palettes.NewFromARGB(source)
 
+		config, err := config.GetGeneratorConfig()
+		if err != nil {
+			return err
+		}
 		scheme := dynamic.NewDynamicScheme(source.ToHct(),
-			config.Global.Variant, config.Global.Constrast,
-			!config.Global.Light, config.Global.Platform,
-			config.Global.Version, primary,
+			config.Variant, config.Constrast, config.Dark,
+			config.Platform, config.Version, primary,
 			nil, nil, nil, nil, nil,
 		)
 
@@ -62,7 +65,7 @@ var Command = &cobra.Command{
 		}
 
 		fg, bg := colorMap["on_background"], colorMap["background"]
-		based := base16.GenerateRandom(fg, bg, !config.Global.Light)
+		based := base16.GenerateRandom(fg, bg)
 
 		output := models.NewOutput("", based, colorMap)
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/num"
+	"github.com/spf13/viper"
 )
 
 // distance returns the shortest distance between two angles on a circle
@@ -69,7 +70,7 @@ func SelectColors(colors []color.Hct, k int) []color.Hct {
 
 // Generate generates base16 colors from selecting quantizes color. It takes
 // color with long chroma distance to ensure colors has more variety
-func Generate(fg, bg color.ARGB, dark bool, colors []color.ARGB) map[string]color.ARGB {
+func Generate(fg, bg color.ARGB, colors []color.ARGB) map[string]color.ARGB {
 	hct := make([]color.Hct, len(colors))
 	for i, v := range colors {
 		hct[i] = v.ToHct()
@@ -77,6 +78,7 @@ func Generate(fg, bg color.ARGB, dark bool, colors []color.ARGB) map[string]colo
 
 	selected := SelectColors(hct, 10)
 
+	dark := viper.GetBool("dark")
 	b := map[string]color.ARGB{}
 	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
 	b["color_1"], b["color_9"] = fix(dark, getColorWithRandFallback(selected, 0))
@@ -133,7 +135,9 @@ func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 }
 
 // GenerateRandom generate random base16 colors with given fg,bg and dark
-func GenerateRandom(fg, bg color.ARGB, dark bool) map[string]color.ARGB {
+func GenerateRandom(fg, bg color.ARGB) map[string]color.ARGB {
+	dark := viper.GetBool("viper")
+
 	b := map[string]color.ARGB{}
 	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
 

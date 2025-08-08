@@ -5,12 +5,13 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"slices"
+	"reflect"
 	"strings"
 	"text/template"
 
-	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/models"
+	"github.com/Nadim147c/rong/internal/pathutil"
+	"github.com/spf13/viper"
 )
 
 var success = map[string]bool{}
@@ -22,7 +23,7 @@ var templates embed.FS
 func Execute(color models.Output) {
 	defer link()
 
-	if err := os.MkdirAll(config.StateDir, 0755); err != nil {
+	if err := os.MkdirAll(pathutil.StateDir, 0755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return
 	}
@@ -39,7 +40,7 @@ func Execute(color models.Output) {
 		execute(tmpl, color)
 	}
 
-	templateRoot := filepath.Join(config.ConfigDir, "templates")
+	templateRoot := filepath.Join(pathutil.ConfigDir, "templates")
 
 	templatePath, err := filepath.Glob(templateRoot + "/*.tmpl")
 	if err != nil {
@@ -63,11 +64,25 @@ func Execute(color models.Output) {
 }
 
 func link() {
-	if config.Global.Links == nil {
+	links := viper.Get("links")
+	if links == nil {
+		slog.Warn("No links defined in configuration")
 		return
 	}
 
-	for src, paths := range config.Global.Links {
+	linksValue := reflect.ValueOf(links)
+	if linksValue.Kind() != reflect.Map {
+		slog.Error("Expected 'links' to be a map in configuration")
+		return
+	}
+
+	for _, key := range linksValue.MapKeys() {
+		if key.Kind() != reflect.String {
+			slog.Error("Link key is not a string", "key", key)
+			os.Exit(1) // Fatal configuration error
+		}
+
+		src := key.String()
 		if _, ok := success[src]; !ok {
 			slog.Warn("Skipping source, it doesn't exist", "src", src)
 			continue
@@ -77,15 +92,46 @@ func link() {
 			continue
 		}
 
-		for path := range slices.Values(paths) {
-			path, err := config.FindPath(config.ConfigDir, path)
+		pathValue := linksValue.MapIndex(key)
+		if pathValue.Kind() == reflect.Interface {
+			pathValue = pathValue.Elem()
+		}
+
+		switch pathValue.Kind() {
+		case reflect.String:
+			path, err := pathutil.FindPath(pathutil.ConfigDir, pathValue.String())
 			if err != nil {
-				slog.Error("Failed to find path", "error", err)
-				return
+				slog.Error("Failed to find path", "src", src, "path", pathValue.String(), "error", err)
+				os.Exit(1)
+			}
+			srcDir := filepath.Join(pathutil.StateDir, src)
+			hardlinkOrCopy(srcDir, path)
+
+		case reflect.Array, reflect.Slice:
+			for i := 0; i < pathValue.Len(); i++ {
+				k := pathValue.Index(i)
+
+				if k.Kind() == reflect.Interface {
+					k = k.Elem()
+				}
+
+				if k.Kind() != reflect.String {
+					slog.Warn("Skipping non-string path entry", "index", i, "type", k.Kind(), "src", src)
+					continue
+				}
+				pathStr := k.String()
+				path, err := pathutil.FindPath(pathutil.ConfigDir, pathStr)
+				if err != nil {
+					slog.Error("Failed to find path", "src", src, "path", pathStr, "error", err)
+					os.Exit(1)
+				}
+				srcDir := filepath.Join(pathutil.StateDir, src)
+				hardlinkOrCopy(srcDir, path)
 			}
 
-			srcDir := filepath.Join(config.StateDir, src)
-			hardlinkOrCopy(srcDir, path)
+		default:
+			slog.Error("Invalid path value type; expected string or array/slice", "src", src, "type", pathValue.Kind().String())
+			os.Exit(1)
 		}
 	}
 }
@@ -95,7 +141,7 @@ func execute(tmpl *template.Template, color models.Output) {
 	name := tmpl.Name()
 
 	saveFile := strings.TrimSuffix(name, ".tmpl")
-	outputPath := filepath.Join(config.StateDir, saveFile)
+	outputPath := filepath.Join(pathutil.StateDir, saveFile)
 
 	file, err := os.Create(outputPath)
 	if err != nil {

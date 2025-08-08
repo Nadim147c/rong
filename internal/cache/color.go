@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/material"
+	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/cespare/xxhash"
 )
 
@@ -49,7 +49,7 @@ func LoadCache(source string) (material.Quantized, error) {
 		return output, err
 	}
 
-	path := filepath.Join(config.CacheDir, name+".json")
+	path := filepath.Join(pathutil.CacheDir, name+".json")
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -68,9 +68,9 @@ func SaveCache(source string, output material.Quantized) error {
 		return err
 	}
 
-	path := filepath.Join(config.CacheDir, name+".json")
+	path := filepath.Join(pathutil.CacheDir, name+".json")
 
-	if err := os.MkdirAll(config.CacheDir, 0755); err != nil {
+	if err := os.MkdirAll(pathutil.CacheDir, 0755); err != nil {
 		return err
 	}
 

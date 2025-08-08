@@ -8,6 +8,7 @@ import (
 	"github.com/Nadim147c/material/palettes"
 	"github.com/Nadim147c/material/quantizer"
 	"github.com/Nadim147c/material/score"
+	"github.com/Nadim147c/rong/internal/config"
 )
 
 // Quantized is quantized colors
@@ -37,28 +38,24 @@ type Colors = map[string]color.ARGB
 // GenerateFromPixels generates color from a slice of pixels
 func GenerateFromPixels(
 	pixels []color.ARGB,
-	variant dynamic.Variant,
-	dark bool,
-	constrast float64,
-	platform dynamic.Platform,
-	version dynamic.Version,
+	cfg config.GeneratorConfig,
 ) (Colors, []color.ARGB, error) {
 	q := Quantize(pixels)
-	return GenerateFromQuantized(q, variant, dark, constrast, platform, version)
+	return GenerateFromQuantized(q, cfg)
 }
 
 // GenerateFromQuantized generates color from a cached quantized
 func GenerateFromQuantized(
 	quantized Quantized,
-	variant dynamic.Variant,
-	dark bool,
-	constrast float64,
-	platform dynamic.Platform,
-	version dynamic.Version,
+	cfg config.GeneratorConfig,
 ) (Colors, []color.ARGB, error) {
 	celebi, wu := quantized.Celebi, quantized.Wu
 
-	scored := score.Score(celebi, score.ScoreOptions{Desired: 4, Fallback: score.FallbackColor})
+	scored := score.Score(celebi, score.ScoreOptions{
+		Desired:  4,
+		Fallback: score.FallbackColor,
+	})
+
 	if len(scored) == 0 {
 		return Colors{}, wu, ErrNoColorFound
 	}
@@ -66,8 +63,9 @@ func GenerateFromQuantized(
 	primary := palettes.NewFromARGB(scored[0])
 
 	scheme := dynamic.NewDynamicScheme(
-		scored[0].ToHct(), variant, constrast, dark,
-		platform, version, primary,
+		scored[0].ToHct(),
+		cfg.Variant, cfg.Constrast, cfg.Dark,
+		cfg.Platform, cfg.Version, primary,
 		nil, nil, nil, nil, nil,
 	)
 
