@@ -51,6 +51,8 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
 
+		slog.Info("Generating color", "from", videoPath)
+
 		quantized, err := cache.LoadCache(videoPath)
 		if err != nil {
 			if !os.IsNotExist(err) {
