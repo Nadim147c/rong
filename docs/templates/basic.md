@@ -72,6 +72,8 @@ Standard functions like `index`, `print`, and `printf` are supported.
 `rong` also adds:
 
 - `upper`, `lower` — changes string case
+- `chroma` - adjust saturation (E.g. `{{ chroma .Primary 50 }}`)
+- `tone` - adjust brightness (E.g. `{{ tone .Primary 75 }}`)
 - `replace` — replaces parts of a string
 - `quote` — wraps a string in quotes
 - `json` — outputs JSON-formatted data

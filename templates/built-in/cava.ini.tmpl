@@ -6,16 +6,15 @@
 [color]
 ; background = '{{ .Background }}'
 background = 'default'
-foreground = '{{ .Primary }}'
 
 ; gradient = 0
 gradient = 1
-gradient_color_1 = '{{ .Primary }}'
-gradient_color_2 = '{{ .Secondary }}'
-gradient_color_3 = '{{ .Tertiary }}'
+gradient_color_1 = '{{ chroma .Primary   50 }}'
+gradient_color_2 = '{{ chroma .Secondary 50 }}'
+gradient_color_3 = '{{ chroma .Tertiary  50 }}'
 
 ; horizontal_gradient = 0
 horizontal_gradient = 1
-horizontal_gradient_color_1 = '{{ .Primary }}'
-horizontal_gradient_color_2 = '{{ .Secondary }}'
-horizontal_gradient_color_3 = '{{ .Tertiary }}'
+horizontal_gradient_color_1 = '{{ chroma .Primary   50 }}'
+horizontal_gradient_color_2 = '{{ chroma .Secondary 50 }}'
+horizontal_gradient_color_3 = '{{ chroma .Tertiary  50 }}'
