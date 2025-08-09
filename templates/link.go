@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -18,7 +19,7 @@ func hardlinkOrCopy(src, dst string) error {
 	if err == nil {
 		// If it's a directory, remove it
 		if dstInfo.IsDir() {
-			return fmt.Errorf("can't copy/link a directory")
+			return errors.New("can't copy/link a directory")
 		}
 
 		srcInfo, err2 := os.Lstat(src)
@@ -39,6 +40,7 @@ func hardlinkOrCopy(src, dst string) error {
 
 		// Remove existing file
 		if err := os.Remove(dst); err != nil {
+			slog.Warn("Removing destination file", "path", dst)
 			return fmt.Errorf("remove existing dst: %w", err)
 		}
 	}
