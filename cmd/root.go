@@ -14,6 +14,7 @@ import (
 	"github.com/carapace-sh/carapace"
 	termcolor "github.com/fatih/color"
 	"github.com/mattn/go-isatty"
+	slogmulti "github.com/samber/slog-multi"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -62,11 +63,19 @@ func init() {
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
+var logfile *os.File
+
 // Command is root command of the cli
 var Command = &cobra.Command{
 	Use:          "rong",
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
+	PersistentPostRun: func(_ *cobra.Command, _ []string) {
+		if logfile != nil {
+			slog.Info("Exiting rong")
+			logfile.Close()
+		}
+	},
 	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 		if cmd.Name() == "_carapace" {
 			return nil
@@ -97,9 +106,11 @@ var Command = &cobra.Command{
 			opts.Level = slog.Level(100)
 		}
 
+		stderrHandler := slogcolor.NewHandler(os.Stderr, opts)
+
 		logFilePath, err := cmd.Flags().GetString("log-file")
 		if err != nil || logFilePath == "" {
-			slog.SetDefault(slog.New(slogcolor.NewHandler(os.Stderr, opts)))
+			slog.SetDefault(slog.New(stderrHandler))
 		} else {
 			err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
 			if err != nil {
@@ -108,12 +119,18 @@ var Command = &cobra.Command{
 
 			file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 			if err != nil {
-				slog.SetDefault(slog.New(slogcolor.NewHandler(os.Stderr, opts)))
+				slog.SetDefault(slog.New(stderrHandler))
 				slog.Error("Failed to open log-file", "error", err)
 			} else {
-				opts.NoColor = true
-				slog.SetDefault(slog.New(slogcolor.NewHandler(file, opts)))
-				defer file.Close() // Close the file when done
+				fileHanlder := slog.NewJSONHandler(file, &slog.HandlerOptions{
+					AddSource: true,
+					// Manually enabling file logs indicates user is trying to debug
+					Level: slog.LevelDebug,
+				})
+
+				handler := slogmulti.Fanout(stderrHandler, fileHanlder)
+				slog.SetDefault(slog.New(handler))
+				logfile = file
 			}
 		}
 

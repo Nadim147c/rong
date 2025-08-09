@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 // hardlinkOrCopy tries to hardlink src to dst, or falls back to copying. If dst
@@ -35,7 +33,7 @@ func hardlinkOrCopy(src, dst string) error {
 			if err != nil {
 				slog.Error("Failed to update", "file", dst)
 			}
-			slog.Info(color.GreenString("Updated"), "source", src, "destination", dst)
+			slog.Info("Updated", "source", src, "destination", dst)
 			return err
 		}
 
@@ -52,7 +50,7 @@ func hardlinkOrCopy(src, dst string) error {
 
 	// Try to create a hardlink
 	if err := os.Link(src, dst); err == nil {
-		slog.Info(color.BlueString("Linked"), "source", src, "destination", dst)
+		slog.Info("Linked", "source", src, "destination", dst)
 		return nil
 	}
 
@@ -62,7 +60,7 @@ func hardlinkOrCopy(src, dst string) error {
 		slog.Error("Failed to copy", "error", err, "source", src, "destination", dst)
 		return err
 	}
-	slog.Info(color.YellowString("Copied"), "source", src, "destination", dst)
+	slog.Info("Copied", "source", src, "destination", dst)
 	return err
 }
 
