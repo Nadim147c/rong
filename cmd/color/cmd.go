@@ -2,6 +2,7 @@ package color
 
 import (
 	"encoding/json"
+	"log/slog"
 	"os"
 
 	"github.com/Nadim147c/material/color"
@@ -42,6 +43,8 @@ var Command = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		slog.Info("Generating color", "from", source)
 
 		primary := palettes.NewFromARGB(source)
 

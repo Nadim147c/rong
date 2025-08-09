@@ -45,11 +45,17 @@ var Command = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		imagePath := args[0]
 
-		cwd, _ := os.Getwd()
-		imagePath, err := pathutil.FindPath(cwd, imagePath)
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		imagePath, err = pathutil.FindPath(cwd, imagePath)
 		if err != nil {
 			return fmt.Errorf("failed to find image path: %w", err)
 		}
+
+		slog.Info("Generating color", "from", imagePath)
 
 		quantized, err := cache.LoadCache(imagePath)
 		if err != nil {

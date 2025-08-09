@@ -32,13 +32,13 @@ func Execute(color models.Output) error {
 
 	defaultTmpl := template.New("").Funcs(funcs)
 
-	tmpls, err := defaultTmpl.ParseFS(templates, "built-in/*.tmpl")
+	builtInTmpls, err := defaultTmpl.ParseFS(templates, "built-in/*.tmpl")
 	if err != nil {
 		slog.Error("Failed to parse templates", "error", err)
 		return err
 	}
 
-	for _, tmpl := range tmpls.Templates() {
+	for _, tmpl := range builtInTmpls.Templates() {
 		execute(tmpl, color)
 	}
 
@@ -51,16 +51,18 @@ func Execute(color models.Output) error {
 	}
 
 	if len(templatePath) == 0 {
+		slog.Info("No user defined templates")
 		return nil
 	}
 
-	tmpls, err = defaultTmpl.ParseFiles(templatePath...)
+	userTmpl := template.New("").Funcs(funcs)
+	userTmpls, err := userTmpl.ParseFiles(templatePath...)
 	if err != nil {
 		slog.Error("Failed to parse templates", "error", err)
 		return err
 	}
 
-	for _, tmpl := range tmpls.Templates() {
+	for _, tmpl := range userTmpls.Templates() {
 		execute(tmpl, color)
 	}
 
@@ -149,6 +151,10 @@ func execute(tmpl *template.Template, color models.Output) {
 	name := tmpl.Name()
 	saveFile := strings.TrimSuffix(name, ".tmpl")
 	outputPath := filepath.Join(pathutil.StateDir, saveFile)
+
+	if _, ok := success[saveFile]; ok {
+		slog.Warn("Overwriting templates", "name", name)
+	}
 
 	file, err := os.Create(outputPath)
 	if err != nil {
