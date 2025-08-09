@@ -74,7 +74,7 @@ var Command = &cobra.Command{
 		}
 
 		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
-			templates.Execute(output)
+			return templates.Execute(output)
 		}
 		return nil
 	},
