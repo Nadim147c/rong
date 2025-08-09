@@ -2,6 +2,8 @@ package templates
 
 import (
 	"embed"
+	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -20,12 +22,12 @@ var success = map[string]bool{}
 var templates embed.FS
 
 // Execute runs built-in and user-defined templates and links user defined files
-func Execute(color models.Output) {
+func Execute(color models.Output) error {
 	defer link()
 
 	if err := os.MkdirAll(pathutil.StateDir, 0755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
-		return
+		return err
 	}
 
 	defaultTmpl := template.New("").Funcs(funcs)
@@ -33,7 +35,7 @@ func Execute(color models.Output) {
 	tmpls, err := defaultTmpl.ParseFS(templates, "built-in/*.tmpl")
 	if err != nil {
 		slog.Error("Failed to parse templates", "error", err)
-		return
+		return err
 	}
 
 	for _, tmpl := range tmpls.Templates() {
@@ -45,41 +47,41 @@ func Execute(color models.Output) {
 	templatePath, err := filepath.Glob(templateRoot + "/*.tmpl")
 	if err != nil {
 		slog.Error("Failed to find template", "error", err)
-		return
+		return err
 	}
 
 	if len(templatePath) == 0 {
-		return
+		return nil
 	}
 
 	tmpls, err = defaultTmpl.ParseFiles(templatePath...)
 	if err != nil {
 		slog.Error("Failed to parse templates", "error", err)
-		return
+		return err
 	}
 
 	for _, tmpl := range tmpls.Templates() {
 		execute(tmpl, color)
 	}
+
+	return nil
 }
 
-func link() {
+func link() error {
 	links := viper.Get("links")
 	if links == nil {
 		slog.Warn("No links defined in configuration")
-		return
+		return nil
 	}
 
 	linksValue := reflect.ValueOf(links)
 	if linksValue.Kind() != reflect.Map {
-		slog.Error("Expected 'links' to be a map in configuration")
-		return
+		return errors.New("expected 'links' to be a map in configuration")
 	}
 
 	for _, key := range linksValue.MapKeys() {
 		if key.Kind() != reflect.String {
-			slog.Error("Link key is not a string", "key", key)
-			os.Exit(1) // Fatal configuration error
+			return fmt.Errorf("link key is not a string: %v", key)
 		}
 
 		src := key.String()
@@ -102,15 +104,17 @@ func link() {
 			path, err := pathutil.FindPath(pathutil.ConfigDir, pathValue.String())
 			if err != nil {
 				slog.Error("Failed to find path", "src", src, "path", pathValue.String(), "error", err)
-				os.Exit(1)
+				continue
 			}
 			srcDir := filepath.Join(pathutil.StateDir, src)
-			hardlinkOrCopy(srcDir, path)
+			if err := hardlinkOrCopy(srcDir, path); err != nil {
+				slog.Error("Failed to link or copy", "src", src, "path", path, "error", err)
+				continue
+			}
 
 		case reflect.Array, reflect.Slice:
 			for i := 0; i < pathValue.Len(); i++ {
 				k := pathValue.Index(i)
-
 				if k.Kind() == reflect.Interface {
 					k = k.Elem()
 				}
@@ -123,23 +127,26 @@ func link() {
 				path, err := pathutil.FindPath(pathutil.ConfigDir, pathStr)
 				if err != nil {
 					slog.Error("Failed to find path", "src", src, "path", pathStr, "error", err)
-					os.Exit(1)
+					continue // log and continue instead of returning
 				}
-				srcDir := filepath.Join(pathutil.StateDir, src)
-				hardlinkOrCopy(srcDir, path)
+				if err := hardlinkOrCopy(filepath.Join(pathutil.StateDir, src), path); err != nil {
+					slog.Error("Failed to link or copy", "src", src, "path", path, "error", err)
+					continue
+				}
 			}
 
 		default:
-			slog.Error("Invalid path value type; expected string or array/slice", "src", src, "type", pathValue.Kind().String())
-			os.Exit(1)
+			return fmt.Errorf("invalid path value type for src %q; expected string or array/slice, got %s",
+				src, pathValue.Kind().String())
 		}
 	}
+
+	return nil
 }
 
 // execute executes a template using color
 func execute(tmpl *template.Template, color models.Output) {
 	name := tmpl.Name()
-
 	saveFile := strings.TrimSuffix(name, ".tmpl")
 	outputPath := filepath.Join(pathutil.StateDir, saveFile)
 
@@ -149,9 +156,9 @@ func execute(tmpl *template.Template, color models.Output) {
 		success[saveFile] = false
 		return
 	}
+	defer file.Close()
 
 	err = tmpl.Execute(file, color)
-	file.Close()
 	if err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
 		success[saveFile] = false
