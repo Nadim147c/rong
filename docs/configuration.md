@@ -24,7 +24,7 @@ Here is a minimal example of a `config.toml`:
 ```toml
 variant = "expressive"
 version = 2021
-light = false
+dark = true
 ```
 
 ### Fields
@@ -50,9 +50,7 @@ light = false
     </tbody>
   </table>
 
-- `version`: Material You specification version. For now, only `2021` is supported.
-  Check this [issue](https://github.com/Nadim147c/material/issues/1) for `2025`
-  specification.
+- `version`: Material You specification version. (`2021` or `2025`)
 - `light`: Whether to generate a light theme (`true`) or dark theme (`false`).
 
 ## Linking Generated Files
