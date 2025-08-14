@@ -71,12 +71,14 @@ You can nest conditions:
 Standard functions like `index`, `print`, and `printf` are supported.
 `rong` also adds:
 
-- `upper`, `lower` — changes string case
-- `chroma` - adjust saturation (E.g. `{{ chroma .Primary 50 }}`)
-- `tone` - adjust brightness (E.g. `{{ tone .Primary 75 }}`)
-- `replace` — replaces parts of a string
-- `quote` — wraps a string in quotes
-- `json` — outputs JSON-formatted data
+- **`upper`** – Converts a string to uppercase.
+- **`lower`** – Converts a string to lowercase.
+- **`replace`** – Replaces all occurrences of a substring with another substring.
+- **`parse`** – Parses a hex color string.
+- **`chroma`** – Adjusts the chroma (color intensity) of a color.
+- **`tone`** – Adjusts the tone (lightness/darkness) of a color.
+- **`quote`** – Wraps the given value in double quotes as a string.
+- **`json`** – Converts a value to its JSON string representation or `"null"` on error.
 
 Examples:
 
