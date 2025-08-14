@@ -5,7 +5,7 @@ title: Configuration
 # Configuration
 
 Configuration can be loaded from a variety of sources, including files (`json`,
-`toml`, `yaml`, `yml`, `hcl`), command-line flags, and environment variables
+`toml`, `yaml`, `yml`), command-line flags, and environment variables
 (prefixed with `RONG_`). Rong will automatically merge values from all sources.
 
 ## Locations
@@ -17,7 +17,7 @@ By default, the `rong` configuration file is located at:
 ```
 
 (Usually `~/.config/rong/config.toml`.)
-The file can be in `json`, `toml`, `yaml`, `yml`, or `hcl` format.
+The file can be in `json`, `toml`, `yaml`, or `yml` format.
 
 ::: tip
 Use `rong --config /path/to/config` to load a custom config file. The extension determines the format.
