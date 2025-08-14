@@ -2,7 +2,7 @@
 * This file has been generated using https://github.com/Nadim147c/rong
 */
 
-$image: {{ .Image | qoute }};
+$image: {{ .Image | quote }};
 
 {{ range .Colors -}}
 ${{ .Name.Camel }}: {{ .Color.HexRGB }};

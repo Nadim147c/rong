@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/rong/internal/models"
 )
 
@@ -13,25 +14,31 @@ var funcs = template.FuncMap{
 	"upper":   strings.ToUpper,
 	"lower":   strings.ToLower,
 	"replace": strings.ReplaceAll,
+	"parse":   parse,
 	"chroma":  chroma,
 	"tone":    tone,
-	"qoute":   qoute,
+	"quote":   quote,
 	"json":    jsonString,
 }
 
-func chroma(color models.ColorValue, c float64) models.ColorValue {
-	hct := color.Int.ToHct()
-	hct.Chroma = c
+func parse(s string) models.ColorValue {
+	c := color.ARGBFromHexMust(s)
+	return models.NewColorValue(c)
+}
+
+func chroma(c models.ColorValue, chroma float64) models.ColorValue {
+	hct := c.Int.ToHct()
+	hct.Chroma = chroma
 	return models.NewColorValue(hct.ToARGB())
 }
 
-func tone(color models.ColorValue, t float64) models.ColorValue {
-	hct := color.Int.ToHct()
+func tone(c models.ColorValue, t float64) models.ColorValue {
+	hct := c.Int.ToHct()
 	hct.Tone = t
 	return models.NewColorValue(hct.ToARGB())
 }
 
-func qoute(s any) string {
+func quote(s any) string {
 	return fmt.Sprintf("%q", s)
 }
 

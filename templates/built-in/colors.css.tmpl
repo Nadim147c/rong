@@ -3,7 +3,7 @@
 */
 
 :root {
-  --image: {{ .Image | qoute }};
+  --image: {{ .Image | quote }};
 {{ range .Colors }}  --{{ .Name.Kebab }}: {{ .Color.HexRGB }};
 {{ end -}}
 }
