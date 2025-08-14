@@ -1,0 +1,82 @@
+# GTK Colors
+# This file has been generated using https://github.com/Nadim147c/rong
+# Original: https://github.com/InioX/matugen-themes/blob/main/templates/btop.theme
+
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]=""
+
+# Main text color
+theme[main_fg]="{{ .OnSurface }}"
+
+# Title color for boxes
+theme[title]="{{ .Primary }}"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="{{ .Secondary }}"
+
+# Background color of selected item in processes box
+theme[selected_bg]="{{ .Primary }}"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="{{ .OnPrimary }}"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="{{ .OnSurfaceVariant }}"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="{{ .Tertiary }}"
+
+# Cpu box outline color
+theme[cpu_box]="{{ .Outline }}"
+
+# Memory/disks box outline color
+theme[mem_box]="{{ .Outline }}"
+
+# Net up/down box outline color
+theme[net_box]="{{ .Outline }}"
+
+# Processes box outline color
+theme[proc_box]="{{ .Outline }}"
+
+# Box divider line and small boxes line color
+theme[div_line]="{{ .OutlineVariant }}"
+
+# Temperature graph colors
+theme[temp_start]="{{ .Secondary }}"
+theme[temp_mid]="{{ .Primary }}"
+theme[temp_end]="{{ .Error }}"
+
+# CPU graph colors
+theme[cpu_start]="{{ .Secondary }}"
+theme[cpu_mid]="{{ .Primary }}"
+theme[cpu_end]="{{ .Error }}"
+
+# Mem/Disk free meter
+theme[free_start]="{{ .Secondary }}"
+theme[free_mid]=""
+theme[free_end]="{{ .SecondaryContainer }}"
+
+# Mem/Disk cached meter
+theme[cached_start]="{{ .Tertiary }}"
+theme[cached_mid]=""
+theme[cached_end]="{{ .TertiaryContainer }}"
+
+# Mem/Disk available meter
+theme[available_start]="{{ .Primary }}"
+theme[available_mid]=""
+theme[available_end]="{{ .PrimaryContainer }}"
+
+# Mem/Disk used meter
+theme[used_start]="{{ .Error }}"
+theme[used_mid]=""
+theme[used_end]="{{ .ErrorContainer }}"
+
+# Download graph colors
+theme[download_start]="{{ .Secondary }}"
+theme[download_mid]="{{ .Primary }}"
+theme[download_end]="{{ .Tertiary }}"
+
+# Upload graph colors
+theme[upload_start]="{{ .Secondary }}"
+theme[upload_mid]="{{ .Primary }}"
+theme[upload_end]="{{ .Tertiary }}"
