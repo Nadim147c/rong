@@ -7,7 +7,7 @@ rong: {
   inherit (lib) types mkOption mkMerge mkEnableOption mkIf;
   pkg = pkgs.callPackage ./. {};
   cfg = config.programs.rong;
-  format = pkgs.formats.yaml {};
+  format = pkgs.formats.json {};
 in {
   options.programs.rong = {
     enable = mkEnableOption "Enable rong color generator";
@@ -78,8 +78,8 @@ in {
     home.packages = mkIf (cfg.package != null) [cfg.package];
     xdg.configFile = mkMerge [
       (mkIf (cfg.settings != {}) {
-        "rong/config.yaml" = {
-          source = format.generate "rong.yaml" cfg.settings;
+        "rong/config.json" = {
+          source = format.generate "rong.json" cfg.settings;
         };
       })
 
