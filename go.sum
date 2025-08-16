@@ -1,7 +1,7 @@
 github.com/MatusOllah/slogcolor v1.7.0 h1:Nrd7yBPv2EBEEBEwl7WEPRmMd1ozZzw2jm8SLMYDbKs=
 github.com/MatusOllah/slogcolor v1.7.0/go.mod h1:5y1H50XuQIBvuYTJlmokWi+4FuPiJN5L7Z0jM4K4bYA=
-github.com/Nadim147c/material v0.0.7-alpha h1:ENEeaF8qLfu8Y1BSWos2rqFkWE/vv0ux9DpJ1G9bOkI=
-github.com/Nadim147c/material v0.0.7-alpha/go.mod h1:t5h6m4ehD1rSZI3iM+Sz2gWSrQM/D40IJYj88CoEEhc=
+github.com/Nadim147c/material v0.0.8-alpha h1:bEQXWWO1hy+JRPwg3To2nhkJMr1Hay9AsBAkgYKJx3g=
+github.com/Nadim147c/material v0.0.8-alpha/go.mod h1:t5h6m4ehD1rSZI3iM+Sz2gWSrQM/D40IJYj88CoEEhc=
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=

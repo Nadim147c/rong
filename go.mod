@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	github.com/MatusOllah/slogcolor v1.7.0
-	github.com/Nadim147c/material v0.0.7-alpha
+	github.com/Nadim147c/material v0.0.8-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.8.6
 	github.com/cespare/xxhash v1.1.0
