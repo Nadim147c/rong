@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/num"
 	"github.com/spf13/viper"
 )
 
@@ -14,6 +13,45 @@ import (
 func distance(a, b float64) float64 {
 	diff := math.Abs(a - b)
 	return math.Min(diff, 360-diff)
+}
+
+func hueSpread(colors []color.Hct) float64 {
+	if len(colors) < 2 {
+		return 0
+	}
+	minHue, maxHue := 360.0, 0.0
+	for _, c := range colors {
+		if c.Hue < minHue {
+			minHue = c.Hue
+		}
+		if c.Hue > maxHue {
+			maxHue = c.Hue
+		}
+	}
+	return maxHue - minHue
+}
+
+func ensureHueVariety(colors []color.Hct, needed int) []color.Hct {
+	if len(colors) == 0 {
+		return []color.Hct{randomHct()}
+	}
+	out := make([]color.Hct, len(colors))
+	copy(out, colors)
+
+	spread := hueSpread(colors)
+	if spread < 60 {
+		base := colors[0]
+		// Inject complementary & triadic hues
+		for _, offset := range []float64{120, 180, 240} {
+			if len(out) >= needed {
+				break
+			}
+			rotated := base
+			rotated.Hue = math.Mod(base.Hue+offset, 360.0)
+			out = append(out, rotated)
+		}
+	}
+	return out
 }
 
 // SelectColors selects k Hct colors maximizing angular separation
@@ -76,7 +114,7 @@ func Generate(fg, bg color.ARGB, colors []color.ARGB) map[string]color.ARGB {
 		hct[i] = v.ToHct()
 	}
 
-	selected := SelectColors(hct, 10)
+	selected := SelectColors(ensureHueVariety(hct, 10), 10)
 
 	dark := viper.GetBool("dark")
 	b := map[string]color.ARGB{}
@@ -107,31 +145,36 @@ func randomHct() color.Hct {
 	}
 }
 
-func tc(c color.Hct, tone float64, chromaMultipler float64) color.ARGB {
+func tc(c color.Hct, tone float64, chroma float64) color.ARGB {
 	c.Tone = tone
-	c.Chroma = num.Clamp(0, 100, c.Chroma*chromaMultipler)
+	c.Chroma = chroma
 	return c.ToARGB()
 }
 
+const (
+	darkChroma  float64 = 80
+	lightChroma float64 = 100
+)
+
 func fixfg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 100, 1.7), tc(c, 90, 1.7)
+		return tc(c, 100, darkChroma), tc(c, 90, darkChroma)
 	}
-	return tc(c, 20, 2), tc(c, 35, 2)
+	return tc(c, 20, lightChroma), tc(c, 35, lightChroma)
 }
 
 func fixbg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 20, 1.7), tc(c, 35, 1.7)
+		return tc(c, 20, darkChroma), tc(c, 35, darkChroma)
 	}
-	return tc(c, 100, 2), tc(c, 90, 2)
+	return tc(c, 100, lightChroma), tc(c, 90, lightChroma)
 }
 
 func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, 50, 1.7), tc(c, 70, 1.7)
+		return tc(c, 50, darkChroma), tc(c, 70, darkChroma)
 	}
-	return tc(c, 35, 2), tc(c, 25, 2)
+	return tc(c, 35, lightChroma), tc(c, 25, lightChroma)
 }
 
 // GenerateRandom generate random base16 colors with given fg,bg and dark
