@@ -34,7 +34,7 @@ func hardlinkOrCopy(src, dst string) error {
 			if err != nil {
 				slog.Error("Failed to update", "file", dst)
 			}
-			slog.Info("Updated", "source", src, "destination", dst)
+			slog.Info("Updated", "src", src, "dst", dst)
 			return err
 		}
 
@@ -52,17 +52,17 @@ func hardlinkOrCopy(src, dst string) error {
 
 	// Try to create a hardlink
 	if err := os.Link(src, dst); err == nil {
-		slog.Info("Linked", "source", src, "destination", dst)
+		slog.Info("Linked", "src", src, "dst", dst)
 		return nil
 	}
 
 	// Fall back to copying
 	err = copyFile(src, dst)
 	if err != nil {
-		slog.Error("Failed to copy", "error", err, "source", src, "destination", dst)
+		slog.Error("Failed to copy", "error", err, "src", src, "dst", dst)
 		return err
 	}
-	slog.Info("Copied", "source", src, "destination", dst)
+	slog.Info("Copied", "src", src, "dst", dst)
 	return err
 }
 
