@@ -2,17 +2,17 @@ package templates
 
 import (
 	"embed"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"reflect"
+	"slices"
 	"strings"
 	"text/template"
 
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/pathutil"
+	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
 
@@ -70,76 +70,28 @@ func Execute(color models.Output) error {
 }
 
 func link() error {
-	links := viper.Get("links")
-	if links == nil {
+	linksCfg := viper.Get("links")
+	if linksCfg == nil {
 		slog.Warn("No links defined in configuration")
 		return nil
 	}
 
-	linksValue := reflect.ValueOf(links)
-	if linksValue.Kind() != reflect.Map {
-		return errors.New("expected 'links' to be a map in configuration")
+	links, err := cast.ToStringMapStringSliceE(linksCfg)
+	if err != nil {
+		return fmt.Errorf("failed to convert links: %v", links)
 	}
 
-	for _, key := range linksValue.MapKeys() {
-		if key.Kind() != reflect.String {
-			return fmt.Errorf("link key is not a string: %v", key)
-		}
-
-		src := key.String()
-		if _, ok := success[src]; !ok {
-			slog.Warn("Skipping source, it doesn't exist", "src", src)
-			continue
-		}
-		if !success[src] {
-			slog.Warn("Skipping source, it previously failed", "src", src)
-			continue
-		}
-
-		pathValue := linksValue.MapIndex(key)
-		if pathValue.Kind() == reflect.Interface {
-			pathValue = pathValue.Elem()
-		}
-
-		switch pathValue.Kind() {
-		case reflect.String:
-			path, err := pathutil.FindPath(pathutil.ConfigDir, pathValue.String())
+	for src, target := range links {
+		for path := range slices.Values(target) {
+			path, err := pathutil.FindPath(pathutil.ConfigDir, path)
 			if err != nil {
-				slog.Error("Failed to find path", "src", src, "path", pathValue.String(), "error", err)
-				continue
+				slog.Error("Failed to find path", "src", src, "path", path, "error", err)
+				continue // log and continue instead of returning
 			}
-			srcDir := filepath.Join(pathutil.StateDir, src)
-			if err := hardlinkOrCopy(srcDir, path); err != nil {
+			if err := hardlinkOrCopy(filepath.Join(pathutil.StateDir, src), path); err != nil {
 				slog.Error("Failed to link or copy", "src", src, "path", path, "error", err)
 				continue
 			}
-
-		case reflect.Array, reflect.Slice:
-			for i := 0; i < pathValue.Len(); i++ {
-				k := pathValue.Index(i)
-				if k.Kind() == reflect.Interface {
-					k = k.Elem()
-				}
-
-				if k.Kind() != reflect.String {
-					slog.Warn("Skipping non-string path entry", "index", i, "type", k.Kind(), "src", src)
-					continue
-				}
-				pathStr := k.String()
-				path, err := pathutil.FindPath(pathutil.ConfigDir, pathStr)
-				if err != nil {
-					slog.Error("Failed to find path", "src", src, "path", pathStr, "error", err)
-					continue // log and continue instead of returning
-				}
-				if err := hardlinkOrCopy(filepath.Join(pathutil.StateDir, src), path); err != nil {
-					slog.Error("Failed to link or copy", "src", src, "path", path, "error", err)
-					continue
-				}
-			}
-
-		default:
-			return fmt.Errorf("invalid path value type for src %q; expected string or array/slice, got %s",
-				src, pathValue.Kind().String())
 		}
 	}
 
