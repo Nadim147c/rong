@@ -7,16 +7,15 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/cache"
-	"github.com/Nadim147c/rong/internal/config"
 	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	_ "image/jpeg" // for jpeg encoding
 	_ "image/png"  // for png encoding
@@ -40,9 +39,9 @@ var Command = &cobra.Command{
 	Short: "Generate colors from a image",
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+		config.SetPflagSet(cmd.Flags())
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		imagePath := args[0]
 
 		cwd, err := os.Getwd()
@@ -78,8 +77,8 @@ var Command = &cobra.Command{
 			quantized = material.Quantize(pixels)
 		}
 
-		cfg, err := config.GetGeneratorConfig()
-		if err != nil {
+		var cfg material.GeneratorConfig
+		if err := config.Bind("", &cfg); err != nil {
 			return err
 		}
 		colorMap, wu, err := material.GenerateFromQuantized(quantized, cfg)
@@ -96,13 +95,13 @@ var Command = &cobra.Command{
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
-		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+		if config.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
 				slog.Error("Failed to encode output", "error", err)
 			}
 		}
 
-		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
+		if !config.GetBool("dry-run") {
 			return templates.Execute(output)
 		}
 

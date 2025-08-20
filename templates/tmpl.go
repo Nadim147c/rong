@@ -10,10 +10,9 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/pathutil"
-	"github.com/spf13/cast"
-	"github.com/spf13/viper"
 )
 
 var success = map[string]bool{}
@@ -70,13 +69,7 @@ func Execute(color models.Output) error {
 }
 
 func link() error {
-	linksCfg := viper.Get("links")
-	if linksCfg == nil {
-		slog.Warn("No links defined in configuration")
-		return nil
-	}
-
-	links, err := cast.ToStringMapStringSliceE(linksCfg)
+	links, err := config.GetStringMapStringSliceE("links")
 	if err != nil {
 		return fmt.Errorf("failed to convert links: %v", links)
 	}

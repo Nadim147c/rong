@@ -6,9 +6,9 @@ import (
 	"math/rand"
 	"sort"
 
+	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/num"
-	"github.com/spf13/viper"
 )
 
 // distance returns the shortest distance between two angles on a circle
@@ -119,7 +119,7 @@ func Generate(fg, bg color.ARGB, colors []color.ARGB) map[string]color.ARGB {
 
 	selected := SelectColors(ensureHueVariety(hct), 10)
 
-	dark := viper.GetBool("dark")
+	dark := config.GetBool("dark")
 	b := map[string]color.ARGB{}
 	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
 	b["color_1"], b["color_9"] = fix(dark, getColorWithRandFallback(selected, 0))
@@ -203,7 +203,7 @@ func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 
 // GenerateRandom generate random base16 colors with given fg,bg and dark
 func GenerateRandom(fg, bg color.ARGB) map[string]color.ARGB {
-	dark := viper.GetBool("viper")
+	dark := config.GetBool("dark")
 
 	b := map[string]color.ARGB{}
 	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())

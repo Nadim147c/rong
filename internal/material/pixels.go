@@ -8,7 +8,6 @@ import (
 	"github.com/Nadim147c/material/palettes"
 	"github.com/Nadim147c/material/quantizer"
 	"github.com/Nadim147c/material/score"
-	"github.com/Nadim147c/rong/internal/config"
 )
 
 // Quantized is quantized colors
@@ -36,19 +35,13 @@ var ErrNoColorFound = errors.New("no color found")
 type Colors = map[string]color.ARGB
 
 // GenerateFromPixels generates color from a slice of pixels
-func GenerateFromPixels(
-	pixels []color.ARGB,
-	cfg config.GeneratorConfig,
-) (Colors, []color.ARGB, error) {
+func GenerateFromPixels(pixels []color.ARGB, cfg GeneratorConfig) (Colors, []color.ARGB, error) {
 	q := Quantize(pixels)
 	return GenerateFromQuantized(q, cfg)
 }
 
 // GenerateFromQuantized generates color from a cached quantized
-func GenerateFromQuantized(
-	quantized Quantized,
-	cfg config.GeneratorConfig,
-) (Colors, []color.ARGB, error) {
+func GenerateFromQuantized(quantized Quantized, cfg GeneratorConfig) (Colors, []color.ARGB, error) {
 	celebi, wu := quantized.Celebi, quantized.Wu
 
 	scored := score.Score(celebi, score.ScoreOptions{

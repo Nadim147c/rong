@@ -5,15 +5,15 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/material/palettes"
 	"github.com/Nadim147c/rong/internal/base16"
-	"github.com/Nadim147c/rong/internal/config"
+	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	_ "image/jpeg" // for jpeg encoding
 	_ "image/png"  // for png encoding
@@ -36,9 +36,9 @@ var Command = &cobra.Command{
 	Short: "Generate colors from a color",
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+		config.SetPflagSet(cmd.Flags())
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		source, err := color.ARGBFromHex(args[0])
 		if err != nil {
 			return err
@@ -48,13 +48,13 @@ var Command = &cobra.Command{
 
 		primary := palettes.NewFromARGB(source)
 
-		config, err := config.GetGeneratorConfig()
-		if err != nil {
+		var cfg material.GeneratorConfig
+		if err := config.Bind("", &cfg); err != nil {
 			return err
 		}
 		scheme := dynamic.NewDynamicScheme(source.ToHct(),
-			config.Variant, config.Constrast, config.Dark,
-			config.Platform, config.Version, primary,
+			cfg.Variant, cfg.Constrast, cfg.Dark,
+			cfg.Platform, cfg.Version, primary,
 			nil, nil, nil, nil, nil,
 		)
 
@@ -72,13 +72,14 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput("", based, colorMap)
 
-		if jsonFlag, _ := cmd.Flags().GetBool("json"); jsonFlag {
+		if config.GetBool("json") {
 			json.NewEncoder(os.Stdout).Encode(output)
 		}
 
-		if dry, _ := cmd.Flags().GetBool("dry-run"); !dry {
+		if !config.GetBool("dry-run") {
 			return templates.Execute(output)
 		}
+
 		return nil
 	},
 }
