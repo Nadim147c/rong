@@ -14,11 +14,11 @@ buildGoModule {
   src = fetchFromGitHub {
     owner = "Nadim147c";
     repo = "rong";
-    rev = "d959883b5cb23d44f83df65ff049e6426fc962fc";
-    hash = "sha256-qHJ5KllX/Kb6DAAFMNpPUO/UC0zoAhXLDdxQnnX8vwQ=";
+    rev = "96cf9e6ee50d6a4c06eaf1cb2aad028f5c251ab0";
+    hash = "sha256-QuqN5xbSrhrI/Nw3D/cdRAlXQbpm/gQsiaLUPpzN2NE=";
   };
 
-  vendorHash = "sha256-BGjNmaFrugJt7aYIrXfr5UB76haSZBTxfRGPTElPjPQ=";
+  vendorHash = "sha256-85QIPgacYq0QYP3WCuNGWYxbOSMRHct0pELL6lur1kU=";
 
   ldflags = ["-s" "-w"];
 
