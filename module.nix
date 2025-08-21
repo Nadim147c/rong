@@ -18,6 +18,12 @@ in {
       description = "Rong package to use";
     };
 
+    wallpaper = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = "Wallpaper to use for generating color";
+    };
+
     templates = mkOption {
       type = types.attrsOf types.str;
       default = {};
@@ -69,13 +75,27 @@ in {
             "dunstrc" = "~/.config/dunst/dunstrc";
           }
         '';
-        description = "Map of theme files to target paths or list of paths.";
+        description = "Map of theme files to target paths or list of paths";
       };
     };
   };
 
   config = mkIf cfg.enable {
     home.packages = mkIf (cfg.package != null) [cfg.package];
+
+    home.activation.generateThemes = lib.mkIf (cfg.wallpaper != null) (
+      let
+        rong = "${cfg.package}/bin/rong";
+        state = "${config.xdg.stateHome}/rong/image.txt";
+      in
+        lib.hm.dag.entryAfter ["writeBoundary"] ''
+          if [ -f "${state}" ] && [ -f "$(cat "${state}")" ]; then
+            ${rong} video "$(cat "${state}")"
+          else
+            ${rong} video "${cfg.wallpaper}"
+          fi
+        ''
+    );
     xdg.configFile = mkMerge [
       (mkIf (cfg.settings != {}) {
         "rong/config.json" = {
