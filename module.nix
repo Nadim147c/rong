@@ -90,9 +90,9 @@ in {
       in
         lib.hm.dag.entryAfter ["writeBoundary"] ''
           if [ -f "${state}" ] && [ -f "$(cat "${state}")" ]; then
-            ${rong} video "$(cat "${state}")"
+            run --silence ${rong} video $VERBOSE_ARG "$(cat "${state}")"
           else
-            ${rong} video "${cfg.wallpaper}"
+            run --silence ${rong} video $VERBOSE_ARG "${cfg.wallpaper}"
           fi
         ''
     );
