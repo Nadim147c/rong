@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: "Rong"
-  text: A Material You color generator
+  text: A Material You and Base16 color generator
   actions:
     - theme: brand
       text: What is Rong?
@@ -22,6 +22,9 @@ features:
   - icon: 🎨
     title: Material You
     details: Generate colors based on the Material You specification.
+  - icon: 🖥
+    title: Base16
+    details: Generate Base16 colors for terminals
   - icon: 🎥
     title: Color, Image, and Video
     details: Generate colors from a source color, image, or even a video.
