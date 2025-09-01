@@ -14,6 +14,8 @@ video, and applies it across your system using configurable template mappings.
 - Easily theme apps like **WezTerm**, **Eww**, **Kitty**, **Spicetify**, **Waybar**,
   and **Discord mods**
 
+![Rong Preview](./preview.png)
+
 **Example:**
 
 ```sh
