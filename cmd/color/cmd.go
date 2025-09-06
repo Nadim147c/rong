@@ -23,13 +23,7 @@ import (
 )
 
 func init() {
-	Command.Flags().Bool("dark", false, "generate dark color palette")
-	Command.Flags().String("variant", string(dynamic.TonalSpot), "variant to use (e.g., tonal_spot, vibrant, expressive)")
-	Command.Flags().Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
-	Command.Flags().String("platform", string(dynamic.Phone), "target platform (phone or watch)")
-	Command.Flags().Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
-	Command.Flags().BoolP("json", "j", false, "print generated colors as json")
-	Command.Flags().Bool("dry-run", false, "generate colors without applying templates")
+	Command.Flags().AddFlagSet(material.GeneratorFlags)
 }
 
 // Command is the image command
