@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/color"
@@ -35,14 +36,32 @@ func init() {
 var Command = &cobra.Command{
 	Use:   "color [flags] <image>",
 	Short: "Generate colors from a color",
-	Args:  cobra.ExactArgs(1),
+	Example: `
+# Using color name
+rong color hot_pink
+
+# Using #RGB format
+rong color '#F00'
+
+# Using #RRGGBB format
+rong color '#00FF00'
+
+# Get generate colors as json
+rong color green --dry-run --json | jq
+  `,
+	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
 		config.SetPflagSet(cmd.Flags())
 	},
 	RunE: func(_ *cobra.Command, args []string) error {
-		source, err := color.ARGBFromHex(args[0])
-		if err != nil {
-			return err
+		name := strings.ToLower(args[0])
+		source, ok := names[name]
+		if !ok {
+			src, err := color.ARGBFromHex(name)
+			if err != nil {
+				return err
+			}
+			source = src
 		}
 
 		slog.Info("Generating color", "from", source)
