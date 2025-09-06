@@ -60,7 +60,7 @@ func init() {
 	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
-	Command.PersistentFlags().StringP("config", "c", "", "path to config (.toml|.yaml|.yml) file")
+	Command.PersistentFlags().StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
