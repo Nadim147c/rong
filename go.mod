@@ -4,7 +4,7 @@ go 1.24.5
 
 require (
 	github.com/MatusOllah/slogcolor v1.7.0
-	github.com/Nadim147c/go-config v0.0.3-dev.0.20250820134235-3adf0909b148
+	github.com/Nadim147c/go-config v0.0.4-dev.0.20250906151028-2caa7181a9e4
 	github.com/Nadim147c/material v0.0.8-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.8.6
@@ -28,6 +28,7 @@ require (
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/goccy/go-yaml v1.18.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/hjson/hjson-go/v4 v4.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
