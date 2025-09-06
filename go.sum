@@ -2,8 +2,6 @@ github.com/BurntSushi/toml v1.5.0 h1:W5quZX/G/csjUnuI8SUYlsHs9M38FC7znL0lIO+DvMg
 github.com/BurntSushi/toml v1.5.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/MatusOllah/slogcolor v1.7.0 h1:Nrd7yBPv2EBEEBEwl7WEPRmMd1ozZzw2jm8SLMYDbKs=
 github.com/MatusOllah/slogcolor v1.7.0/go.mod h1:5y1H50XuQIBvuYTJlmokWi+4FuPiJN5L7Z0jM4K4bYA=
-github.com/Nadim147c/go-config v0.0.3-dev.0.20250820134235-3adf0909b148 h1:jtL99+Pnsrn+xEAKP69PM7gzGiMHb1CqXRIE/X9LBlQ=
-github.com/Nadim147c/go-config v0.0.3-dev.0.20250820134235-3adf0909b148/go.mod h1:IuhRD3cs0IooLZqI8QTY7iMyLH/+ffJY6+8ABvZJQJo=
 github.com/Nadim147c/go-config v0.0.4-dev.0.20250906151028-2caa7181a9e4 h1:ajWNYBbnZ8Mly9faZJP3Ab+Q5s4hdy9jRMglTyl332o=
 github.com/Nadim147c/go-config v0.0.4-dev.0.20250906151028-2caa7181a9e4/go.mod h1:vCGO6KNNYeyNA9k/EzlI0mb0wvVSlXRKH2g0XVXfa58=
 github.com/Nadim147c/material v0.0.8-alpha h1:bEQXWWO1hy+JRPwg3To2nhkJMr1Hay9AsBAkgYKJx3g=
