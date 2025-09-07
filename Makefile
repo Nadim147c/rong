@@ -1,12 +1,13 @@
-GO     ?= go
-REVIVE ?= revive
-OUTBIN ?= rong
-PREFIX = /usr/local/
+GO      ?= go
+REVIVE  ?= revive
+OUTBIN  ?= rong
+VERSION ?= $(shell git describe --tags)
+PREFIX  ?= /usr/local/
 
 -include Makefile.local
 
 build:
-	$(GO) build -trimpath -o $(OUTBIN)
+	$(GO) build -trimpath -ldflags '-X main.Version=$(VERSION)' -o $(OUTBIN)
 
 install:
 	install -Dm755 $(OUTBIN) "$(PREFIX)/bin/$(OUTBIN)"
