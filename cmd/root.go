@@ -41,33 +41,33 @@ func init() {
 
 	carapace.Gen(color.Command).FlagCompletion(actions)
 
-	imageCara := carapace.Gen(image.Command)
-	imageCara.FlagCompletion(actions)
-	imageCara.PositionalAnyCompletion(carapace.ActionFiles())
+	imageComp := carapace.Gen(image.Command)
+	imageComp.FlagCompletion(actions)
+	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	videoCara := carapace.Gen(video.Command)
-	videoCara.FlagCompletion(actions)
-	videoCara.PositionalAnyCompletion(carapace.ActionFiles())
+	videoComp := carapace.Gen(video.Command)
+	videoComp.FlagCompletion(actions)
+	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	cacheCara := carapace.Gen(cache.Command)
-	cacheCara.FlagCompletion(actions)
-	cacheCara.PositionalAnyCompletion(carapace.ActionFiles())
+	cacheComp := carapace.Gen(cache.Command)
+	cacheComp.FlagCompletion(actions)
+	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	colorCara := carapace.Gen(color.Command)
-	colorCara.FlagCompletion(actions)
+	colorComp := carapace.Gen(color.Command)
+	colorComp.FlagCompletion(actions)
 	nameCompletions := make([]string, 0, len(color.Names)*2)
 	for name, value := range color.Names {
 		_, r, g, b := value.Values()
 		nameCompletions = append(nameCompletions, name, style.TrueColor(r, g, b))
 	}
-	colorCara.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
+	colorComp.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
 
-	regenCara := carapace.Gen(regen.Command)
-	regenCara.FlagCompletion(actions)
+	regenComp := carapace.Gen(regen.Command)
+	regenComp.FlagCompletion(actions)
 
-	rootCara := carapace.Gen(Command)
-	rootCara.Standalone()
-	rootCara.FlagCompletion(carapace.ActionMap{
+	rootComp := carapace.Gen(Command)
+	rootComp.Standalone()
+	rootComp.FlagCompletion(carapace.ActionMap{
 		"config":   carapace.ActionFiles(),
 		"log-file": carapace.ActionFiles(),
 	})
