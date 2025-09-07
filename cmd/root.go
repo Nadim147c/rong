@@ -11,6 +11,7 @@ import (
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
 	"github.com/Nadim147c/rong/cmd/image"
+	"github.com/Nadim147c/rong/cmd/regen"
 	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/carapace-sh/carapace"
@@ -25,6 +26,7 @@ func init() {
 	Command.AddCommand(image.Command)
 	Command.AddCommand(video.Command)
 	Command.AddCommand(cache.Command)
+	Command.AddCommand(regen.Command)
 
 	actions := carapace.ActionMap{
 		"variant": carapace.ActionValues(
@@ -49,6 +51,9 @@ func init() {
 	cacheCara := carapace.Gen(cache.Command)
 	cacheCara.FlagCompletion(actions)
 	cacheCara.PositionalAnyCompletion(carapace.ActionFiles())
+
+	regenCara := carapace.Gen(regen.Command)
+	regenCara.FlagCompletion(actions)
 
 	rootCara := carapace.Gen(Command)
 	rootCara.Standalone()

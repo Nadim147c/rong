@@ -88,6 +88,10 @@ var Command = &cobra.Command{
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
+		if err := cache.SaveState(imagePath, quantized); err != nil {
+			slog.Warn("Failed to save colors to cache", "error", err)
+		}
+
 		if config.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
 				slog.Error("Failed to encode output", "error", err)
