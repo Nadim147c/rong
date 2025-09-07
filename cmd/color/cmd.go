@@ -49,7 +49,7 @@ rong color green --dry-run --json | jq
 	},
 	RunE: func(_ *cobra.Command, args []string) error {
 		name := strings.ToLower(args[0])
-		source, ok := names[name]
+		source, ok := Names[name]
 		if !ok {
 			src, err := color.ARGBFromHex(name)
 			if err != nil {

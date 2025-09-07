@@ -15,6 +15,7 @@ import (
 	"github.com/Nadim147c/rong/cmd/video"
 	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/carapace-sh/carapace"
+	"github.com/carapace-sh/carapace/pkg/style"
 	termcolor "github.com/fatih/color"
 	"github.com/mattn/go-isatty"
 	slogmulti "github.com/samber/slog-multi"
@@ -51,6 +52,15 @@ func init() {
 	cacheCara := carapace.Gen(cache.Command)
 	cacheCara.FlagCompletion(actions)
 	cacheCara.PositionalAnyCompletion(carapace.ActionFiles())
+
+	colorCara := carapace.Gen(color.Command)
+	colorCara.FlagCompletion(actions)
+	nameCompletions := make([]string, 0, len(color.Names)*2)
+	for name, value := range color.Names {
+		_, r, g, b := value.Values()
+		nameCompletions = append(nameCompletions, name, style.TrueColor(r, g, b))
+	}
+	colorCara.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
 
 	regenCara := carapace.Gen(regen.Command)
 	regenCara.FlagCompletion(actions)
