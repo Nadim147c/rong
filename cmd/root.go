@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/MatusOllah/slogcolor"
-	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
@@ -20,6 +19,7 @@ import (
 	"github.com/mattn/go-isatty"
 	slogmulti "github.com/samber/slog-multi"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -128,7 +128,7 @@ var Command = &cobra.Command{
 		if err != nil || logFilePath == "" {
 			logger := slog.New(stderrHandler)
 			slog.SetDefault(logger)
-			config.SetLogger(logger)
+			viper.SetOptions(viper.WithLogger(logger))
 		} else {
 			err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
 			if err != nil {
@@ -139,7 +139,7 @@ var Command = &cobra.Command{
 			if err != nil {
 				logger := slog.New(stderrHandler)
 				slog.SetDefault(logger)
-				config.SetLogger(logger)
+				viper.SetOptions(viper.WithLogger(logger))
 				slog.Error("Failed to open log-file", "error", err)
 			} else {
 				fileHanlder := slog.NewJSONHandler(file, &slog.HandlerOptions{
@@ -151,25 +151,25 @@ var Command = &cobra.Command{
 				handler := slogmulti.Fanout(stderrHandler, fileHanlder)
 				logger := slog.New(handler)
 				slog.SetDefault(logger)
-				config.SetLogger(logger)
+				viper.SetOptions(viper.WithLogger(logger))
 				logfile = file
 			}
 		}
 
-		config.AddPath("/etc/rong")
-		config.AddPath(pathutil.ConfigDir)
-		config.SetFormat("yaml")
-		config.SetEnvPrefix("rong")
+		viper.AddConfigPath("/etc/rong")
+		viper.AddConfigPath(pathutil.ConfigDir)
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("config")
 
-		config.SetDefault("dark", true)
-		config.SetDefault("variant", dynamic.Expressive)
-		config.SetDefault("platform", dynamic.Phone)
+		viper.SetDefault("dark", true)
+		viper.SetDefault("variant", dynamic.Expressive)
+		viper.SetDefault("platform", dynamic.Phone)
 
-		cfgFile, err := cmd.Flags().GetString("config")
-		if err == nil {
-			config.AddFile(cfgFile)
+		cfgFlag := cmd.Flags().Lookup("config")
+		if cfgFlag != nil && cfgFlag.Changed {
+			viper.SetConfigFile(cfgFlag.Value.String())
 		}
 
-		return config.ReadConfig()
+		return viper.ReadInConfig()
 	},
 }

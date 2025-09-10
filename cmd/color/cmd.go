@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/material/palettes"
@@ -15,6 +14,7 @@ import (
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/templates"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	_ "image/jpeg" // for jpeg encoding
 	_ "image/png"  // for png encoding
@@ -45,7 +45,7 @@ rong color green --dry-run --json | jq
   `,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
-		config.SetPflagSet(cmd.Flags())
+		viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(_ *cobra.Command, args []string) error {
 		name := strings.ToLower(args[0])
@@ -62,10 +62,11 @@ rong color green --dry-run --json | jq
 
 		primary := palettes.NewFromARGB(source)
 
-		var cfg material.GeneratorConfig
-		if err := config.Bind("", &cfg); err != nil {
+		cfg, err := material.GetConfig()
+		if err != nil {
 			return err
 		}
+
 		scheme := dynamic.NewDynamicScheme(source.ToHct(),
 			cfg.Variant, cfg.Constrast, cfg.Dark,
 			cfg.Platform, cfg.Version, primary,
@@ -86,11 +87,11 @@ rong color green --dry-run --json | jq
 
 		output := models.NewOutput("", based, colorMap)
 
-		if config.GetBool("json") {
+		if viper.GetBool("json") {
 			json.NewEncoder(os.Stdout).Encode(output)
 		}
 
-		if !config.GetBool("dry-run") {
+		if !viper.GetBool("dry-run") {
 			return templates.Execute(output)
 		}
 

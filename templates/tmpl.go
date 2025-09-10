@@ -10,9 +10,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Nadim147c/go-config"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/internal/pathutil"
+	"github.com/spf13/cast"
+	"github.com/spf13/viper"
 )
 
 var success = map[string]bool{}
@@ -69,7 +70,8 @@ func Execute(color models.Output) error {
 }
 
 func link() error {
-	links, err := config.GetStringMapStringSliceE("links")
+	rawLinks := viper.Get("links")
+	links, err := cast.ToStringMapStringSliceE(rawLinks)
 	if err != nil {
 		return fmt.Errorf("failed to convert links: %v", links)
 	}

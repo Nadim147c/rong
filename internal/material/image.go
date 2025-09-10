@@ -1,20 +1,54 @@
 package material
 
 import (
+	"fmt"
 	"image"
 
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
-// GeneratorConfig is configuration used to generate colors
-type GeneratorConfig struct {
-	Variant   dynamic.Variant  `config:"variant" check:"enum='monochrome,neutral,tonal_spot,vibrant,expressive,fidelity,content,rainbow,fruit_salad'"`
-	Platform  dynamic.Platform `config:"platform" check:"enum='phone,watch'"`
-	Version   dynamic.Version  `config:"version" check:"enum='2021,2025'"`
-	Dark      bool             `config:"dark"`
-	Constrast float64          `config:"Constrast" check:"min=-1,max=1"`
+// Config is configuration used to generate colors
+type Config struct {
+	Variant   dynamic.Variant
+	Platform  dynamic.Platform
+	Version   dynamic.Version
+	Dark      bool
+	Constrast float64
+}
+
+// GetConfig return Config from viper
+func GetConfig() (Config, error) {
+	config := Config{}
+
+	variant, err := dynamic.ParseVariant(viper.GetString("variant"))
+	if err != nil {
+		return config, err
+	}
+	config.Variant = variant
+
+	version, err := dynamic.ParseVersion(viper.GetString("version"))
+	if err != nil {
+		return config, err
+	}
+	config.Version = version
+
+	platform, err := dynamic.ParsePlatform(viper.GetString("platform"))
+	if err != nil {
+		return config, err
+	}
+	config.Platform = platform
+
+	config.Constrast = viper.GetFloat64("contrast")
+	if config.Constrast < -1 || config.Constrast > 1 {
+		return config, fmt.Errorf("contrast must between -1 to 1 but got %d", config.Constrast)
+	}
+
+	config.Dark = viper.GetBool("dark")
+
+	return config, nil
 }
 
 // GeneratorFlags are the flags used for generating colors
@@ -25,9 +59,9 @@ func init() {
 	GeneratorFlags.Bool("dry-run", false, "generate colors without applying templates")
 	GeneratorFlags.Bool("json", false, "print generated colors as json")
 	GeneratorFlags.Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
-	GeneratorFlags.Int("version", int(dynamic.V2021), "version of the theme (2021 or 2025)")
-	GeneratorFlags.String("platform", string(dynamic.Phone), "target platform (phone or watch)")
-	GeneratorFlags.String("variant", string(dynamic.TonalSpot), "variant to use (e.g., tonal_spot, vibrant, expressive)")
+	GeneratorFlags.String("version", dynamic.V2021.String(), "version of the theme (2021 or 2025)")
+	GeneratorFlags.String("platform", dynamic.Phone.String(), "target platform (phone or watch)")
+	GeneratorFlags.String("variant", dynamic.TonalSpot.String(), "variant to use (e.g., tonal_spot, vibrant, expressive)")
 }
 
 // GetPixelsFromImage returns pixels from image.Imaget interface
@@ -47,10 +81,7 @@ func GetPixelsFromImage(img image.Image) []color.ARGB {
 }
 
 // GenerateFromImage colors from an image.Image
-func GenerateFromImage(
-	img image.Image,
-	cfg GeneratorConfig,
-) (Colors, []color.ARGB, error) {
+func GenerateFromImage(img image.Image, cfg Config) (Colors, []color.ARGB, error) {
 	pixels := GetPixelsFromImage(img)
 	return GenerateFromPixels(pixels, cfg)
 }
