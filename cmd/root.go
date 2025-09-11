@@ -161,6 +161,8 @@ var Command = &cobra.Command{
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
 
+		viper.SetEnvPrefix("rong")
+
 		viper.SetDefault("dark", true)
 		viper.SetDefault("variant", dynamic.Expressive)
 		viper.SetDefault("platform", dynamic.Phone)
