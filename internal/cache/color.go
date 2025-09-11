@@ -2,33 +2,23 @@ package cache
 
 import (
 	"encoding/base64"
-	"encoding/binary"
 	"encoding/json"
-	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/pathutil"
-	"github.com/cespare/xxhash"
+	"github.com/zeebo/xxh3"
 )
 
 func hash(path string) (string, error) {
-	file, err := os.Open(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
 
-	sum := xxhash.New()
-	if _, err := io.Copy(sum, file); err != nil {
-		return "", err
-	}
-
-	result := make([]byte, 8)
-	binary.BigEndian.PutUint64(result, sum.Sum64())
-
-	return base64.RawURLEncoding.EncodeToString(result), nil
+	sum := xxh3.Hash128(b).Bytes()
+	return base64.RawURLEncoding.EncodeToString(sum[:]), nil
 }
 
 // IsCached checks if the file is colors is cached or not

@@ -7,7 +7,6 @@ require (
 	github.com/Nadim147c/material v0.0.9-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.8.6
-	github.com/cespare/xxhash v1.1.0
 	github.com/charmbracelet/fang v0.4.0
 	github.com/fatih/color v1.18.0
 	github.com/mattn/go-isatty v0.0.20
@@ -16,6 +15,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
+	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/image v0.30.0
 )
 
@@ -30,6 +30,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
