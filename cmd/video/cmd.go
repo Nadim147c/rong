@@ -26,7 +26,17 @@ func init() {
 var Command = &cobra.Command{
 	Use:   "video [flags] <video|image>",
 	Short: "Generate colors from a video",
-	Args:  cobra.ExactArgs(1),
+	Example: `
+# Generate from a video
+rong video path/to/video.mkv
+
+# Generate from a image
+rong video path/to/image.webp
+
+# Get generate colors as json
+rong video path/to/image.mp4 --dry-run --json | jq
+  `,
+	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
 		viper.BindPFlags(cmd.Flags())
 	},
