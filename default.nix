@@ -7,18 +7,18 @@
   stdenv,
   makeWrapper,
 }:
-buildGoModule {
+buildGoModule (finalAttr: {
   pname = "rong";
-  version = "0-unstable-2025-07-27";
+  version = "0.0.4";
 
   src = fetchFromGitHub {
     owner = "Nadim147c";
     repo = "rong";
-    rev = "96cf9e6ee50d6a4c06eaf1cb2aad028f5c251ab0";
-    hash = "sha256-QuqN5xbSrhrI/Nw3D/cdRAlXQbpm/gQsiaLUPpzN2NE=";
+    rev = "v${finalAttr.version}";
+    hash = "sha256-Z3KMBrCFlscPBEfob9HJWAEIJTvxalRVFX1OYs8u8D4=";
   };
 
-  vendorHash = "sha256-85QIPgacYq0QYP3WCuNGWYxbOSMRHct0pELL6lur1kU=";
+  vendorHash = "sha256-YYKn8RsqtoqEIlC+dyl8s6OsUVH1eZYZfNoYLJxGe4c=";
 
   ldflags = ["-s" "-w"];
 
@@ -41,4 +41,4 @@ buildGoModule {
     license = lib.licenses.gpl3Only;
     mainProgram = "rong";
   };
-}
+})
