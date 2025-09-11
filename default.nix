@@ -20,7 +20,7 @@ buildGoModule (finalAttr: {
 
   vendorHash = "sha256-YYKn8RsqtoqEIlC+dyl8s6OsUVH1eZYZfNoYLJxGe4c=";
 
-  ldflags = ["-s" "-w"];
+  ldflags = ["-s" "-w" "-X" "main.Version=v${finalAttr.version}"];
 
   nativeBuildInputs = [installShellFiles makeWrapper];
   propagatedBuildInputs = [ffmpeg];
