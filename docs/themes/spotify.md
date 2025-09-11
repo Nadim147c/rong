@@ -53,6 +53,25 @@ You need to run `spicetify apply` and restart Spotify to apply new generated the
 However, it is possible to live reload theme by starting spicetify in watch mode
 (`spicetify watch -s`).
 
+::: info
+For flatpak version of spotify, `spicetify watch -s` **might** fail to restart spotify.
+In that case, you can install run spotify with debug flags and run `spicetify watch
+-s` after generating colors.
+
+- Start spotify:
+
+```bash
+flatpak run com.spotify.Client --remote-debugging-port=9222 --remote-allow-origins='*'
+```
+
+- Live reload after color generation:
+
+```bash
+timeout 2s spicetify watch -s
+```
+
+:::
+
 ### Reload with Hyprland
 
 To auto reload Spotify on Hyprland compositor, make these changes to your Hyprland
