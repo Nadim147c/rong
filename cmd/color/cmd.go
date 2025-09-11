@@ -26,9 +26,9 @@ func init() {
 	Command.Flags().AddFlagSet(material.GeneratorFlags)
 }
 
-// Command is the image command
+// Command is the color command
 var Command = &cobra.Command{
-	Use:   "color [flags] <image>",
+	Use:   "color [flags] <hex|name>",
 	Short: "Generate colors from a color",
 	Example: `
 # Using color name

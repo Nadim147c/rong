@@ -22,9 +22,9 @@ func init() {
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 }
 
-// Command is the image command
+// Command is the video command
 var Command = &cobra.Command{
-	Use:   "video [flags] <image>",
+	Use:   "video [flags] <video|image>",
 	Short: "Generate colors from a video",
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {
