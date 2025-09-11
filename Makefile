@@ -1,17 +1,20 @@
-GO      ?= go
-REVIVE  ?= revive
-OUTBIN  ?= rong
-VERSION ?= $(shell git describe --tags)
-PREFIX  ?= /usr/local/
+GO       ?= go
+REVIVE   ?= revive
+BIN_NAME ?= rong
+VERSION  ?= $(shell git describe --tags)
+PREFIX   ?= /usr/local/
+
+BIN_FILE     = $(shell realpath "$(PREFIX)/bin/$(BIN_NAME)")
+LICENSE_FILE = $(shell realpath "$(PREFIX)/share/licenses/$(BIN_NAME)/LICENSE")
 
 -include Makefile.local
 
 build:
-	$(GO) build -trimpath -ldflags '-X main.Version=$(VERSION)' -o $(OUTBIN)
+	$(GO) build -trimpath -ldflags '-s -w -X main.Version=$(VERSION)' -o $(BIN_NAME)
 
 install:
-	install -Dm755 $(OUTBIN) "$(PREFIX)/bin/$(OUTBIN)"
-	install -Dm644 LICENSE "$(PREFIX)/share/licenses/$(OUTBIN)/LICENSE"
+	install -Dm755 $(BIN_NAME) "$(BIN_FILE)"
+	install -Dm644 LICENSE "$(LICENSE_FILE)"
 
 lint:
 	$(REVIVE) -config revive.toml -formatter friendly ./...
