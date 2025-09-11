@@ -49,9 +49,9 @@ spicetify apply
 
 ## Reload
 
-Reloading Spotify is somewhat complicated. You need to run `spicetify apply` and
-restart Spotify to apply new generated theme. However, it is possible by running
-spicetify in watch mode (`spicetify watch -s`).
+You need to run `spicetify apply` and restart Spotify to apply new generated theme.
+However, it is possible to live reload theme by starting spicetify in watch mode
+(`spicetify watch -s`).
 
 ### Reload with Hyprland
 
