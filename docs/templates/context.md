@@ -22,55 +22,55 @@ All fields are of type `ColorValue`.
 
 | Field Name                | Example Template                 | Output Example |
 | ------------------------- | -------------------------------- | -------------- |
-| `Background`              | `{{ .Background }}`              | `121212`       |
-| `Error`                   | `{{ .Error }}`                   | `B3261E`       |
-| `ErrorContainer`          | `{{ .ErrorContainer }}`          | `F9DEDC`       |
-| `InverseOnSurface`        | `{{ .InverseOnSurface }}`        | `322F29`       |
-| `InversePrimary`          | `{{ .InversePrimary }}`          | `D0BCFF`       |
-| `InverseSurface`          | `{{ .InverseSurface }}`          | `E4E2E6`       |
-| `OnBackground`            | `{{ .OnBackground }}`            | `E0E0E0`       |
-| `OnError`                 | `{{ .OnError }}`                 | `FFFFFF`       |
-| `OnErrorContainer`        | `{{ .OnErrorContainer }}`        | `410E0B`       |
-| `OnPrimary`               | `{{ .OnPrimary }}`               | `FFFFFF`       |
-| `OnPrimaryContainer`      | `{{ .OnPrimaryContainer }}`      | `3700B3`       |
-| `OnPrimaryFixed`          | `{{ .OnPrimaryFixed }}`          | `21005D`       |
-| `OnPrimaryFixedVariant`   | `{{ .OnPrimaryFixedVariant }}`   | `000000`       |
-| `OnSecondary`             | `{{ .OnSecondary }}`             | `FFFFFF`       |
-| `OnSecondaryContainer`    | `{{ .OnSecondaryContainer }}`    | `1D192B`       |
-| `OnSecondaryFixed`        | `{{ .OnSecondaryFixed }}`        | `332D41`       |
-| `OnSecondaryFixedVariant` | `{{ .OnSecondaryFixedVariant }}` | `4A4458`       |
-| `OnSurface`               | `{{ .OnSurface }}`               | `E0E0E0`       |
-| `OnSurfaceVariant`        | `{{ .OnSurfaceVariant }}`        | `C4C7C5`       |
-| `OnTertiary`              | `{{ .OnTertiary }}`              | `FFFFFF`       |
-| `OnTertiaryContainer`     | `{{ .OnTertiaryContainer }}`     | `31111D`       |
-| `OnTertiaryFixed`         | `{{ .OnTertiaryFixed }}`         | `492532`       |
-| `OnTertiaryFixedVariant`  | `{{ .OnTertiaryFixedVariant }}`  | `633B48`       |
-| `Outline`                 | `{{ .Outline }}`                 | `938F99`       |
-| `OutlineVariant`          | `{{ .OutlineVariant }}`          | `C4C7C5`       |
-| `Primary`                 | `{{ .Primary }}`                 | `BB86FC`       |
-| `PrimaryContainer`        | `{{ .PrimaryContainer }}`        | `6200EE`       |
-| `PrimaryFixed`            | `{{ .PrimaryFixed }}`            | `EADDFF`       |
-| `PrimaryFixedDim`         | `{{ .PrimaryFixedDim }}`         | `D0BCFF`       |
-| `Scrim`                   | `{{ .Scrim }}`                   | `000000`       |
-| `Secondary`               | `{{ .Secondary }}`               | `03DAC6`       |
-| `SecondaryContainer`      | `{{ .SecondaryContainer }}`      | `018786`       |
-| `SecondaryFixed`          | `{{ .SecondaryFixed }}`          | `E8DEF8`       |
-| `SecondaryFixedDim`       | `{{ .SecondaryFixedDim }}`       | `CCC2DC`       |
-| `Shadow`                  | `{{ .Shadow }}`                  | `000000`       |
-| `Surface`                 | `{{ .Surface }}`                 | `121212`       |
-| `SurfaceBright`           | `{{ .SurfaceBright }}`           | `373737`       |
-| `SurfaceContainer`        | `{{ .SurfaceContainer }}`        | `211F26`       |
-| `SurfaceContainerHigh`    | `{{ .SurfaceContainerHigh }}`    | `2B2930`       |
-| `SurfaceContainerHighest` | `{{ .SurfaceContainerHighest }}` | `36343B`       |
-| `SurfaceContainerLow`     | `{{ .SurfaceContainerLow }}`     | `1D1B20`       |
-| `SurfaceContainerLowest`  | `{{ .SurfaceContainerLowest }}`  | `0F0D13`       |
-| `SurfaceDim`              | `{{ .SurfaceDim }}`              | `121212`       |
-| `SurfaceTint`             | `{{ .SurfaceTint }}`             | `BB86FC`       |
-| `SurfaceVariant`          | `{{ .SurfaceVariant }}`          | `49454F`       |
-| `Tertiary`                | `{{ .Tertiary }}`                | `03DAC6`       |
-| `TertiaryContainer`       | `{{ .TertiaryContainer }}`       | `3700B3`       |
-| `TertiaryFixed`           | `{{ .TertiaryFixed }}`           | `FFD8E4`       |
-| `TertiaryFixedDim`        | `{{ .TertiaryFixedDim }}`        | `EFB8C8`       |
+| `Background`              | `{{ .Background }}`              | `#121212`      |
+| `Error`                   | `{{ .Error }}`                   | `#B3261E`      |
+| `ErrorContainer`          | `{{ .ErrorContainer }}`          | `#F9DEDC`      |
+| `InverseOnSurface`        | `{{ .InverseOnSurface }}`        | `#322F29`      |
+| `InversePrimary`          | `{{ .InversePrimary }}`          | `#D0BCFF`      |
+| `InverseSurface`          | `{{ .InverseSurface }}`          | `#E4E2E6`      |
+| `OnBackground`            | `{{ .OnBackground }}`            | `#E0E0E0`      |
+| `OnError`                 | `{{ .OnError }}`                 | `#FFFFFF`      |
+| `OnErrorContainer`        | `{{ .OnErrorContainer }}`        | `#410E0B`      |
+| `OnPrimary`               | `{{ .OnPrimary }}`               | `#FFFFFF`      |
+| `OnPrimaryContainer`      | `{{ .OnPrimaryContainer }}`      | `#3700B3`      |
+| `OnPrimaryFixed`          | `{{ .OnPrimaryFixed }}`          | `#21005D`      |
+| `OnPrimaryFixedVariant`   | `{{ .OnPrimaryFixedVariant }}`   | `#000000`      |
+| `OnSecondary`             | `{{ .OnSecondary }}`             | `#FFFFFF`      |
+| `OnSecondaryContainer`    | `{{ .OnSecondaryContainer }}`    | `#1D192B`      |
+| `OnSecondaryFixed`        | `{{ .OnSecondaryFixed }}`        | `#332D41`      |
+| `OnSecondaryFixedVariant` | `{{ .OnSecondaryFixedVariant }}` | `#4A4458`      |
+| `OnSurface`               | `{{ .OnSurface }}`               | `#E0E0E0`      |
+| `OnSurfaceVariant`        | `{{ .OnSurfaceVariant }}`        | `#C4C7C5`      |
+| `OnTertiary`              | `{{ .OnTertiary }}`              | `#FFFFFF`      |
+| `OnTertiaryContainer`     | `{{ .OnTertiaryContainer }}`     | `#31111D`      |
+| `OnTertiaryFixed`         | `{{ .OnTertiaryFixed }}`         | `#492532`      |
+| `OnTertiaryFixedVariant`  | `{{ .OnTertiaryFixedVariant }}`  | `#633B48`      |
+| `Outline`                 | `{{ .Outline }}`                 | `#938F99`      |
+| `OutlineVariant`          | `{{ .OutlineVariant }}`          | `#C4C7C5`      |
+| `Primary`                 | `{{ .Primary }}`                 | `#BB86FC`      |
+| `PrimaryContainer`        | `{{ .PrimaryContainer }}`        | `#6200EE`      |
+| `PrimaryFixed`            | `{{ .PrimaryFixed }}`            | `#EADDFF`      |
+| `PrimaryFixedDim`         | `{{ .PrimaryFixedDim }}`         | `#D0BCFF`      |
+| `Scrim`                   | `{{ .Scrim }}`                   | `#000000`      |
+| `Secondary`               | `{{ .Secondary }}`               | `#03DAC6`      |
+| `SecondaryContainer`      | `{{ .SecondaryContainer }}`      | `#018786`      |
+| `SecondaryFixed`          | `{{ .SecondaryFixed }}`          | `#E8DEF8`      |
+| `SecondaryFixedDim`       | `{{ .SecondaryFixedDim }}`       | `#CCC2DC`      |
+| `Shadow`                  | `{{ .Shadow }}`                  | `#000000`      |
+| `Surface`                 | `{{ .Surface }}`                 | `#121212`      |
+| `SurfaceBright`           | `{{ .SurfaceBright }}`           | `#373737`      |
+| `SurfaceContainer`        | `{{ .SurfaceContainer }}`        | `#211F26`      |
+| `SurfaceContainerHigh`    | `{{ .SurfaceContainerHigh }}`    | `#2B2930`      |
+| `SurfaceContainerHighest` | `{{ .SurfaceContainerHighest }}` | `#36343B`      |
+| `SurfaceContainerLow`     | `{{ .SurfaceContainerLow }}`     | `#1D1B20`      |
+| `SurfaceContainerLowest`  | `{{ .SurfaceContainerLowest }}`  | `#0F0D13`      |
+| `SurfaceDim`              | `{{ .SurfaceDim }}`              | `#121212`      |
+| `SurfaceTint`             | `{{ .SurfaceTint }}`             | `#BB86FC`      |
+| `SurfaceVariant`          | `{{ .SurfaceVariant }}`          | `#49454F`      |
+| `Tertiary`                | `{{ .Tertiary }}`                | `#03DAC6`      |
+| `TertiaryContainer`       | `{{ .TertiaryContainer }}`       | `#3700B3`      |
+| `TertiaryFixed`           | `{{ .TertiaryFixed }}`           | `#FFD8E4`      |
+| `TertiaryFixedDim`        | `{{ .TertiaryFixedDim }}`        | `#EFB8C8`      |
 
 ## ColorValue Representations
 
@@ -78,9 +78,9 @@ You can use these suffixes on any `ColorValue` field (Material fields or `.Color
 
 | Representation      | Example Template                   | Output Example              |
 | ------------------- | ---------------------------------- | --------------------------- |
-| `HexRGB`            | `{{ .Primary.HexRGB }}`            | `BB86FC`                    |
+| `HexRGB`            | `{{ .Primary.HexRGB }}`            | `#BB86FC`                   |
 | `TrimmedHexRGB`     | `{{ .Error.TrimmedHexRGB }}`       | `B3261E`                    |
-| `HexRGBA`           | `{{ .OnSurface.HexRGBA }}`         | `E0E0E0FF`                  |
+| `HexRGBA`           | `{{ .OnSurface.HexRGBA }}`         | `#E0E0E0FF`                 |
 | `TrimmedHexRGBA`    | `{{ .Background.TrimmedHexRGBA }}` | `121212FF`                  |
 | `RGB`               | `{{ .Primary.RGB }}`               | `rgb(187, 134, 252)`        |
 | `TrimmedRGB`        | `{{ .Primary.TrimmedRGB }}`        | `187, 134, 252`             |
