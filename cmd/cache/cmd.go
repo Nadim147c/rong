@@ -18,8 +18,21 @@ func init() {
 // Command is cache command
 var Command = &cobra.Command{
 	Use:   "cache <path...>",
-	Short: "Generate color cache from a image/video",
-	Args:  cobra.MinimumNArgs(1),
+	Short: "Generate color cache from images or videos",
+	Example: `
+# Cache from a video
+rong cache path/to/video.mkv
+
+# Cache from a image
+rong cache path/to/image.webp
+
+# Cache all png in a directory
+rong cache path/to/*.png
+
+# Recursively cache all image and video in a directory
+rong cache path/to/directory
+  `,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		paths := make(chan string, 10)
 
