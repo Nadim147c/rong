@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -18,7 +18,7 @@ func hash(path string) (string, error) {
 	}
 
 	sum := xxh3.Hash128(b).Bytes()
-	return base64.RawURLEncoding.EncodeToString(sum[:]), nil
+	return hex.EncodeToString(sum[:]), nil
 }
 
 // IsCached checks if the file is colors is cached or not

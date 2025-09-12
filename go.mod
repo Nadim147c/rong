@@ -1,6 +1,6 @@
 module github.com/Nadim147c/rong
 
-go 1.24.5
+go 1.25
 
 require (
 	github.com/MatusOllah/slogcolor v1.7.0
