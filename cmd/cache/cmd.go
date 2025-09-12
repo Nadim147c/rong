@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"log/slog"
 	"runtime"
 	"sync"
@@ -40,14 +41,20 @@ rong cache path/to/directory
 
 		var wg sync.WaitGroup
 
+		var progress progressTracker
 		lock := make(chan struct{}, runtime.NumCPU())
 		for path := range paths {
 			lock <- struct{}{}
+			progress.Added()
+
 			wg.Go(func() {
-				defer func() { <-lock }()
+				defer func() {
+					<-lock
+					progress.Finished()
+				}()
 
 				if cache.IsCached(path) {
-					slog.Info("Skipping", "path", path, "reason", "already cached")
+					slog.Info("Skipping", "progress", progress.String(), "path", path, "reason", "already cached")
 					return
 				}
 
@@ -64,11 +71,36 @@ rong cache path/to/directory
 					return
 				}
 
-				slog.Info("Successfully cached media", "path", path)
+				slog.Info("Successfully cached media", "progress", progress.String(), "path", path)
 			})
 		}
 		close(lock)
 
 		wg.Wait()
 	},
+}
+
+type progressTracker struct {
+	// mu is Mutex for async safe locking
+	mu sync.Mutex
+	// total, finished are the progress
+	total, finished uint
+}
+
+func (p *progressTracker) Added() {
+	p.mu.Lock()
+	p.total++
+	p.mu.Unlock()
+}
+
+func (p *progressTracker) Finished() {
+	p.mu.Lock()
+	p.finished++
+	p.mu.Unlock()
+}
+
+func (p *progressTracker) String() string {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return fmt.Sprintf("[%d/%d]", p.finished+1, p.total)
 }
