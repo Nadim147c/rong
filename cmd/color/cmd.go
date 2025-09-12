@@ -28,7 +28,7 @@ func init() {
 
 // Command is the color command
 var Command = &cobra.Command{
-	Use:   "color [flags] <hex|name>",
+	Use:   "color <color>",
 	Short: "Generate colors from a color",
 	Example: `
 # Using color name

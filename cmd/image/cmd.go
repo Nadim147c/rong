@@ -28,7 +28,7 @@ func init() {
 
 // Command is the image command
 var Command = &cobra.Command{
-	Use:   "image [flags] <image>",
+	Use:   "image <image>",
 	Short: "Generate colors from a image",
 	Args:  cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, _ []string) {

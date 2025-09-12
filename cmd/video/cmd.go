@@ -24,7 +24,7 @@ func init() {
 
 // Command is the video command
 var Command = &cobra.Command{
-	Use:   "video [flags] <video|image>",
+	Use:   "video <video>",
 	Short: "Generate colors from a video",
 	Example: `
 # Generate from a video
