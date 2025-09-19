@@ -1,6 +1,7 @@
 package ffmpeg
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -12,7 +13,7 @@ import (
 
 // GetPixels decodes media using ffmpeg and returns slices of pixels for given
 // maxFrames numbers
-func GetPixels(path string, maxFrames int) ([]color.ARGB, error) {
+func GetPixels(ctx context.Context, path string, maxFrames int) ([]color.ARGB, error) {
 	var pixels []color.ARGB
 
 	meta, err := CheckMediaType(path)
@@ -25,7 +26,7 @@ func GetPixels(path string, maxFrames int) ([]color.ARGB, error) {
 	}
 
 	if meta.Type == "image" {
-		ffmpeg := exec.Command("ffmpeg",
+		ffmpeg := exec.CommandContext(ctx, "ffmpeg",
 			"-i", path,
 			"-vframes", "1",
 			"-f", "rawvideo",
@@ -54,7 +55,7 @@ func GetPixels(path string, maxFrames int) ([]color.ARGB, error) {
 		fps = 1
 	}
 
-	ffmpeg := exec.Command("ffmpeg",
+	ffmpeg := exec.CommandContext(ctx, "ffmpeg",
 		"-i", path,
 		"-vf", fmt.Sprintf("fps=%.8f", fps),
 		"-f", "rawvideo",

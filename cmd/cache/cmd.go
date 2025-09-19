@@ -34,16 +34,26 @@ rong cache path/to/*.png
 rong cache path/to/directory
   `,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+
 		paths := make(chan string, 10)
 
-		go ScanPaths(args, paths)
+		go ScanPaths(ctx, args, paths)
 
 		var wg sync.WaitGroup
 
 		var progress progressTracker
 		lock := make(chan struct{}, runtime.NumCPU())
 		for path := range paths {
+			select {
+			case <-ctx.Done():
+				close(lock)
+				wg.Wait()
+				return ctx.Err()
+			default:
+			}
+
 			lock <- struct{}{}
 			progress.Added()
 
@@ -59,13 +69,19 @@ rong cache path/to/directory
 				}
 
 				frames, _ := cmd.Flags().GetInt("frames")
-				pixels, err := ffmpeg.GetPixels(path, frames)
+				pixels, err := ffmpeg.GetPixels(ctx, path, frames)
 				if err != nil {
-					slog.Error("Failed to get pixels from media", "path", path, "error", err)
+					if ctx.Err() != nil {
+						slog.Error("Failed to get pixels from media", "path", path, "error", err)
+					}
 					return
 				}
 
-				quantized := material.Quantize(pixels)
+				quantized, err := material.Quantize(ctx, pixels)
+				if err != nil {
+					return
+				}
+
 				if err := cache.SaveCache(path, quantized); err != nil {
 					slog.Error("Failed to save cache", "path", path, "error", err)
 					return
@@ -77,6 +93,8 @@ rong cache path/to/directory
 		close(lock)
 
 		wg.Wait()
+
+		return nil
 	},
 }
 

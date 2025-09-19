@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/MatusOllah/slogcolor v1.7.0
-	github.com/Nadim147c/material v0.0.9-alpha
+	github.com/Nadim147c/material v0.0.10-alpha
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.8.7
 	github.com/charmbracelet/fang v0.4.0

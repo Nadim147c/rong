@@ -34,7 +34,8 @@ var Command = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, _ []string) {
 		viper.BindPFlags(cmd.Flags())
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		imagePath := args[0]
 
 		cwd, err := os.Getwd()
@@ -67,7 +68,10 @@ var Command = &cobra.Command{
 			}
 
 			pixels := material.GetPixelsFromImage(img)
-			quantized = material.Quantize(pixels)
+			quantized, err = material.Quantize(ctx, pixels)
+			if err != nil {
+				return err
+			}
 		}
 
 		cfg, err := material.GetConfig()

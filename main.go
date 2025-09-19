@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"io"
 	"os"
 
 	"github.com/Nadim147c/rong/cmd"
@@ -11,7 +13,20 @@ import (
 var Version = "dev"
 
 func main() {
-	if err := fang.Execute(context.Background(), cmd.Command, fang.WithVersion(Version)); err != nil {
+	err := fang.Execute(
+		context.Background(),
+		cmd.Command,
+		fang.WithoutCompletions(),
+		fang.WithVersion(Version),
+		fang.WithNotifySignal(os.Interrupt, os.Kill),
+		fang.WithErrorHandler(func(w io.Writer, styles fang.Styles, err error) {
+			if errors.Is(err, context.Canceled) {
+				err = errors.New("operation cancelled by user")
+			}
+			fang.DefaultErrorHandler(w, styles, err)
+		}),
+	)
+	if err != nil {
 		os.Exit(1)
 	}
 }

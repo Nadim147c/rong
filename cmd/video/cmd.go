@@ -40,7 +40,9 @@ rong video path/to/image.mp4 --dry-run --json | jq
 	PreRun: func(cmd *cobra.Command, _ []string) {
 		viper.BindPFlags(cmd.Flags())
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+
 		videoPath := args[0]
 
 		cwd, err := os.Getwd()
@@ -62,11 +64,14 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			}
 
 			frames := viper.GetInt("frames")
-			pixels, err := ffmpeg.GetPixels(videoPath, frames)
+			pixels, err := ffmpeg.GetPixels(ctx, videoPath, frames)
 			if err != nil {
 				return fmt.Errorf("Failed to get pixels from media: %w", err)
 			}
-			quantized = material.Quantize(pixels)
+			quantized, err = material.Quantize(ctx, pixels)
+			if err != nil {
+				return err
+			}
 		}
 
 		slog.Info("Couldn't load colors from cache", "error", err)

@@ -1,6 +1,7 @@
 package material
 
 import (
+	"context"
 	"fmt"
 	"image"
 
@@ -43,7 +44,10 @@ func GetConfig() (Config, error) {
 
 	config.Constrast = viper.GetFloat64("contrast")
 	if config.Constrast < -1 || config.Constrast > 1 {
-		return config, fmt.Errorf("contrast must between -1 to 1 but got %d", config.Constrast)
+		return config, fmt.Errorf(
+			"contrast must between -1 to 1 but got %.2f",
+			config.Constrast,
+		)
 	}
 
 	config.Dark = viper.GetBool("dark")
@@ -56,12 +60,28 @@ var GeneratorFlags = pflag.NewFlagSet("generate", pflag.ContinueOnError)
 
 func init() {
 	GeneratorFlags.Bool("dark", false, "generate dark color palette")
-	GeneratorFlags.Bool("dry-run", false, "generate colors without applying templates")
+	GeneratorFlags.Bool(
+		"dry-run",
+		false,
+		"generate colors without applying templates",
+	)
 	GeneratorFlags.Bool("json", false, "print generated colors as json")
 	GeneratorFlags.Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
-	GeneratorFlags.String("version", dynamic.V2021.String(), "version of the theme (2021 or 2025)")
-	GeneratorFlags.String("platform", dynamic.Phone.String(), "target platform (phone or watch)")
-	GeneratorFlags.String("variant", dynamic.TonalSpot.String(), "variant to use (e.g., tonal_spot, vibrant, expressive)")
+	GeneratorFlags.String(
+		"version",
+		dynamic.V2021.String(),
+		"version of the theme (2021 or 2025)",
+	)
+	GeneratorFlags.String(
+		"platform",
+		dynamic.Phone.String(),
+		"target platform (phone or watch)",
+	)
+	GeneratorFlags.String(
+		"variant",
+		dynamic.TonalSpot.String(),
+		"variant to use (e.g., tonal_spot, vibrant, expressive)",
+	)
 }
 
 // GetPixelsFromImage returns pixels from image.Imaget interface
@@ -81,7 +101,11 @@ func GetPixelsFromImage(img image.Image) []color.ARGB {
 }
 
 // GenerateFromImage colors from an image.Image
-func GenerateFromImage(img image.Image, cfg Config) (Colors, []color.ARGB, error) {
+func GenerateFromImage(
+	ctx context.Context,
+	img image.Image,
+	cfg Config,
+) (Colors, []color.ARGB, error) {
 	pixels := GetPixelsFromImage(img)
-	return GenerateFromPixels(pixels, cfg)
+	return GenerateFromPixels(ctx, pixels, cfg)
 }

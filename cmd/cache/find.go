@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -20,9 +22,15 @@ func isMediaFile(path string) bool {
 }
 
 // ScanPaths scans the given paths and sends absolute paths of image/video files to the provided channel
-func ScanPaths(paths []string, out chan<- string) {
+func ScanPaths(ctx context.Context, paths []string, out chan<- string) {
 	defer close(out)
 	for _, p := range paths {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
 		fileInfo, err := os.Stat(p)
 		if err != nil {
 			slog.Error("Failed to find file/directory", "path", p, "error", err)
@@ -30,10 +38,18 @@ func ScanPaths(paths []string, out chan<- string) {
 		}
 
 		if fileInfo.IsDir() {
-			filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
+			err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					return nil
 				}
+
+				// Check context
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+
 				if !info.IsDir() && isMediaFile(path) {
 					abs, err := filepath.Abs(path)
 					if err == nil {
@@ -42,6 +58,11 @@ func ScanPaths(paths []string, out chan<- string) {
 				}
 				return nil
 			})
+
+			if err != nil && errors.Is(err, ctx.Err()) {
+				return
+			}
+
 			continue
 		}
 

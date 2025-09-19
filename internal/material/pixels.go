@@ -1,6 +1,7 @@
 package material
 
 import (
+	"context"
 	"errors"
 
 	"github.com/Nadim147c/material/color"
@@ -17,15 +18,23 @@ type Quantized struct {
 }
 
 // Quantize quantizes list of pixels
-func Quantize(pixels []color.ARGB) Quantized {
-	wu := quantizer.QuantizeWu(pixels, 100)
+func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
+	wu, err := quantizer.QuantizeWuWithContext(ctx, pixels, 100)
+	if err != nil {
+		return Quantized{}, err
+	}
+
 	colors := make([]color.Lab, len(wu))
 	for i, c := range wu {
 		colors[i] = c.ToLab()
 	}
 
-	celebi := quantizer.QuantizeWsMeans(pixels, colors, 4)
-	return Quantized{celebi, wu}
+	celebi, err := quantizer.QuantizeWsMeansWithContext(ctx, pixels, colors, 4)
+	if err != nil {
+		return Quantized{}, err
+	}
+
+	return Quantized{celebi, wu}, nil
 }
 
 // ErrNoColorFound is a error
@@ -35,13 +44,24 @@ var ErrNoColorFound = errors.New("no color found")
 type Colors = map[string]color.ARGB
 
 // GenerateFromPixels generates color from a slice of pixels
-func GenerateFromPixels(pixels []color.ARGB, cfg Config) (Colors, []color.ARGB, error) {
-	q := Quantize(pixels)
+func GenerateFromPixels(
+	ctx context.Context,
+	pixels []color.ARGB,
+	cfg Config,
+) (Colors, []color.ARGB, error) {
+	q, err := Quantize(ctx, pixels)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	return GenerateFromQuantized(q, cfg)
 }
 
 // GenerateFromQuantized generates color from a cached quantized
-func GenerateFromQuantized(quantized Quantized, cfg Config) (Colors, []color.ARGB, error) {
+func GenerateFromQuantized(
+	quantized Quantized,
+	cfg Config,
+) (Colors, []color.ARGB, error) {
 	celebi, wu := quantized.Celebi, quantized.Wu
 
 	scored := score.Score(celebi, score.ScoreOptions{
