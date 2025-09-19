@@ -4,23 +4,23 @@
   ffmpeg,
   installShellFiles,
   lib,
-  stdenv,
   makeWrapper,
+  stdenv,
 }:
-buildGoModule (finalAttr: {
+buildGoModule rec {
   pname = "rong";
-  version = "0.0.4";
+  version = "0.0.7";
 
   src = fetchFromGitHub {
     owner = "Nadim147c";
     repo = "rong";
-    rev = "v${finalAttr.version}";
-    hash = "sha256-Z3KMBrCFlscPBEfob9HJWAEIJTvxalRVFX1OYs8u8D4=";
+    rev = "v${version}";
+    hash = "sha256-D8yHtwSrdk86n8t55QWwmzUPgMdrTM+3TWzYmyEgfQ0=";
   };
 
-  vendorHash = "sha256-YYKn8RsqtoqEIlC+dyl8s6OsUVH1eZYZfNoYLJxGe4c=";
+  vendorHash = "sha256-ZDPYUYG43+ryUVTxvspHVbNuwky8k6xp62id8rVkoSw=";
 
-  ldflags = ["-s" "-w" "-X" "main.Version=v${finalAttr.version}"];
+  ldflags = ["-s" "-w" "-X" "main.Version=v${version}"];
 
   nativeBuildInputs = [installShellFiles makeWrapper];
   propagatedBuildInputs = [ffmpeg];
@@ -36,9 +36,9 @@ buildGoModule (finalAttr: {
   '';
 
   meta = {
-    description = "A Material You color generator";
+    description = "A Material You and Base16 color generator";
     homepage = "https://github.com/Nadim147c/rong";
     license = lib.licenses.gpl3Only;
     mainProgram = "rong";
   };
-})
+}

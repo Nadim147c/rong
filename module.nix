@@ -83,14 +83,14 @@ in {
   config = mkIf cfg.enable {
     home.packages = mkIf (cfg.package != null) [cfg.package];
 
-    home.activation.generateThemes = lib.mkIf (cfg.wallpaper != null) (
+    home.activation.generateRongThemes = lib.mkIf (cfg.wallpaper != null) (
       let
         rong = "${cfg.package}/bin/rong";
-        state = "${config.xdg.stateHome}/rong/image.txt";
+        state = "${config.xdg.stateHome}/rong/state.json";
       in
-        lib.hm.dag.entryAfter ["writeBoundary"] ''
-          if [ -f "${state}" ] && [ -f "$(cat "${state}")" ]; then
-            run --silence ${rong} video $VERBOSE_ARG "$(cat "${state}")"
+        lib.hm.dag.entryAfter ["checkLinkTargets"] ''
+          if [ -f "${state}" ]; then
+            run --silence ${rong} regen $VERBOSE_ARG
           else
             run --silence ${rong} video $VERBOSE_ARG "${cfg.wallpaper}"
           fi
