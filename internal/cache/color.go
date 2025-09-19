@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -12,12 +13,17 @@ import (
 )
 
 func hash(path string) (string, error) {
-	b, err := os.ReadFile(path)
+	f, err := os.Open(path)
 	if err != nil {
 		return "", err
 	}
 
-	sum := xxh3.Hash128(b).Bytes()
+	h := xxh3.New128()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+
+	sum := h.Sum128().Bytes()
 	return hex.EncodeToString(sum[:]), nil
 }
 
