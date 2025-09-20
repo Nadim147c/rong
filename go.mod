@@ -9,6 +9,7 @@ require (
 	github.com/carapace-sh/carapace v1.8.7
 	github.com/charmbracelet/fang v0.4.0
 	github.com/fatih/color v1.18.0
+	github.com/gabriel-vasile/mimetype v1.4.10
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.5.0
 	github.com/spf13/cast v1.10.0
