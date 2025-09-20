@@ -77,9 +77,12 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			if err != nil {
 				return err
 			}
+
+			if err := cache.SaveCache(hash, quantized); err != nil {
+				slog.Warn("Failed to save colors to cache", "error", err)
+			}
 		}
 
-		slog.Info("Couldn't load colors from cache", "error", err)
 		slog.Info("Generating colors from source")
 
 		cfg, err := material.GetConfig()
@@ -95,11 +98,13 @@ rong video path/to/image.mp4 --dry-run --json | jq
 		fg, bg := colorMap["on_background"], colorMap["background"]
 		based := base16.Generate(fg, bg, wu)
 
-		output := models.NewOutput(videoPath, based, colorMap)
-
-		if err := cache.SaveCache(hash, quantized); err != nil {
-			slog.Warn("Failed to save colors to cache", "error", err)
+		path, err := cache.GetPreview(videoPath, hash)
+		if err != nil {
+			slog.Warn("Failed to generate preview image", "error", err)
+			path = videoPath
 		}
+
+		output := models.NewOutput(path, based, colorMap)
 
 		if err := cache.SaveState(videoPath, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)

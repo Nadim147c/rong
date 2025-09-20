@@ -114,3 +114,9 @@ func GetDuration(filePath string) (float64, error) {
 	}
 	return strconv.ParseFloat(data.Format.Duration, 64)
 }
+
+// GeneratePreview generates preview thumnail for given media
+func GeneratePreview(ctx context.Context, src string, dst string) error {
+	ffmpeg := exec.CommandContext(ctx, "ffmpeg", "-i", src, "-vframes", "1", dst)
+	return ffmpeg.Run()
+}

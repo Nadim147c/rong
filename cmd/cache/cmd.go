@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log/slog"
 	"runtime"
+	"strings"
 	"sync"
 
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/material"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/spf13/cobra"
 )
 
@@ -94,7 +96,20 @@ rong cache path/to/directory
 					return
 				}
 
-				slog.Info("Successfully cached media", "progress", progress.String(), "path", path)
+				mtype, err := mimetype.DetectFile(path)
+				if err != nil {
+					slog.Error("Failed to get media type", "error", err)
+					return
+				}
+
+				if strings.HasPrefix(mtype.String(), "video") {
+					if _, err := cache.GetPreview(path, hash); err != nil {
+						slog.Error("Failed to generate preview", "hash", hash, "path", path)
+						return
+					}
+				}
+
+				slog.Info("Successfully cached media", "progress", progress, "hash", hash, "path", path)
 			})
 		}
 		close(lock)

@@ -77,6 +77,10 @@ var Command = &cobra.Command{
 			if err != nil {
 				return err
 			}
+
+			if err := cache.SaveCache(hash, quantized); err != nil {
+				slog.Warn("Failed to save colors to cache", "error", err)
+			}
 		}
 
 		cfg, err := material.GetConfig()
@@ -93,10 +97,6 @@ var Command = &cobra.Command{
 		based := base16.Generate(fg, bg, wu)
 
 		output := models.NewOutput(imagePath, based, colorMap)
-
-		if err := cache.SaveCache(hash, quantized); err != nil {
-			slog.Warn("Failed to save colors to cache", "error", err)
-		}
 
 		if err := cache.SaveState(imagePath, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)

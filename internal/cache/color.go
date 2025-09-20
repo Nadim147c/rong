@@ -39,9 +39,11 @@ func Hash(path string) (Sum, error) {
 
 // IsCached checks if the file is colors is cached or not
 func IsCached(hash Sum) bool {
-	path := filepath.Join(pathutil.CacheDir, hash.String()+".json")
-	_, err := os.Stat(path)
-	return err == nil
+	p1 := filepath.Join(pathutil.CacheDir, hash.String()+".json")
+	p2 := filepath.Join(pathutil.CacheDir, hash.String()+".webp")
+	_, e1 := os.Stat(p1)
+	_, e2 := os.Stat(p2)
+	return e1 == nil && e2 == nil
 }
 
 // LoadCache tries to load cached colors for this image
