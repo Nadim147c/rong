@@ -98,7 +98,7 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, based, colorMap)
 
-		if err := cache.SaveState(imagePath, quantized); err != nil {
+		if err := cache.SaveState(imagePath, hash, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 

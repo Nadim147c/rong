@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,12 +15,38 @@ import (
 
 // Sum is the xxh3_128 hash result
 type Sum struct {
-	xxh3.Uint128
+	bytes []byte
+}
+
+// NewSum return Sum
+func NewSum(s xxh3.Uint128) Sum {
+	b := s.Bytes()
+	return Sum{bytes: b[:]}
 }
 
 func (s Sum) String() string {
-	b := s.Uint128.Bytes()
-	return hex.EncodeToString(b[:])
+	return hex.EncodeToString(s.bytes)
+}
+
+// MarshalText implements the encoding.TextMarshaler interface.
+// It encodes the Sum as a lowercase hexadecimal string.
+func (s Sum) MarshalText() ([]byte, error) {
+	return []byte(s.String()), nil
+}
+
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// It decodes a lowercase hexadecimal string into the Sum.
+// The input must represent exactly 16 bytes (32 hex characters).
+func (s *Sum) UnmarshalText(text []byte) error {
+	b, err := hex.DecodeString(string(text))
+	if err != nil {
+		return err
+	}
+	if len(b) != 16 {
+		return fmt.Errorf("invalid length: expected 16 bytes, got %d", len(b))
+	}
+	s.bytes = b
+	return nil
 }
 
 // Hash returns xxh3_128 sum
@@ -34,7 +61,7 @@ func Hash(path string) (Sum, error) {
 		return Sum{}, err
 	}
 
-	return Sum{h.Sum128()}, nil
+	return NewSum(h.Sum128()), nil
 }
 
 // IsCached checks if the file is colors is cached or not

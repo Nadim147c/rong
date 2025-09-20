@@ -12,11 +12,12 @@ import (
 // State is the current generation state
 type State struct {
 	Path      string             `json:"filename"`
+	Hash      Sum                `json:"hash"`
 	Quantized material.Quantized `json:"quantized"`
 }
 
 // SaveState saves state to state dir
-func SaveState(source string, output material.Quantized) error {
+func SaveState(source string, hash Sum, output material.Quantized) error {
 	path := filepath.Join(pathutil.StateDir, "state.json")
 
 	if err := os.MkdirAll(pathutil.CacheDir, 0755); err != nil {
@@ -29,7 +30,7 @@ func SaveState(source string, output material.Quantized) error {
 	}
 	defer file.Close()
 
-	state := State{source, output}
+	state := State{source, hash, output}
 
 	return json.NewEncoder(file).Encode(state)
 }

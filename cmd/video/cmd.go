@@ -102,11 +102,13 @@ rong video path/to/image.mp4 --dry-run --json | jq
 		if err != nil {
 			slog.Warn("Failed to generate preview image", "error", err)
 			path = videoPath
+		} else {
+			slog.Info("Using generated preview", "path", path)
 		}
 
 		output := models.NewOutput(path, based, colorMap)
 
-		if err := cache.SaveState(videoPath, quantized); err != nil {
+		if err := cache.SaveState(videoPath, hash, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 

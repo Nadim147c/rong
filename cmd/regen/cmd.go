@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/Nadim147c/rong/internal/base16"
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/material"
 	"github.com/Nadim147c/rong/internal/models"
 	"github.com/Nadim147c/rong/templates"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,7 +50,15 @@ var Command = &cobra.Command{
 		fg, bg := colorMap["on_background"], colorMap["background"]
 		based := base16.Generate(fg, bg, wu)
 
-		output := models.NewOutput(state.Path, based, colorMap)
+		path := state.Path
+		mtype, err := mimetype.DetectFile(state.Path)
+		if err == nil && strings.HasPrefix(mtype.String(), "video") {
+			if preview, err := cache.GetPreview(path, state.Hash); err == nil {
+				path = preview
+			}
+		}
+
+		output := models.NewOutput(path, based, colorMap)
 
 		if viper.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
