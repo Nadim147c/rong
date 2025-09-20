@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/MatusOllah/slogcolor"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
@@ -15,8 +14,7 @@ import (
 	"github.com/Nadim147c/rong/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	"github.com/carapace-sh/carapace/pkg/style"
-	termcolor "github.com/fatih/color"
-	"github.com/mattn/go-isatty"
+	"github.com/charmbracelet/log"
 	slogmulti "github.com/samber/slog-multi"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -97,32 +95,19 @@ var Command = &cobra.Command{
 			return nil
 		}
 
-		tty := os.Getenv("TERM") != "dumb" &&
-			(isatty.IsTerminal(os.Stderr.Fd()) ||
-				isatty.IsCygwinTerminal(os.Stderr.Fd()))
-		termcolor.NoColor = !tty
-
-		opts := slogcolor.DefaultOptions
-		opts.NoTime = true
-		opts.SrcFileMode = 0
-		opts.LevelTags = map[slog.Level]string{
-			slog.LevelDebug: termcolor.New(termcolor.FgGreen).Sprint("DBG"),
-			slog.LevelInfo:  termcolor.New(termcolor.FgCyan).Sprint("INF"),
-			slog.LevelWarn:  termcolor.New(termcolor.FgYellow).Sprint("WRN"),
-			slog.LevelError: termcolor.New(termcolor.FgRed).Sprint("ERR"),
-		}
-
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		if verbose {
-			opts.Level = slog.LevelDebug
+			slog.SetLogLoggerLevel(slog.LevelDebug)
 		}
 
 		quiet, _ := cmd.Flags().GetBool("quiet")
 		if quiet {
-			opts.Level = slog.Level(100)
+			slog.SetLogLoggerLevel(100)
 		}
 
-		stderrHandler := slogcolor.NewHandler(os.Stderr, opts)
+		stderrHandler := log.NewWithOptions(os.Stderr, log.Options{
+			ReportTimestamp: false,
+		})
 
 		logFilePath, err := cmd.Flags().GetString("log-file")
 		if err != nil || logFilePath == "" {
