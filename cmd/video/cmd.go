@@ -57,7 +57,12 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		slog.Info("Generating color", "from", videoPath)
 
-		quantized, err := cache.LoadCache(videoPath)
+		hash, err := cache.Hash(videoPath)
+		if err != nil {
+			return fmt.Errorf("failed to get xxh sum: %v", err)
+		}
+
+		quantized, err := cache.LoadCache(hash)
 		if err != nil {
 			if !os.IsNotExist(err) {
 				slog.Error("Failed to load cache", "error", err)
@@ -92,7 +97,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		output := models.NewOutput(videoPath, based, colorMap)
 
-		if err := cache.SaveCache(videoPath, quantized); err != nil {
+		if err := cache.SaveCache(hash, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 

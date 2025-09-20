@@ -43,7 +43,7 @@ rong cache path/to/directory
 
 		var wg sync.WaitGroup
 
-		var progress progressTracker
+		progress := &progressTracker{}
 		lock := make(chan struct{}, runtime.NumCPU())
 		for path := range paths {
 			select {
@@ -63,15 +63,21 @@ rong cache path/to/directory
 					progress.Finished()
 				}()
 
-				if cache.IsCached(path) {
-					slog.Info("Skipping", "progress", progress.String(), "path", path, "reason", "already cached")
+				hash, err := cache.Hash(path)
+				if err != nil {
+					slog.Error("Failed to hash (xxh3_128) data", "path", path)
+					return
+				}
+
+				if cache.IsCached(hash) {
+					slog.Info("File already cached", "progress", progress, "hash", hash, "path", path)
 					return
 				}
 
 				frames, _ := cmd.Flags().GetInt("frames")
 				pixels, err := ffmpeg.GetPixels(ctx, path, frames)
 				if err != nil {
-					if ctx.Err() != nil {
+					if ctx.Err() == nil {
 						slog.Error("Failed to get pixels from media", "path", path, "error", err)
 					}
 					return
@@ -79,10 +85,11 @@ rong cache path/to/directory
 
 				quantized, err := material.Quantize(ctx, pixels)
 				if err != nil {
+					slog.Error("Failed to quantize", "path", path, "error", err)
 					return
 				}
 
-				if err := cache.SaveCache(path, quantized); err != nil {
+				if err := cache.SaveCache(hash, quantized); err != nil {
 					slog.Error("Failed to save cache", "path", path, "error", err)
 					return
 				}
@@ -120,5 +127,5 @@ func (p *progressTracker) Finished() {
 func (p *progressTracker) String() string {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	return fmt.Sprintf("[%d/%d]", p.finished+1, p.total)
+	return fmt.Sprintf("%d/%d", p.finished+1, p.total)
 }

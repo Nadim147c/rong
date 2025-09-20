@@ -50,7 +50,12 @@ var Command = &cobra.Command{
 
 		slog.Info("Generating color", "from", imagePath)
 
-		quantized, err := cache.LoadCache(imagePath)
+		hash, err := cache.Hash(imagePath)
+		if err != nil {
+			return fmt.Errorf("failed to get xxh sum: %v", err)
+		}
+
+		quantized, err := cache.LoadCache(hash)
 		if err != nil {
 			if !os.IsNotExist(err) {
 				slog.Error("Failed to load cache", "error", err)
@@ -89,7 +94,7 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, based, colorMap)
 
-		if err := cache.SaveCache(imagePath, quantized); err != nil {
+		if err := cache.SaveCache(hash, quantized); err != nil {
 			slog.Warn("Failed to save colors to cache", "error", err)
 		}
 
