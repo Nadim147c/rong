@@ -21,13 +21,14 @@ func isMediaFile(path string) bool {
 	return mediaExtensions[ext]
 }
 
-// ScanPaths scans the given paths and sends absolute paths of image/video files to the provided channel
-func ScanPaths(ctx context.Context, paths []string, out chan<- string) {
-	defer close(out)
+// ScanPaths scans the given paths and returns absolute paths of image/video files
+func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
+	var results []string
+
 	for _, p := range paths {
 		select {
 		case <-ctx.Done():
-			return
+			return results, ctx.Err()
 		default:
 		}
 
@@ -53,14 +54,16 @@ func ScanPaths(ctx context.Context, paths []string, out chan<- string) {
 				if !info.IsDir() && isMediaFile(path) {
 					abs, err := filepath.Abs(path)
 					if err == nil {
-						out <- abs
+						results = append(results, abs)
 					}
 				}
 				return nil
 			})
-
-			if err != nil && errors.Is(err, ctx.Err()) {
-				return
+			if err != nil {
+				if errors.Is(err, ctx.Err()) {
+					return results, ctx.Err()
+				}
+				return results, err
 			}
 
 			continue
@@ -69,8 +72,10 @@ func ScanPaths(ctx context.Context, paths []string, out chan<- string) {
 		if isMediaFile(p) {
 			abs, err := filepath.Abs(p)
 			if err == nil {
-				out <- abs
+				results = append(results, abs)
 			}
 		}
 	}
+
+	return results, nil
 }

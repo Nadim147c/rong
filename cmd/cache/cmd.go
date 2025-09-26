@@ -1,21 +1,164 @@
 package cache
 
 import (
+	"context"
 	"fmt"
-	"log/slog"
 	"runtime"
+	"slices"
 	"strings"
-	"sync"
 
-	"github.com/Nadim147c/rong/internal/cache"
-	"github.com/Nadim147c/rong/internal/ffmpeg"
-	"github.com/Nadim147c/rong/internal/material"
-	"github.com/gabriel-vasile/mimetype"
 	"github.com/spf13/cobra"
+
+	"github.com/charmbracelet/bubbles/progress"
+	"github.com/charmbracelet/bubbles/spinner"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func init() {
-	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
+	Command.Flags().Int("frames", 5, "number of frames of video to process")
+	Command.Flags().Int("workers", runtime.NumCPU(), "number of concurrent workers")
+}
+
+type processingDoneMsg struct{}
+
+const (
+	padding  = 2
+	maxWidth = 80
+)
+
+type model struct {
+	ctx             context.Context
+	frames, workers int
+
+	active []*job
+	queue  queue
+
+	progress progress.Model
+
+	width     int
+	height    int
+	completed int
+	total     int
+	done      bool
+}
+
+// NewModel creates a new model with the given paths
+func newModel(ctx context.Context, paths []string, frames, workers int) model {
+	m := model{
+		total:    len(paths),
+		frames:   frames,
+		workers:  workers,
+		progress: progress.New(),
+	}
+	for path := range slices.Values(paths) {
+		j := newJob(ctx, path, frames)
+		if len(m.active) < workers {
+			m.active = append(m.active, j)
+		} else {
+			m.queue.Enqueue(j)
+		}
+	}
+
+	return m
+}
+
+func (m *model) selectJob(filename string) *job {
+	for j := range slices.Values(m.active) {
+		if j.filename == filename {
+			return j
+		}
+	}
+	panic("invalid job name")
+}
+
+// Init is Init
+func (m model) Init() tea.Cmd {
+	cmds := make([]tea.Cmd, 0, m.workers)
+	for j := range slices.Values(m.active) {
+		cmds = append(cmds, j.Init())
+	}
+	return tea.Batch(cmds...)
+}
+
+// Update updates Update
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width, m.height = msg.Width, msg.Height
+		m.progress.Width = min(msg.Width-padding*2-4, maxWidth)
+		return m, nil
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc", "q":
+			return m, tea.Quit
+		}
+	case processingDoneMsg:
+		m.done = true
+		return m, tea.Quit
+	case jobDone:
+		m.completed++
+		j := m.selectJob(msg.Name)
+		jobModel, _ := j.Update(msg)
+		var cmds []tea.Cmd
+
+		cmds = append(cmds, tea.Println(jobModel.View()))
+
+		m.active = slices.DeleteFunc(m.active, func(e *job) bool {
+			return e.filename == j.filename
+		})
+
+		progCmd := m.progress.SetPercent(float64(m.completed) / float64(m.total))
+		cmds = append(cmds, progCmd)
+
+		if len(m.active) == 0 && m.queue.Size() == 0 {
+			cmds = append(cmds, func() tea.Msg { return processingDoneMsg{} })
+			return m, tea.Sequence(cmds...)
+		}
+
+		if len(m.active) < m.workers {
+			newJob, ok := m.queue.Dequeue()
+			if ok {
+				m.active = append(m.active, newJob)
+				cmds = append(cmds, newJob.Init())
+			}
+		}
+
+		return m, tea.Sequence(cmds...)
+	case progress.FrameMsg:
+		p, cmd := m.progress.Update(msg)
+		m.progress = p.(progress.Model)
+		return m, cmd
+	case spinner.TickMsg:
+		cmds := make([]tea.Cmd, 0, len(m.active))
+		for i, j := range m.active {
+			var cmd tea.Cmd
+			m.active[i], cmd = j.Update(msg)
+			cmds = append(cmds, cmd)
+		}
+		return m, tea.Batch(cmds...)
+	}
+
+	return m, nil
+}
+
+// View views View
+func (m model) View() string {
+	if m.done {
+		return fmt.Sprintf("Done! Processed %d/%d files\n", m.completed, m.total)
+	}
+
+	var buf strings.Builder
+	for _, job := range m.active {
+		fmt.Fprintln(&buf, job.View())
+	}
+
+	for _, job := range m.queue.NextN(m.height - m.workers - 3) {
+		fmt.Fprintln(&buf, job.View())
+	}
+
+	fmt.Fprintf(&buf, "\n%s%s\n", strings.Repeat(" ", padding), m.progress.View())
+
+	return buf.String()
 }
 
 // Command is cache command
@@ -38,109 +181,26 @@ rong cache path/to/directory
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
+		frames, _ := cmd.Flags().GetInt("frames")
+		workers, _ := cmd.Flags().GetInt("workers")
 
-		paths := make(chan string, 10)
-
-		go ScanPaths(ctx, args, paths)
-
-		var wg sync.WaitGroup
-
-		progress := &progressTracker{}
-		lock := make(chan struct{}, runtime.NumCPU())
-		for path := range paths {
-			select {
-			case <-ctx.Done():
-				close(lock)
-				wg.Wait()
-				return ctx.Err()
-			default:
-			}
-
-			lock <- struct{}{}
-			progress.Added()
-
-			wg.Go(func() {
-				defer func() {
-					<-lock
-					progress.Finished()
-				}()
-
-				hash, err := cache.Hash(path)
-				if err != nil {
-					slog.Error("Failed to hash (xxh3_128) data", "path", path)
-					return
-				}
-
-				if cache.IsCached(hash) {
-					slog.Info("File already cached", "progress", progress, "hash", hash, "path", path)
-					return
-				}
-
-				frames, _ := cmd.Flags().GetInt("frames")
-				pixels, err := ffmpeg.GetPixels(ctx, path, frames)
-				if err != nil {
-					if ctx.Err() == nil {
-						slog.Error("Failed to get pixels from media", "path", path, "error", err)
-					}
-					return
-				}
-
-				quantized, err := material.Quantize(ctx, pixels)
-				if err != nil {
-					slog.Error("Failed to quantize", "path", path, "error", err)
-					return
-				}
-
-				if err := cache.SaveCache(hash, quantized); err != nil {
-					slog.Error("Failed to save cache", "path", path, "error", err)
-					return
-				}
-
-				mtype, err := mimetype.DetectFile(path)
-				if err != nil {
-					slog.Error("Failed to get media type", "error", err)
-					return
-				}
-
-				if strings.HasPrefix(mtype.String(), "video") {
-					if _, err := cache.GetPreview(path, hash); err != nil {
-						slog.Error("Failed to generate preview", "hash", hash, "path", path)
-						return
-					}
-				}
-
-				slog.Info("Successfully cached media", "progress", progress, "hash", hash, "path", path)
-			})
+		// Collect all paths first
+		paths, err := ScanPaths(ctx, args)
+		if err != nil {
+			return err
 		}
-		close(lock)
 
-		wg.Wait()
+		if len(paths) == 0 {
+			fmt.Println("No files found to process")
+			return nil
+		}
+
+		model := newModel(ctx, paths, frames, workers)
+		p := tea.NewProgram(model)
+		if _, err := p.Run(); err != nil {
+			return fmt.Errorf("error running program: %w", err)
+		}
 
 		return nil
 	},
-}
-
-type progressTracker struct {
-	// mu is Mutex for async safe locking
-	mu sync.Mutex
-	// total, finished are the progress
-	total, finished uint
-}
-
-func (p *progressTracker) Added() {
-	p.mu.Lock()
-	p.total++
-	p.mu.Unlock()
-}
-
-func (p *progressTracker) Finished() {
-	p.mu.Lock()
-	p.finished++
-	p.mu.Unlock()
-}
-
-func (p *progressTracker) String() string {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	return fmt.Sprintf("%d/%d", p.finished+1, p.total)
 }
