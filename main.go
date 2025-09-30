@@ -16,9 +16,10 @@ func main() {
 	err := fang.Execute(
 		context.Background(),
 		cmd.Command,
-		fang.WithoutCompletions(),
-		fang.WithVersion(Version),
+		fang.WithColorSchemeFunc(fang.AnsiColorScheme),
 		fang.WithNotifySignal(os.Interrupt, os.Kill),
+		fang.WithVersion(Version),
+		fang.WithoutCompletions(),
 		fang.WithErrorHandler(func(w io.Writer, styles fang.Styles, err error) {
 			if errors.Is(err, context.Canceled) {
 				err = errors.New("operation cancelled by user")
