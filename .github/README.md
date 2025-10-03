@@ -1,7 +1,15 @@
-# Rong (রং)
+# Material
+
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Nadim147c/rong?style=for-the-badge&logo=go&labelColor=11140F&color=BBE9AA)](https://pkg.go.dev/github.com/Nadim147c/rong)
+[![GitHub Repo stars](https://img.shields.io/github/stars/Nadim147c/rong?style=for-the-badge&logo=github&labelColor=11140F&color=BBE9AA)](https://github.com/Nadim147c/rong)
+[![GitHub License](https://img.shields.io/github/license/Nadim147c/rong?style=for-the-badge&logo=gplv3&labelColor=11140F&color=BBE9AA)](./LICENSE)
+[![GitHub Tag](https://img.shields.io/github/v/tag/Nadim147c/rong?include_prereleases&sort=semver&style=for-the-badge&logo=git&labelColor=11140F&color=BBE9AA)](https://github.com/Nadim147c/rong/tags)
+
+> [!IMPORTANT]
+> 🔥 Found this useful? A quick star goes a long way.
 
 > [!CAUTION]
-> This is highly experimental 🧪 and expect breaking changes
+> This is tool is in beta and expect some unforeseen bugs.
 
 **Rong** is a CLI that extracts a **Material You** color palette from an image or
 video, and applies it across your system using configurable template mappings.
