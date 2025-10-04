@@ -4,3 +4,4 @@ node_modules
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/.vitepress/config.mjs.timestamp*
+build
