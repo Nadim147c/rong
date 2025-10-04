@@ -16,7 +16,8 @@ install:
 	install -Dm755 $(BIN_NAME) "$(BIN_FILE)"
 	install -Dm644 LICENSE "$(LICENSE_FILE)"
 
-lint:
+test:
+	$(GO) test -v ./...
 	$(REVIVE) -config revive.toml -formatter friendly ./...
 
 docs-dev:
