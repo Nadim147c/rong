@@ -77,6 +77,10 @@ func init() {
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
+func should[T any](v T, _ error) T {
+	return v
+}
+
 var logfile *os.File
 
 // Command is root command of the cli
@@ -85,8 +89,8 @@ var Command = &cobra.Command{
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
 	PersistentPostRun: func(_ *cobra.Command, _ []string) {
+		slog.Info("Exiting rong")
 		if logfile != nil {
-			slog.Info("Exiting rong")
 			logfile.Close()
 		}
 	},
@@ -95,28 +99,26 @@ var Command = &cobra.Command{
 			return nil
 		}
 
-		verbose, _ := cmd.Flags().GetBool("verbose")
+		level := slog.LevelInfo
+
+		verbose := should(cmd.Flags().GetBool("verbose"))
 		if verbose {
-			slog.SetLogLoggerLevel(slog.LevelDebug)
+			level = slog.LevelDebug
 		}
 
-		quiet, _ := cmd.Flags().GetBool("quiet")
+		quiet := should(cmd.Flags().GetBool("quiet"))
 		if quiet {
-			slog.SetLogLoggerLevel(100)
+			level = slog.Level(100)
 		}
 
 		stderrHandler := log.NewWithOptions(os.Stderr, log.Options{
-			ReportTimestamp: false,
+			ReportTimestamp: false, Level: log.Level(level),
 		})
 
-		logFilePath, err := cmd.Flags().GetString("log-file")
-		if err != nil || logFilePath == "" {
-			logger := slog.New(stderrHandler)
-			slog.SetDefault(logger)
-			viper.SetOptions(viper.WithLogger(logger))
-		} else {
-			err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
-			if err != nil {
+		if cmd.Flags().Changed("log-file") {
+			logFilePath := should(cmd.Flags().GetString("log-file"))
+
+			if err := os.MkdirAll(filepath.Dir(logFilePath), 0755); err != nil {
 				slog.Error("Failed to create parent directory for log file", "error", err)
 			}
 
@@ -139,6 +141,10 @@ var Command = &cobra.Command{
 				viper.SetOptions(viper.WithLogger(logger))
 				logfile = file
 			}
+		} else {
+			logger := slog.New(stderrHandler)
+			slog.SetDefault(logger)
+			viper.SetOptions(viper.WithLogger(logger))
 		}
 
 		viper.AddConfigPath("/etc/rong")
