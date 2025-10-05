@@ -10,8 +10,8 @@ import (
 )
 
 // GetPreview returns the preview image
-func GetPreview(src string, hash Sum) (string, error) {
-	path := filepath.Join(pathutil.CacheDir, hash.String()+".webp")
+func GetPreview(src string, hash string) (string, error) {
+	path := filepath.Join(pathutil.CacheDir, hash+".webp")
 	if _, err := os.Stat(path); err == nil {
 		return path, nil
 	}

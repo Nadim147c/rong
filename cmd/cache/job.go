@@ -25,7 +25,6 @@ type jobState int
 const (
 	jobWaiting jobState = iota
 	jobProcessing
-	jobHashing
 	jobExtracting
 	jobQuantizing
 	jobSaving
@@ -76,8 +75,6 @@ func (j *job) setState(s jobState) {
 func (j *job) processFile() error {
 	ctx := context.Background()
 
-	// Update state for hashing
-	j.setState(jobHashing)
 	hash, err := cache.Hash(j.filename)
 	if err != nil {
 		return err
@@ -164,10 +161,6 @@ func (j *job) View() string {
 		icon = j.spinner.View()
 		status = "Processing"
 		c = ansi.Blue
-	case jobHashing:
-		icon = j.spinner.View()
-		status = "Hashing"
-		c = ansi.Cyan
 	case jobExtracting:
 		icon = j.spinner.View()
 		status = "Extracting frames"
