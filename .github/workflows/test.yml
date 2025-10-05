@@ -40,5 +40,8 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
+      - name: Download dependencies
+        run: go install github.com/mgechev/revive@latest
+
       - name: Run tests
         run: make test
