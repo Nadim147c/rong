@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log/slog"
+	"math"
 	"os"
 	"path/filepath"
 
@@ -70,7 +71,7 @@ func init() {
 		"log-file": carapace.ActionFiles(),
 	})
 
-	Command.PersistentFlags().BoolP("verbose", "v", false, "enable verbose logging")
+	Command.PersistentFlags().CountP("verbose", "v", "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
 	Command.PersistentFlags().StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
@@ -101,14 +102,21 @@ var Command = &cobra.Command{
 
 		level := slog.LevelInfo
 
-		verbose := should(cmd.Flags().GetBool("verbose"))
-		if verbose {
-			level = slog.LevelDebug
+		if verbose, err := cmd.Flags().GetCount("verbose"); err == nil {
+			if verbose == 0 {
+				level = slog.LevelError
+			} else if verbose == 1 {
+				level = slog.LevelWarn
+			} else if verbose == 2 {
+				level = slog.LevelInfo
+			} else if verbose >= 3 {
+				level = slog.Level(math.MinInt)
+			}
 		}
 
 		quiet := should(cmd.Flags().GetBool("quiet"))
 		if quiet {
-			level = slog.Level(100)
+			level = slog.Level(math.MaxInt)
 		}
 
 		stderrHandler := log.NewWithOptions(os.Stderr, log.Options{
