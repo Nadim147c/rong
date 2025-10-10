@@ -22,12 +22,15 @@ func Hash(path string) (string, error) {
 }
 
 // IsCached checks if the file is colors is cached or not
-func IsCached(hash string) bool {
-	p1 := filepath.Join(pathutil.CacheDir, hash+".json")
-	p2 := filepath.Join(pathutil.CacheDir, hash+".webp")
-	_, e1 := os.Stat(p1)
-	_, e2 := os.Stat(p2)
-	return e1 == nil && e2 == nil
+func IsCached(hash string, isVideo bool) bool {
+	if !isVideo {
+		jsonCache := filepath.Join(pathutil.CacheDir, hash+".json")
+		_, err := os.Stat(jsonCache)
+		return err == nil
+	}
+	preview := filepath.Join(pathutil.CacheDir, hash+".webp")
+	_, err := os.Stat(preview)
+	return err == nil
 }
 
 // LoadCache tries to load cached colors for this image

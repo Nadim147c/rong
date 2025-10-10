@@ -80,7 +80,13 @@ func (j *job) processFile() error {
 		return err
 	}
 
-	if cache.IsCached(hash) {
+	mtype, err := mimetype.DetectFile(j.filename)
+	if err != nil {
+		return err
+	}
+	isVideo := strings.HasPrefix(mtype.String(), "video")
+
+	if cache.IsCached(hash, isVideo) {
 		return nil
 	}
 
@@ -104,12 +110,7 @@ func (j *job) processFile() error {
 		return err
 	}
 
-	mtype, err := mimetype.DetectFile(j.filename)
-	if err != nil {
-		return err
-	}
-
-	if strings.HasPrefix(mtype.String(), "video") {
+	if isVideo {
 		// Update state for preview generation
 		j.setState(jobGeneratingPreview)
 		if _, err := cache.GetPreview(j.filename, hash); err != nil {
