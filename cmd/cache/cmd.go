@@ -152,7 +152,7 @@ func (m model) View() string {
 		fmt.Fprintln(&buf, job.View())
 	}
 
-	for _, job := range m.queue.NextN(m.height - m.workers - 3) {
+	for _, job := range m.queue.NextN(m.height - m.workers - 10) {
 		fmt.Fprintln(&buf, job.View())
 	}
 
