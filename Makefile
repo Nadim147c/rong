@@ -1,8 +1,9 @@
 GO       ?= go
-REVIVE   ?= revive
 BIN_NAME ?= rong
 VERSION  ?= $(shell git describe --tags)
 PREFIX   ?= /usr/local/
+TOOL_MOD ?= -modfile tool.go.mod
+TOOL     ?= $(GO) tool $(TOOL_MOD)
 
 BIN_FILE            = $(shell realpath -m "$(PREFIX)/bin/$(BIN_NAME)")
 LICENSE_FILE        = $(shell realpath -m "$(PREFIX)/share/licenses/$(BIN_NAME)/LICENSE")
@@ -24,8 +25,19 @@ install:
 	$(BIN_NAME) _carapace zsh  | install -Dm644 /dev/stdin "$(ZSH_COMPLETION_DIR)/_$(BIN_NAME)"
 	$(BIN_NAME) _carapace fish | install -Dm644 /dev/stdin "$(FISH_COMPLETION_DIR)/$(BIN_NAME).fish"
 
+tools-install:
+	$(GO) get $(TOOL_MOD) -tool github.com/mgechev/revive@latest
+	$(GO) get $(TOOL_MOD) -tool github.com/segmentio/golines@latest
+	$(GO) get $(TOOL_MOD) -tool mvdan.cc/gofumpt@latest
+	$(GO) mod tidy $(TOOL_MOD)
+
+format:
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) golines --max-len 80 -w -l
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) gofumpt -w -l
+
 test:
 	$(GO) test -v ./...
-	$(REVIVE) -config revive.toml -formatter friendly ./...
+	$(TOOL) revive -config revive.toml -formatter friendly ./...
+
 docs-dev:
 	bun run dev
