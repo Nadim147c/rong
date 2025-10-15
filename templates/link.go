@@ -45,7 +45,7 @@ func hardlinkOrCopy(src, dst string) error {
 		}
 	}
 
-	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
 		slog.Error("Failed to create parent directory", "for", dst)
 		return err
 	}

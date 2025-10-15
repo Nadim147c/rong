@@ -25,7 +25,7 @@ var templates embed.FS
 func Execute(color models.Output) error {
 	defer link()
 
-	if err := os.MkdirAll(pathutil.StateDir, 0755); err != nil {
+	if err := os.MkdirAll(pathutil.StateDir, 0o755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return err
 	}
@@ -80,11 +80,27 @@ func link() error {
 		for path := range slices.Values(target) {
 			path, err := pathutil.FindPath(pathutil.ConfigDir, path)
 			if err != nil {
-				slog.Error("Failed to find path", "src", src, "path", path, "error", err)
+				slog.Error(
+					"Failed to find path",
+					"src",
+					src,
+					"path",
+					path,
+					"error",
+					err,
+				)
 				continue // log and continue instead of returning
 			}
 			if err := hardlinkOrCopy(filepath.Join(pathutil.StateDir, src), path); err != nil {
-				slog.Error("Failed to link or copy", "src", src, "path", path, "error", err)
+				slog.Error(
+					"Failed to link or copy",
+					"src",
+					src,
+					"path",
+					path,
+					"error",
+					err,
+				)
 				continue
 			}
 		}

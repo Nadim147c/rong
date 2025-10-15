@@ -20,7 +20,7 @@ type State struct {
 func SaveState(source, hash string, output material.Quantized) error {
 	path := filepath.Join(pathutil.StateDir, "state.json")
 
-	if err := os.MkdirAll(pathutil.CacheDir, 0755); err != nil {
+	if err := os.MkdirAll(pathutil.CacheDir, 0o755); err != nil {
 		return err
 	}
 

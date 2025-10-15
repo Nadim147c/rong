@@ -122,12 +122,30 @@ func Generate(fg, bg color.ARGB, colors []color.ARGB) map[string]color.ARGB {
 	dark := viper.GetBool("dark")
 	b := map[string]color.ARGB{}
 	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
-	b["color_1"], b["color_9"] = fix(dark, getColorWithRandFallback(selected, 0))
-	b["color_2"], b["color_a"] = fix(dark, getColorWithRandFallback(selected, 1))
-	b["color_3"], b["color_b"] = fix(dark, getColorWithRandFallback(selected, 2))
-	b["color_4"], b["color_c"] = fix(dark, getColorWithRandFallback(selected, 3))
-	b["color_5"], b["color_d"] = fix(dark, getColorWithRandFallback(selected, 4))
-	b["color_6"], b["color_e"] = fix(dark, getColorWithRandFallback(selected, 5))
+	b["color_1"], b["color_9"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 0),
+	)
+	b["color_2"], b["color_a"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 1),
+	)
+	b["color_3"], b["color_b"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 2),
+	)
+	b["color_4"], b["color_c"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 3),
+	)
+	b["color_5"], b["color_d"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 4),
+	)
+	b["color_6"], b["color_e"] = fix(
+		dark,
+		getColorWithRandFallback(selected, 5),
+	)
 	b["color_7"], b["color_f"] = fixfg(dark, fg.ToHct())
 
 	return b

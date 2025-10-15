@@ -25,6 +25,27 @@ func isMediaFile(path string) bool {
 func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
 	var results []string
 
+	handler := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+
+		// Check context
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		if !info.IsDir() && isMediaFile(path) {
+			abs, err := filepath.Abs(path)
+			if err == nil {
+				results = append(results, abs)
+			}
+		}
+		return nil
+	}
+
 	for _, p := range paths {
 		select {
 		case <-ctx.Done():
@@ -39,26 +60,7 @@ func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
 		}
 
 		if fileInfo.IsDir() {
-			err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					return nil
-				}
-
-				// Check context
-				select {
-				case <-ctx.Done():
-					return ctx.Err()
-				default:
-				}
-
-				if !info.IsDir() && isMediaFile(path) {
-					abs, err := filepath.Abs(path)
-					if err == nil {
-						results = append(results, abs)
-					}
-				}
-				return nil
-			})
+			err := filepath.Walk(p, handler)
 			if err != nil {
 				if errors.Is(err, ctx.Err()) {
 					return results, ctx.Err()

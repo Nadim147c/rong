@@ -16,7 +16,8 @@ import (
 
 func init() {
 	Command.Flags().Int("frames", 5, "number of frames of video to process")
-	Command.Flags().Int("workers", runtime.NumCPU(), "number of concurrent workers")
+	Command.Flags().
+		Int("workers", runtime.NumCPU(), "number of concurrent workers")
 }
 
 type processingDoneMsg struct{}
@@ -144,7 +145,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View views View
 func (m model) View() string {
 	if m.done {
-		return fmt.Sprintf("Done! Processed %d/%d files\n", m.completed, m.total)
+		return fmt.Sprintf(
+			"Done! Processed %d/%d files\n",
+			m.completed,
+			m.total,
+		)
 	}
 
 	var buf strings.Builder
@@ -156,7 +161,12 @@ func (m model) View() string {
 		fmt.Fprintln(&buf, job.View())
 	}
 
-	fmt.Fprintf(&buf, "\n%s%s\n", strings.Repeat(" ", padding), m.progress.View())
+	fmt.Fprintf(
+		&buf,
+		"\n%s%s\n",
+		strings.Repeat(" ", padding),
+		m.progress.View(),
+	)
 
 	return buf.String()
 }

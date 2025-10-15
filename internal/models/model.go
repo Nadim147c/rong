@@ -12,14 +12,18 @@ import (
 
 // Output contains all values that will execute templates
 type Output struct {
-	Material `json:"material"`
-	Base16   `json:"base16"`
+	Material `        json:"material"`
+	Base16   `        json:"base16"`
 	Image    string  `json:"image"`
 	Colors   []Color `json:"colors"`
 }
 
 // NewOutput create output struct for templates execution
-func NewOutput(source string, base16 map[string]color.ARGB, colorMap map[string]color.ARGB) Output {
+func NewOutput(
+	source string,
+	base16 map[string]color.ARGB,
+	colorMap map[string]color.ARGB,
+) Output {
 	colors := make([]Color, 0, len(colorMap)+16)
 
 	for key, value := range base16 {
@@ -168,15 +172,43 @@ func NewColorValue(rgb color.ARGB) ColorValue {
 	value.HexRGB = fmt.Sprintf("#%02X%02X%02X", red, green, blue)
 	value.TrimmedHexRGB = fmt.Sprintf("%02X%02X%02X", red, green, blue)
 	value.HexRGBA = fmt.Sprintf("#%02X%02X%02X%02X", red, green, blue, alpha)
-	value.TrimmedHexRGBA = fmt.Sprintf("%02X%02X%02X%02X", red, green, blue, alpha)
+	value.TrimmedHexRGBA = fmt.Sprintf(
+		"%02X%02X%02X%02X",
+		red,
+		green,
+		blue,
+		alpha,
+	)
 	value.RGB = fmt.Sprintf("rgb(%d,%d,%d)", red, green, blue)
 	value.TrimmedRGB = fmt.Sprintf("%d,%d,%d", red, green, blue)
 	value.RGBA = fmt.Sprintf("rgba(%d,%d,%d,%d)", red, green, blue, alpha)
 	value.TrimmedRGBA = fmt.Sprintf("%d,%d,%d,%d", red, green, blue, alpha)
-	value.LinearRGB = fmt.Sprintf("rgb(%.3f,%.3f,%.3f)", lf(red), lf(green), lf(blue))
-	value.TrimmedLinearRGB = fmt.Sprintf("%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue))
-	value.LinearRGBA = fmt.Sprintf("rgba(%.3f,%.3f,%.3f,%.3f)", lf(red), lf(green), lf(blue), lf(alpha))
-	value.TrimmedLinearRGBA = fmt.Sprintf("%.3f,%.3f,%.3f,%.3f", lf(red), lf(green), lf(blue), lf(alpha))
+	value.LinearRGB = fmt.Sprintf(
+		"rgb(%.3f,%.3f,%.3f)",
+		lf(red),
+		lf(green),
+		lf(blue),
+	)
+	value.TrimmedLinearRGB = fmt.Sprintf(
+		"%.3f,%.3f,%.3f",
+		lf(red),
+		lf(green),
+		lf(blue),
+	)
+	value.LinearRGBA = fmt.Sprintf(
+		"rgba(%.3f,%.3f,%.3f,%.3f)",
+		lf(red),
+		lf(green),
+		lf(blue),
+		lf(alpha),
+	)
+	value.TrimmedLinearRGBA = fmt.Sprintf(
+		"%.3f,%.3f,%.3f,%.3f",
+		lf(red),
+		lf(green),
+		lf(blue),
+		lf(alpha),
+	)
 	value.AnsiForeground = fmt.Sprintf("38;2;%d;%d;%d", red, green, blue)
 	value.AnsiBackground = fmt.Sprintf("48;2;%d;%d;%d", red, green, blue)
 

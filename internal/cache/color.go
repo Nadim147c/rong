@@ -52,7 +52,7 @@ func LoadCache(hash string) (material.Quantized, error) {
 func SaveCache(hash string, output material.Quantized) error {
 	path := filepath.Join(pathutil.CacheDir, hash+".json")
 
-	if err := os.MkdirAll(pathutil.CacheDir, 0755); err != nil {
+	if err := os.MkdirAll(pathutil.CacheDir, 0o755); err != nil {
 		return err
 	}
 

@@ -15,7 +15,11 @@ import (
 
 // GetPixels decodes media using ffmpeg and returns slices of pixels for given
 // maxFrames numbers
-func GetPixels(ctx context.Context, path string, maxFrames int) ([]color.ARGB, error) {
+func GetPixels(
+	ctx context.Context,
+	path string,
+	maxFrames int,
+) ([]color.ARGB, error) {
 	var pixels []color.ARGB
 
 	mtype, err := mimetype.DetectFile(path)
@@ -39,7 +43,10 @@ func GetPixels(ctx context.Context, path string, maxFrames int) ([]color.ARGB, e
 
 		out, err := ffmpeg.Output()
 		if err != nil {
-			return pixels, fmt.Errorf("failed to get pixels from ffmpeg command: %w", err)
+			return pixels, fmt.Errorf(
+				"failed to get pixels from ffmpeg command: %w",
+				err,
+			)
 		}
 
 		totalBytes := len(out)
@@ -117,6 +124,14 @@ func GetDuration(filePath string) (float64, error) {
 
 // GeneratePreview generates preview thumnail for given media
 func GeneratePreview(ctx context.Context, src string, dst string) error {
-	ffmpeg := exec.CommandContext(ctx, "ffmpeg", "-i", src, "-vframes", "1", dst)
+	ffmpeg := exec.CommandContext(
+		ctx,
+		"ffmpeg",
+		"-i",
+		src,
+		"-vframes",
+		"1",
+		dst,
+	)
 	return ffmpeg.Run()
 }

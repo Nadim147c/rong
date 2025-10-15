@@ -74,7 +74,8 @@ func init() {
 	Command.PersistentFlags().CountP("verbose", "v", "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
 	Command.PersistentFlags().String("log-file", "", "file to save logs")
-	Command.PersistentFlags().StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
+	Command.PersistentFlags().
+		StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
@@ -126,11 +127,11 @@ var Command = &cobra.Command{
 		if cmd.Flags().Changed("log-file") {
 			logFilePath := should(cmd.Flags().GetString("log-file"))
 
-			if err := os.MkdirAll(filepath.Dir(logFilePath), 0755); err != nil {
+			if err := os.MkdirAll(filepath.Dir(logFilePath), 0o755); err != nil {
 				slog.Error("Failed to create parent directory for log file", "error", err)
 			}
 
-			file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+			file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o666)
 			if err != nil {
 				logger := slog.New(stderrHandler)
 				slog.SetDefault(logger)
