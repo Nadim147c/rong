@@ -32,8 +32,8 @@ tools-install:
 	$(GO) mod tidy $(TOOL_MOD)
 
 format:
-	find -iname '*.go' -print0 | xargs -0 $(TOOL) golines --max-len 80 -w -l
-	find -iname '*.go' -print0 | xargs -0 $(TOOL) gofumpt -w -l
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) golines --max-len 80 -w
+	find -iname '*.go' -print0 | xargs -0 $(TOOL) gofumpt -w
 
 test:
 	$(GO) test -v ./...
