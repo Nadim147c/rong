@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/Nadim147c/fang"
 	"github.com/Nadim147c/rong/cmd"
-	"github.com/charmbracelet/fang"
 )
 
 var Version = "dev"
@@ -16,7 +16,7 @@ func main() {
 	err := fang.Execute(
 		context.Background(),
 		cmd.Command,
-		fang.WithColorSchemeFunc(fang.AnsiColorScheme),
+		fang.WithFlagTypes(),
 		fang.WithNotifySignal(os.Interrupt, os.Kill),
 		fang.WithVersion(Version),
 		fang.WithoutCompletions(),

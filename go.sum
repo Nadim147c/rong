@@ -1,3 +1,5 @@
+github.com/Nadim147c/fang v0.4.4-0.20251004092645-61f7565b973f h1:o1hJUcNLFa6beV0qK2mT1Rl2WQDY8vfuuRfOqfcZ+HY=
+github.com/Nadim147c/fang v0.4.4-0.20251004092645-61f7565b973f/go.mod h1:dRy4C4H/sC0GXcAkrVos3ppWn/YNX3KJNU8mcCcGP0U=
 github.com/Nadim147c/material v0.2.0-beta.0.20251017070913-ecf37260ba51 h1:S488uViaApw0+CGkA3+PMeve5Z+eDXXxGx7IGcUDyGs=
 github.com/Nadim147c/material v0.2.0-beta.0.20251017070913-ecf37260ba51/go.mod h1:t5h6m4ehD1rSZI3iM+Sz2gWSrQM/D40IJYj88CoEEhc=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
@@ -16,8 +18,6 @@ github.com/charmbracelet/bubbletea v1.3.10 h1:otUDHWMMzQSB0Pkc87rm691KZ3SWa4KUlv
 github.com/charmbracelet/bubbletea v1.3.10/go.mod h1:ORQfo0fk8U+po9VaNvnV95UPWA1BitP1E0N6xJPlHr4=
 github.com/charmbracelet/colorprofile v0.3.2 h1:9J27WdztfJQVAQKX2WOlSSRB+5gaKqqITmrvb1uTIiI=
 github.com/charmbracelet/colorprofile v0.3.2/go.mod h1:mTD5XzNeWHj8oqHb+S1bssQb7vIHbepiebQ2kPKVKbI=
-github.com/charmbracelet/fang v0.4.0 h1:boBxmdcFghTeotqkD2itXi7SMBozdIlcslRqjboSJDg=
-github.com/charmbracelet/fang v0.4.0/go.mod h1:9gCUAHmVx5BwSafeyNr3GI0GgvlB1WYjL21SkPp1jyU=
 github.com/charmbracelet/harmonica v0.2.0 h1:8NxJWRWg/bzKqqEaaeFNipOu77YR5t8aSwG4pgaUBiQ=
 github.com/charmbracelet/harmonica v0.2.0/go.mod h1:KSri/1RMQOZLbw7AHqgcBycp8pgJnQMYYT8QZRqZ1Ao=
 github.com/charmbracelet/lipgloss v1.1.0 h1:vYXsiLHVkK7fp74RkV7b2kq9+zDLoEU4MZoFqR/noCY=
