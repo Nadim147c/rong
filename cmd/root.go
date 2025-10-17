@@ -164,8 +164,8 @@ var Command = &cobra.Command{
 		viper.SetEnvPrefix("rong")
 
 		viper.SetDefault("dark", true)
-		viper.SetDefault("variant", dynamic.Expressive)
-		viper.SetDefault("platform", dynamic.Phone)
+		viper.SetDefault("variant", dynamic.VariantTonalSpot)
+		viper.SetDefault("platform", dynamic.PlatformPhone)
 
 		cfgFlag := cmd.Flags().Lookup("config")
 		if cfgFlag != nil && cfgFlag.Changed {

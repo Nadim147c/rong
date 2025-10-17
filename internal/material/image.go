@@ -69,17 +69,17 @@ func init() {
 	GeneratorFlags.Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 	GeneratorFlags.String(
 		"version",
-		dynamic.V2021.String(),
+		dynamic.Version2025.String(),
 		"version of the theme (2021 or 2025)",
 	)
 	GeneratorFlags.String(
 		"platform",
-		dynamic.Phone.String(),
+		dynamic.PlatformPhone.String(),
 		"target platform (phone or watch)",
 	)
 	GeneratorFlags.String(
 		"variant",
-		dynamic.TonalSpot.String(),
+		dynamic.VariantTonalSpot.String(),
 		"variant to use (e.g., tonal_spot, vibrant, expressive)",
 	)
 }

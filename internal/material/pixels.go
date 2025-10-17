@@ -6,7 +6,6 @@ import (
 
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/dynamic"
-	"github.com/Nadim147c/material/palettes"
 	"github.com/Nadim147c/material/quantizer"
 	"github.com/Nadim147c/material/score"
 )
@@ -19,7 +18,7 @@ type Quantized struct {
 
 // Quantize quantizes list of pixels
 func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
-	wu, err := quantizer.QuantizeWuWithContext(ctx, pixels, 100)
+	wu, err := quantizer.QuantizeWuContext(ctx, pixels, 100)
 	if err != nil {
 		return Quantized{}, err
 	}
@@ -29,7 +28,7 @@ func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
 		colors[i] = c.ToLab()
 	}
 
-	celebi, err := quantizer.QuantizeWsMeansWithContext(ctx, pixels, colors, 4)
+	celebi, err := quantizer.QuantizeWsMeansContext(ctx, pixels, colors, 4)
 	if err != nil {
 		return Quantized{}, err
 	}
@@ -64,22 +63,16 @@ func GenerateFromQuantized(
 ) (Colors, []color.ARGB, error) {
 	celebi, wu := quantized.Celebi, quantized.Wu
 
-	scored := score.Score(celebi, score.ScoreOptions{
-		Desired:  4,
-		Fallback: score.FallbackColor,
-	})
+	scored := score.Score(celebi, score.WithFilter())
 
 	if len(scored) == 0 {
-		return Colors{}, wu, ErrNoColorFound
+		return nil, wu, ErrNoColorFound
 	}
-
-	primary := palettes.NewFromARGB(scored[0])
 
 	scheme := dynamic.NewDynamicScheme(
 		scored[0].ToHct(),
 		cfg.Variant, cfg.Constrast, cfg.Dark,
-		cfg.Platform, cfg.Version, primary,
-		nil, nil, nil, nil, nil,
+		cfg.Platform, cfg.Version,
 	)
 
 	dcs := scheme.ToColorMap()
