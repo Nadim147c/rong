@@ -57,9 +57,15 @@ func init() {
 	nameCompletions := make([]string, 0, len(color.Names)*2)
 	for name, value := range color.Names {
 		_, r, g, b := value.Values()
-		nameCompletions = append(nameCompletions, name, style.TrueColor(r, g, b))
+		nameCompletions = append(
+			nameCompletions,
+			name,
+			style.TrueColor(r, g, b),
+		)
 	}
-	colorComp.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
+	colorComp.PositionalAnyCompletion(
+		carapace.ActionStyledValues(nameCompletions...),
+	)
 
 	regenComp := carapace.Gen(regen.Command)
 	regenComp.FlagCompletion(actions)
@@ -128,10 +134,18 @@ var Command = &cobra.Command{
 			logFilePath := should(cmd.Flags().GetString("log-file"))
 
 			if err := os.MkdirAll(filepath.Dir(logFilePath), 0o755); err != nil {
-				slog.Error("Failed to create parent directory for log file", "error", err)
+				slog.Error(
+					"Failed to create parent directory for log file",
+					"error",
+					err,
+				)
 			}
 
-			file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o666)
+			file, err := os.OpenFile(
+				logFilePath,
+				os.O_CREATE|os.O_APPEND|os.O_WRONLY,
+				0o666,
+			)
 			if err != nil {
 				logger := slog.New(stderrHandler)
 				slog.SetDefault(logger)
