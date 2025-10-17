@@ -3,7 +3,7 @@ module github.com/Nadim147c/rong
 go 1.25
 
 require (
-	github.com/Nadim147c/fang v0.4.4-0.20251004092645-61f7565b973f
+	github.com/Nadim147c/fang v0.4.4-0.20251017121346-07509bb205ab
 	github.com/Nadim147c/material v0.2.0-beta.0.20251017070913-ecf37260ba51
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.8.7
