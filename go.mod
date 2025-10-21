@@ -3,10 +3,10 @@ module github.com/Nadim147c/rong
 go 1.25
 
 require (
-	github.com/Nadim147c/fang v0.4.4-0.20251017121346-07509bb205ab
+	github.com/Nadim147c/fang v0.5.0-fork
 	github.com/Nadim147c/material v1.0.0
 	github.com/adrg/xdg v0.5.3
-	github.com/carapace-sh/carapace v1.9.1
+	github.com/carapace-sh/carapace v1.10.1
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
@@ -28,7 +28,7 @@ require (
 	github.com/charmbracelet/harmonica v0.2.0 // indirect
 	github.com/charmbracelet/x/ansi v0.10.2 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20251016201629-54e687c87a08 // indirect
+	github.com/charmbracelet/x/exp/charmtone v0.0.0-20251020183722-ee4914f58d13 // indirect
 	github.com/charmbracelet/x/exp/color v0.0.0-20251006100439-2151805163c8 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.2.0 // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/exp v0.0.0-20251009144603-d2f985daa21b // indirect
+	golang.org/x/exp v0.0.0-20251017212417-90e834f514db // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
