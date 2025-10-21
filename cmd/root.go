@@ -1,11 +1,15 @@
 package cmd
 
 import (
+	"context"
+	"errors"
+	"io"
 	"log/slog"
 	"math"
 	"os"
 	"path/filepath"
 
+	"github.com/Nadim147c/fang"
 	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
@@ -85,6 +89,27 @@ func init() {
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
 }
 
+func handleError(w io.Writer, styles fang.Styles, err error) {
+	if errors.Is(err, context.Canceled) {
+		err = errors.New("operation cancelled by user")
+	}
+	fang.DefaultErrorHandler(w, styles, err)
+}
+
+// Execute runs the cobra cli
+func Execute(version string) error {
+	return fang.Execute(
+		context.Background(),
+		Command,
+		fang.WithErrorHandler(handleError),
+		fang.WithFlagTypes(),
+		fang.WithNotifySignal(os.Interrupt, os.Kill),
+		fang.WithShorthandPadding(),
+		fang.WithVersion(version),
+		fang.WithoutCompletions(),
+	)
+}
+
 func should[T any](v T, _ error) T {
 	return v
 }
@@ -133,7 +158,10 @@ var Command = &cobra.Command{
 		if cmd.Flags().Changed("log-file") {
 			logFilePath := should(cmd.Flags().GetString("log-file"))
 
-			if err := os.MkdirAll(filepath.Dir(logFilePath), 0o755); err != nil {
+			if err := os.MkdirAll(
+				filepath.Dir(logFilePath),
+				0o755,
+			); err != nil {
 				slog.Error(
 					"Failed to create parent directory for log file",
 					"error",
@@ -154,7 +182,8 @@ var Command = &cobra.Command{
 			} else {
 				fileHanlder := slog.NewJSONHandler(file, &slog.HandlerOptions{
 					AddSource: true,
-					// Manually enabling file logs indicates user is trying to debug
+					// Manually enabling file logs indicates user is trying to
+					// debug
 					Level: slog.LevelDebug,
 				})
 
