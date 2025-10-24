@@ -21,7 +21,8 @@ func isMediaFile(path string) bool {
 	return mediaExtensions[ext]
 }
 
-// ScanPaths scans the given paths and returns absolute paths of image/video files
+// ScanPaths scans the given paths and returns absolute paths of image/video
+// files
 func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
 	var results []string
 

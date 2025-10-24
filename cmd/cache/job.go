@@ -125,6 +125,8 @@ func (j *job) View(spiner string) string {
 	var status string
 	var c charmtone.Key
 
+	width := 18
+
 	switch j.State {
 	case jobWaiting:
 		icon = "○"
@@ -145,13 +147,16 @@ func (j *job) View(spiner string) string {
 	case jobCompleted:
 		icon = "✓"
 		status = "Completed"
+		width = 9 // size of the word 'Completed'
 	case jobFailed:
 		icon = "✗"
 		status = fmt.Sprintf("Failed: %v", j.Error)
+		width = len(status) // error length
 		c = charmtone.Charcoal
 	}
 
 	status = lipgloss.NewStyle().
+		Width(width).
 		Foreground(lipgloss.Color(c.Hex())).
 		Bold(true).
 		Render(status)
