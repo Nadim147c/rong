@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -35,6 +36,7 @@ type model struct {
 	queue  queue
 
 	progress progress.Model
+	spinner  spinner.Model
 
 	width     int
 	height    int
@@ -44,12 +46,15 @@ type model struct {
 }
 
 // NewModel creates a new model with the given paths
-func newModel(ctx context.Context, paths []string, frames, workers int) model {
-	m := model{
+func newModel(ctx context.Context, paths []string, frames, workers int) *model {
+	s := spinner.New(spinner.WithSpinner(spinner.MiniDot))
+	s.Spinner.FPS = time.Second / 30
+	m := &model{
 		total:    len(paths),
 		frames:   frames,
 		workers:  workers,
 		progress: progress.New(),
+		spinner:  s,
 	}
 	for path := range slices.Values(paths) {
 		j := newJob(ctx, path, frames)
@@ -74,10 +79,11 @@ func (m *model) selectJob(filename string) *job {
 
 // Init is Init
 func (m model) Init() tea.Cmd {
-	cmds := make([]tea.Cmd, 0, m.workers)
+	cmds := make([]tea.Cmd, 0, m.workers+1)
 	for j := range slices.Values(m.active) {
 		cmds = append(cmds, j.Init())
 	}
+	cmds = append(cmds, m.spinner.Tick)
 	return tea.Batch(cmds...)
 }
 
@@ -99,10 +105,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case jobDone:
 		m.completed++
 		j := m.selectJob(msg.Name)
-		jobModel, _ := j.Update(msg)
+		j.Update(msg)
 		var cmds []tea.Cmd
 
-		cmds = append(cmds, tea.Println(jobModel.View()))
+		cmds = append(cmds, tea.Println(j.View(m.spinner.View())))
 
 		m.active = slices.DeleteFunc(m.active, func(e *job) bool {
 			return e.filename == j.filename
@@ -130,13 +136,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.progress = p.(progress.Model)
 		return m, cmd
 	case spinner.TickMsg:
-		cmds := make([]tea.Cmd, 0, len(m.active))
-		for i, j := range m.active {
-			var cmd tea.Cmd
-			m.active[i], cmd = j.Update(msg)
-			cmds = append(cmds, cmd)
-		}
-		return m, tea.Batch(cmds...)
+		s, cmd := m.spinner.Update(msg)
+		m.spinner = s
+		return m, cmd
 	}
 
 	return m, nil
@@ -154,11 +156,7 @@ func (m model) View() string {
 
 	var buf strings.Builder
 	for _, job := range m.active {
-		fmt.Fprintln(&buf, job.View())
-	}
-
-	for _, job := range m.queue.NextN(m.height - m.workers - 10) {
-		fmt.Fprintln(&buf, job.View())
+		fmt.Fprintln(&buf, job.View(m.spinner.View()))
 	}
 
 	fmt.Fprintf(

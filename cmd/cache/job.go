@@ -3,18 +3,14 @@ package cache
 import (
 	"context"
 	"fmt"
-	"image/color"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/material"
-	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	ansi "github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/x/exp/charmtone"
 
 	"github.com/gabriel-vasile/mimetype"
 )
@@ -24,7 +20,6 @@ type jobState int
 
 const (
 	jobWaiting jobState = iota
-	jobProcessing
 	jobExtracting
 	jobQuantizing
 	jobSaving
@@ -42,39 +37,24 @@ type jobDone struct {
 type job struct {
 	ctx      context.Context
 	filename string
-	spinner  spinner.Model
 	frames   int
 
 	State     jobState
 	Error     error
 	Completed bool
-
-	mu sync.Mutex
 }
 
 // newJob creates a new job with a spinner
 func newJob(ctx context.Context, filename string, frames int) *job {
-	s := spinner.New(spinner.WithSpinner(spinner.MiniDot))
-	s.Spinner.FPS = time.Second / 30
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 	return &job{
 		ctx:      ctx,
 		filename: filename,
 		frames:   frames,
 		State:    jobWaiting,
-		spinner:  s,
 	}
 }
 
-func (j *job) setState(s jobState) {
-	j.mu.Lock()
-	defer j.mu.Unlock()
-	j.State = s
-}
-
 func (j *job) processFile() error {
-	ctx := context.Background()
-
 	hash, err := cache.Hash(j.filename)
 	if err != nil {
 		return err
@@ -91,28 +71,28 @@ func (j *job) processFile() error {
 	}
 
 	// Update state for extraction
-	j.setState(jobExtracting)
-	pixels, err := ffmpeg.GetPixels(ctx, j.filename, j.frames)
+	j.State = jobExtracting
+	pixels, err := ffmpeg.GetPixels(j.ctx, j.filename, j.frames)
 	if err != nil {
 		return err
 	}
 
 	// Update state for quantization
-	j.setState(jobQuantizing)
-	quantized, err := material.Quantize(ctx, pixels)
+	j.State = jobQuantizing
+	quantized, err := material.Quantize(j.ctx, pixels)
 	if err != nil {
 		return err
 	}
 
 	// Update state for saving
-	j.setState(jobSaving)
+	j.State = jobSaving
 	if err := cache.SaveCache(hash, quantized); err != nil {
 		return err
 	}
 
 	if isVideo {
 		// Update state for preview generation
-		j.setState(jobGeneratingPreview)
+		j.State = jobGeneratingPreview
 		if _, err := cache.GetPreview(j.filename, hash); err != nil {
 			return err
 		}
@@ -123,72 +103,58 @@ func (j *job) processFile() error {
 
 // Init is Init
 func (j *job) Init() tea.Cmd {
-	return tea.Batch(j.spinner.Tick, func() tea.Msg {
-		return jobDone{
-			Name: j.filename,
-			Err:  j.processFile(),
-		}
-	})
+	return func() tea.Msg {
+		return jobDone{Name: j.filename, Err: j.processFile()}
+	}
 }
 
-func (j *job) Update(msg tea.Msg) (*job, tea.Cmd) {
-	switch msg := msg.(type) {
-	case jobDone:
+func (j *job) Update(msg tea.Msg) {
+	if done, ok := msg.(jobDone); ok {
 		j.Completed = true
 		j.State = jobCompleted
-		if msg.Err != nil {
+		if done.Err != nil {
 			j.State = jobFailed
-			j.Error = msg.Err
+			j.Error = done.Err
 		}
-		return j, nil
-	case spinner.TickMsg:
-		var cmd tea.Cmd
-		j.spinner, cmd = j.spinner.Update(msg)
-		return j, cmd
 	}
-	return j, nil
 }
 
-func (j *job) View() string {
-	var icon, status string
-	var c color.Color
+// This does breaks the tea.Model
+func (j *job) View(spiner string) string {
+	icon := spiner
+	var status string
+	var c charmtone.Key
 
 	switch j.State {
 	case jobWaiting:
 		icon = "○"
 		status = "Queued"
-		c = ansi.BrightBlack
-	case jobProcessing:
-		icon = j.spinner.View()
-		status = "Processing"
-		c = ansi.Blue
+		c = charmtone.Squid
 	case jobExtracting:
-		icon = j.spinner.View()
 		status = "Extracting frames"
-		c = ansi.BrightCyan
+		c = charmtone.Zinc
 	case jobQuantizing:
-		icon = j.spinner.View()
 		status = "Quantizing colors"
-		c = ansi.Blue
+		c = charmtone.Cherry
 	case jobSaving:
-		icon = j.spinner.View()
 		status = "Saving cache"
-		c = ansi.BrightGreen
+		c = charmtone.Grape
 	case jobGeneratingPreview:
-		icon = j.spinner.View()
 		status = "Generating preview"
-		c = ansi.Magenta
+		c = charmtone.Yam
 	case jobCompleted:
 		icon = "✓"
 		status = "Completed"
-		c = ansi.Green
 	case jobFailed:
 		icon = "✗"
 		status = fmt.Sprintf("Failed: %v", j.Error)
-		c = ansi.Red
+		c = charmtone.Charcoal
 	}
 
-	status = ansi.NewStyle().Foreground(c).Bold(true).Render(status)
+	status = lipgloss.NewStyle().
+		Foreground(lipgloss.Color(c.Hex())).
+		Bold(true).
+		Render(status)
 
 	return fmt.Sprintf("%s %s %s", icon, status, j.filename)
 }
