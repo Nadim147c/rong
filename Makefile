@@ -32,9 +32,9 @@ install:
 
 generate-completion: build
 	mkdir -p "$(BUILD_COMPLETION_DIR)"
-	$(NAME) _carapace bash > "$(BUILD_COMPLETION_DIR)/$(NAME).bash"
-	$(NAME) _carapace zsh  > "$(BUILD_COMPLETION_DIR)/$(NAME).zsh"
-	$(NAME) _carapace fish > "$(BUILD_COMPLETION_DIR)/$(NAME).fish"
+	$(BUILD_BIN) _carapace bash > "$(BUILD_COMPLETION_DIR)/$(NAME).bash"
+	$(BUILD_BIN) _carapace zsh  > "$(BUILD_COMPLETION_DIR)/$(NAME).zsh"
+	$(BUILD_BIN) _carapace fish > "$(BUILD_COMPLETION_DIR)/$(NAME).fish"
 
 tools-install:
 	$(GO) get $(TOOL_MOD) -tool github.com/mgechev/revive@latest
