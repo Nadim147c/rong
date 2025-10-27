@@ -5,7 +5,6 @@ set -e # Exit on any error
 # Configuration
 APP_NAME="rong"
 BUILD_DIR="build"
-APP_BIN="${BUILD_DIR}/${APP_NAME}"
 VERSION=$(git describe --tags --abbrev=0)
 COMPLETION_DIR="${BUILD_DIR}/completions"
 
@@ -14,16 +13,9 @@ go install github.com/charmbracelet/gum@latest
 gum format -- "# Building $APP_NAME version $VERSION"
 
 # Step 1: Compile for native arch and OS
-gum format -- "1. Building native binary..."
-gum spin --spinner dot --title "Building native binary" -- \
-  go build -o "$APP_BIN" .
-
-# Step 2: Generate completions
-gum format -- "2. Generating shell completions..."
-mkdir -pv "$COMPLETION_DIR"
-$APP_BIN _carapace bash >"$COMPLETION_DIR/$APP_NAME.bash"
-$APP_BIN _carapace zsh >"$COMPLETION_DIR/$APP_NAME.zsh"
-$APP_BIN _carapace fish >"$COMPLETION_DIR/$APP_NAME.fish"
+gum format -- "1. Build and generate completions"
+echo ""
+make generate-completion
 
 # Step 3: Cross-compile for different platforms
 gum format -- "3. Cross-compiling for different platforms..."
@@ -56,8 +48,8 @@ for platform in "${platforms[@]}"; do
 
   # Cross-compile
   CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" \
-    gum spin --spinner dot --title "Building for $os/$arch..." -- \
-    go build -o "$bin_dir/$binary_name" .
+    BUILD_BIN="$bin_dir/$binary_name" VERSION="$VERSION" \
+    make build
 
   # Copy completion files
   install -Dm644 "$COMPLETION_DIR/$APP_NAME.bash" "$share_base_dir/bash-completion/completions/$APP_NAME"
@@ -65,11 +57,11 @@ for platform in "${platforms[@]}"; do
   install -Dm644 "$COMPLETION_DIR/$APP_NAME.fish" "$share_base_dir/fish/vendor_completions.d/$APP_NAME.fish"
 
   cd "$BUILD_DIR"
-  gum spin --spinner dot --title "Creating archive for $os/$arch..." -- \
-    tar -czf "${APP_NAME}-${VERSION}-${os}-${arch}.tar.gz" "$(basename "$package_dir")"
+  tar -czf "${APP_NAME}-${VERSION}-${os}-${arch}.tar.gz" "$(basename "$package_dir")"
   cd - >/dev/null
 
   gum log -sl info --prefix "$os/$arch" "Build complete"
+  echo
 done
 
 # Step 5: Generate SHA256 checksums
