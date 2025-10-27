@@ -8,9 +8,6 @@
 > [!IMPORTANT]
 > 🔥 Found this useful? A quick star goes a long way.
 
-> [!CAUTION]
-> This is tool is in beta and expect some unforeseen bugs.
-
 **Rong** is a CLI that extracts a **Material You** color palette from an image or
 video, and applies it across your system using configurable template mappings.
 

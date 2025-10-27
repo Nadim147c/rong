@@ -4,11 +4,6 @@ title: What is Rong?
 
 # What is Rong?
 
-::: danger WARNING
-🧪 Rong is an experimental tool. Expect breaking changes and unstable behavior as
-development progresses.
-:::
-
 **Rong** (রং) is a command-line tool that generates **Material You-compatible color
 palettes** from images and videos. It processes visual input and extracts color
 values following the [Material Design 3 (Material You)](https://m3.material.io/)
