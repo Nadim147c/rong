@@ -1,4 +1,4 @@
-rong: {
+{
   config,
   lib,
   pkgs,
@@ -105,9 +105,7 @@ in {
 
       (mkIf (cfg.templates != {}) (
         mkMerge (lib.mapAttrsToList (name: text: {
-            "rong/templates/${name}" = {
-              text = text;
-            };
+            "rong/templates/${name}".text = text;
           })
           cfg.templates)
       ))
