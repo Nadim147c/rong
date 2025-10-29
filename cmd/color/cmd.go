@@ -23,7 +23,7 @@ import (
 )
 
 func init() {
-	Command.Flags().AddFlagSet(material.GeneratorFlags)
+	Command.Flags().AddFlagSet(material.Flags)
 	Command.Flags().AddFlagSet(base16.Flags)
 }
 

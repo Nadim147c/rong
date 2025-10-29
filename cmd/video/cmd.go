@@ -18,7 +18,7 @@ import (
 )
 
 func init() {
-	Command.Flags().AddFlagSet(material.GeneratorFlags)
+	Command.Flags().AddFlagSet(material.Flags)
 	Command.Flags().AddFlagSet(base16.Flags)
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 }

@@ -24,25 +24,25 @@ type Config struct {
 func GetConfig() (Config, error) {
 	config := Config{}
 
-	variant, err := dynamic.ParseVariant(viper.GetString("variant"))
+	variant, err := dynamic.ParseVariant(viper.GetString("material.variant"))
 	if err != nil {
 		return config, err
 	}
 	config.Variant = variant
 
-	version, err := dynamic.ParseVersion(viper.GetString("version"))
+	version, err := dynamic.ParseVersion(viper.GetString("material.version"))
 	if err != nil {
 		return config, err
 	}
 	config.Version = version
 
-	platform, err := dynamic.ParsePlatform(viper.GetString("platform"))
+	platform, err := dynamic.ParsePlatform(viper.GetString("material.platform"))
 	if err != nil {
 		return config, err
 	}
 	config.Platform = platform
 
-	config.Constrast = viper.GetFloat64("contrast")
+	config.Constrast = viper.GetFloat64("material.contrast")
 	if config.Constrast < -1 || config.Constrast > 1 {
 		return config, fmt.Errorf(
 			"contrast must between -1 to 1 but got %.2f",
@@ -55,33 +55,39 @@ func GetConfig() (Config, error) {
 	return config, nil
 }
 
-// GeneratorFlags are the flags used for generating colors
-var GeneratorFlags = pflag.NewFlagSet("generate", pflag.ContinueOnError)
+// Flags are the flags used for generating colors
+var Flags = pflag.NewFlagSet("material", pflag.ContinueOnError)
 
 func init() {
-	GeneratorFlags.Bool("dark", false, "generate dark color palette")
-	GeneratorFlags.Bool(
+	// TODO: These flags should be here
+	Flags.BoolP("dark", "D", false, "generate dark color palette")
+	Flags.BoolP("json", "j", false, "print generated colors as json")
+	Flags.BoolP(
 		"dry-run",
+		"d",
 		false,
 		"generate colors without applying templates",
 	)
-	GeneratorFlags.Bool("json", false, "print generated colors as json")
-	GeneratorFlags.Float64("contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
-	GeneratorFlags.String(
-		"version",
+
+	Flags.Float64("material.contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
+	Flags.String(
+		"material.version",
 		dynamic.Version2025.String(),
 		"version of the theme (2021 or 2025)",
 	)
-	GeneratorFlags.String(
-		"platform",
+	viper.SetDefault("material.version", dynamic.Version2025.String())
+	Flags.String(
+		"material.platform",
 		dynamic.PlatformPhone.String(),
 		"target platform (phone or watch)",
 	)
-	GeneratorFlags.String(
-		"variant",
+	viper.SetDefault("material.platform", dynamic.PlatformPhone.String())
+	Flags.String(
+		"material.variant",
 		dynamic.VariantTonalSpot.String(),
 		"variant to use (e.g., tonal_spot, vibrant, expressive)",
 	)
+	viper.SetDefault("material.variant", dynamic.VariantTonalSpot.String())
 }
 
 // GetPixelsFromImage returns pixels from image.Imaget interface
