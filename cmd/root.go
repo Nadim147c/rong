@@ -206,7 +206,7 @@ var Command = &cobra.Command{
 
 		viper.SetEnvPrefix("rong")
 
-		viper.SetDefault("dark", true)
+		viper.SetDefault("dark", false)
 		viper.SetDefault("variant", dynamic.VariantTonalSpot)
 		viper.SetDefault("platform", dynamic.PlatformPhone)
 
