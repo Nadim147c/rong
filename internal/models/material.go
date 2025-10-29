@@ -6,64 +6,64 @@ import (
 
 // Material contains all material colors
 type Material struct {
-	Background              ColorValue `json:"background"                 toml:"background"`
-	Error                   ColorValue `json:"error"                      toml:"error"`
-	ErrorContainer          ColorValue `json:"error_container"            toml:"error_container"`
-	InverseOnSurface        ColorValue `json:"inverse_on_surface"         toml:"inverse_on_surface"`
-	InversePrimary          ColorValue `json:"inverse_primary"            toml:"inverse_primary"`
-	InverseSurface          ColorValue `json:"inverse_surface"            toml:"inverse_surface"`
-	OnBackground            ColorValue `json:"on_background"              toml:"on_background"`
-	OnError                 ColorValue `json:"on_error"                   toml:"on_error"`
-	OnErrorContainer        ColorValue `json:"on_error_container"         toml:"on_error_container"`
-	OnPrimary               ColorValue `json:"on_primary"                 toml:"on_primary"`
-	OnPrimaryContainer      ColorValue `json:"on_primary_container"       toml:"on_primary_container"`
-	OnPrimaryFixed          ColorValue `json:"on_primary_fixed"           toml:"on_primary_fixed"`
-	OnPrimaryFixedVariant   ColorValue `json:"on_primary_fixed_variant"   toml:"on_primary_fixed_variant"`
-	OnSecondary             ColorValue `json:"on_secondary"               toml:"on_secondary"`
-	OnSecondaryContainer    ColorValue `json:"on_secondary_container"     toml:"on_secondary_container"`
-	OnSecondaryFixed        ColorValue `json:"on_secondary_fixed"         toml:"on_secondary_fixed"`
-	OnSecondaryFixedVariant ColorValue `json:"on_secondary_fixed_variant" toml:"on_secondary_fixed_variant"`
-	OnSurface               ColorValue `json:"on_surface"                 toml:"on_surface"`
-	OnSurfaceVariant        ColorValue `json:"on_surface_variant"         toml:"on_surface_variant"`
-	OnTertiary              ColorValue `json:"on_tertiary"                toml:"on_tertiary"`
-	OnTertiaryContainer     ColorValue `json:"on_tertiary_container"      toml:"on_tertiary_container"`
-	OnTertiaryFixed         ColorValue `json:"on_tertiary_fixed"          toml:"on_tertiary_fixed"`
-	OnTertiaryFixedVariant  ColorValue `json:"on_tertiary_fixed_variant"  toml:"on_tertiary_fixed_variant"`
-	Outline                 ColorValue `json:"outline"                    toml:"outline"`
-	OutlineVariant          ColorValue `json:"outline_variant"            toml:"outline_variant"`
-	Primary                 ColorValue `json:"primary"                    toml:"primary"`
-	PrimaryContainer        ColorValue `json:"primary_container"          toml:"primary_container"`
-	PrimaryFixed            ColorValue `json:"primary_fixed"              toml:"primary_fixed"`
-	PrimaryFixedDim         ColorValue `json:"primary_fixed_dim"          toml:"primary_fixed_dim"`
-	Scrim                   ColorValue `json:"scrim"                      toml:"scrim"`
-	Secondary               ColorValue `json:"secondary"                  toml:"secondary"`
-	SecondaryContainer      ColorValue `json:"secondary_container"        toml:"secondary_container"`
-	SecondaryFixed          ColorValue `json:"secondary_fixed"            toml:"secondary_fixed"`
-	SecondaryFixedDim       ColorValue `json:"secondary_fixed_dim"        toml:"secondary_fixed_dim"`
-	Shadow                  ColorValue `json:"shadow"                     toml:"shadow"`
-	Surface                 ColorValue `json:"surface"                    toml:"surface"`
-	SurfaceBright           ColorValue `json:"surface_bright"             toml:"surface_bright"`
-	SurfaceContainer        ColorValue `json:"surface_container"          toml:"surface_container"`
-	SurfaceContainerHigh    ColorValue `json:"surface_container_high"     toml:"surface_container_high"`
-	SurfaceContainerHighest ColorValue `json:"surface_container_highest"  toml:"surface_container_highest"`
-	SurfaceContainerLow     ColorValue `json:"surface_container_low"      toml:"surface_container_low"`
-	SurfaceContainerLowest  ColorValue `json:"surface_container_lowest"   toml:"surface_container_lowest"`
-	SurfaceDim              ColorValue `json:"surface_dim"                toml:"surface_dim"`
-	SurfaceTint             ColorValue `json:"surface_tint"               toml:"surface_tint"`
-	SurfaceVariant          ColorValue `json:"surface_variant"            toml:"surface_variant"`
-	Tertiary                ColorValue `json:"tertiary"                   toml:"tertiary"`
-	TertiaryContainer       ColorValue `json:"tertiary_container"         toml:"tertiary_container"`
-	TertiaryFixed           ColorValue `json:"tertiary_fixed"             toml:"tertiary_fixed"`
-	TertiaryFixedDim        ColorValue `json:"tertiary_fixed_dim"         toml:"tertiary_fixed_dim"`
+	Background              FormatedColor `json:"background"                 toml:"background"`
+	Error                   FormatedColor `json:"error"                      toml:"error"`
+	ErrorContainer          FormatedColor `json:"error_container"            toml:"error_container"`
+	InverseOnSurface        FormatedColor `json:"inverse_on_surface"         toml:"inverse_on_surface"`
+	InversePrimary          FormatedColor `json:"inverse_primary"            toml:"inverse_primary"`
+	InverseSurface          FormatedColor `json:"inverse_surface"            toml:"inverse_surface"`
+	OnBackground            FormatedColor `json:"on_background"              toml:"on_background"`
+	OnError                 FormatedColor `json:"on_error"                   toml:"on_error"`
+	OnErrorContainer        FormatedColor `json:"on_error_container"         toml:"on_error_container"`
+	OnPrimary               FormatedColor `json:"on_primary"                 toml:"on_primary"`
+	OnPrimaryContainer      FormatedColor `json:"on_primary_container"       toml:"on_primary_container"`
+	OnPrimaryFixed          FormatedColor `json:"on_primary_fixed"           toml:"on_primary_fixed"`
+	OnPrimaryFixedVariant   FormatedColor `json:"on_primary_fixed_variant"   toml:"on_primary_fixed_variant"`
+	OnSecondary             FormatedColor `json:"on_secondary"               toml:"on_secondary"`
+	OnSecondaryContainer    FormatedColor `json:"on_secondary_container"     toml:"on_secondary_container"`
+	OnSecondaryFixed        FormatedColor `json:"on_secondary_fixed"         toml:"on_secondary_fixed"`
+	OnSecondaryFixedVariant FormatedColor `json:"on_secondary_fixed_variant" toml:"on_secondary_fixed_variant"`
+	OnSurface               FormatedColor `json:"on_surface"                 toml:"on_surface"`
+	OnSurfaceVariant        FormatedColor `json:"on_surface_variant"         toml:"on_surface_variant"`
+	OnTertiary              FormatedColor `json:"on_tertiary"                toml:"on_tertiary"`
+	OnTertiaryContainer     FormatedColor `json:"on_tertiary_container"      toml:"on_tertiary_container"`
+	OnTertiaryFixed         FormatedColor `json:"on_tertiary_fixed"          toml:"on_tertiary_fixed"`
+	OnTertiaryFixedVariant  FormatedColor `json:"on_tertiary_fixed_variant"  toml:"on_tertiary_fixed_variant"`
+	Outline                 FormatedColor `json:"outline"                    toml:"outline"`
+	OutlineVariant          FormatedColor `json:"outline_variant"            toml:"outline_variant"`
+	Primary                 FormatedColor `json:"primary"                    toml:"primary"`
+	PrimaryContainer        FormatedColor `json:"primary_container"          toml:"primary_container"`
+	PrimaryFixed            FormatedColor `json:"primary_fixed"              toml:"primary_fixed"`
+	PrimaryFixedDim         FormatedColor `json:"primary_fixed_dim"          toml:"primary_fixed_dim"`
+	Scrim                   FormatedColor `json:"scrim"                      toml:"scrim"`
+	Secondary               FormatedColor `json:"secondary"                  toml:"secondary"`
+	SecondaryContainer      FormatedColor `json:"secondary_container"        toml:"secondary_container"`
+	SecondaryFixed          FormatedColor `json:"secondary_fixed"            toml:"secondary_fixed"`
+	SecondaryFixedDim       FormatedColor `json:"secondary_fixed_dim"        toml:"secondary_fixed_dim"`
+	Shadow                  FormatedColor `json:"shadow"                     toml:"shadow"`
+	Surface                 FormatedColor `json:"surface"                    toml:"surface"`
+	SurfaceBright           FormatedColor `json:"surface_bright"             toml:"surface_bright"`
+	SurfaceContainer        FormatedColor `json:"surface_container"          toml:"surface_container"`
+	SurfaceContainerHigh    FormatedColor `json:"surface_container_high"     toml:"surface_container_high"`
+	SurfaceContainerHighest FormatedColor `json:"surface_container_highest"  toml:"surface_container_highest"`
+	SurfaceContainerLow     FormatedColor `json:"surface_container_low"      toml:"surface_container_low"`
+	SurfaceContainerLowest  FormatedColor `json:"surface_container_lowest"   toml:"surface_container_lowest"`
+	SurfaceDim              FormatedColor `json:"surface_dim"                toml:"surface_dim"`
+	SurfaceTint             FormatedColor `json:"surface_tint"               toml:"surface_tint"`
+	SurfaceVariant          FormatedColor `json:"surface_variant"            toml:"surface_variant"`
+	Tertiary                FormatedColor `json:"tertiary"                   toml:"tertiary"`
+	TertiaryContainer       FormatedColor `json:"tertiary_container"         toml:"tertiary_container"`
+	TertiaryFixed           FormatedColor `json:"tertiary_fixed"             toml:"tertiary_fixed"`
+	TertiaryFixedDim        FormatedColor `json:"tertiary_fixed_dim"         toml:"tertiary_fixed_dim"`
 }
 
 // NewMaterial return material color type
 func NewMaterial(colorMap map[string]color.ARGB) Material {
-	get := func(name string) ColorValue {
+	get := func(name string) FormatedColor {
 		if dc, ok := colorMap[name]; ok {
-			return NewColorValue(dc)
+			return NewFormatedColor(dc)
 		}
-		return NewColorValue(0) // default ARGB (fully transparent black)
+		return NewFormatedColor(0) // default ARGB (fully transparent black)
 	}
 
 	return Material{

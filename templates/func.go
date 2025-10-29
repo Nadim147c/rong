@@ -21,21 +21,21 @@ var funcs = template.FuncMap{
 	"json":    jsonString,
 }
 
-func parse(s string) models.ColorValue {
+func parse(s string) models.FormatedColor {
 	c := color.ARGBFromHexMust(s)
-	return models.NewColorValue(c)
+	return models.NewFormatedColor(c)
 }
 
-func chroma(c models.ColorValue, chroma float64) models.ColorValue {
+func chroma(c models.FormatedColor, chroma float64) models.FormatedColor {
 	hct := c.Int.ToHct()
 	hct.Chroma = chroma
-	return models.NewColorValue(hct.ToARGB())
+	return models.NewFormatedColor(hct.ToARGB())
 }
 
-func tone(c models.ColorValue, t float64) models.ColorValue {
+func tone(c models.FormatedColor, t float64) models.FormatedColor {
 	hct := c.Int.ToHct()
 	hct.Tone = t
-	return models.NewColorValue(hct.ToARGB())
+	return models.NewFormatedColor(hct.ToARGB())
 }
 
 func quote(s any) string {

@@ -19,6 +19,7 @@ import (
 
 func init() {
 	Command.Flags().AddFlagSet(material.GeneratorFlags)
+	Command.Flags().AddFlagSet(base16.Flags)
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 }
 
@@ -95,8 +96,10 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
-		fg, bg := colorMap["on_background"], colorMap["background"]
-		based := base16.Generate(fg, bg, wu)
+		based, err := base16.Generate(colorMap, wu)
+		if err != nil {
+			return err
+		}
 
 		path, err := cache.GetPreview(videoPath, hash)
 		if err != nil {

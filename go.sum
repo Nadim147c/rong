@@ -1,7 +1,7 @@
 github.com/Nadim147c/fang v0.5.0-fork h1:qV2AhItccTMLu5fOxMsrI4KhiM7AqxcM86C2NC6czxg=
 github.com/Nadim147c/fang v0.5.0-fork/go.mod h1:dRy4C4H/sC0GXcAkrVos3ppWn/YNX3KJNU8mcCcGP0U=
-github.com/Nadim147c/material v1.0.0 h1:l4mPtj72qXJMLeXAi3DXieFaGEC+s3W7O3NcdC6be7w=
-github.com/Nadim147c/material v1.0.0/go.mod h1:t5h6m4ehD1rSZI3iM+Sz2gWSrQM/D40IJYj88CoEEhc=
+github.com/Nadim147c/material v1.1.0 h1:esoW+2UJXms+veboc+osS3JqW1TaSZEj+a+s0TBtBu8=
+github.com/Nadim147c/material v1.1.0/go.mod h1:t5h6m4ehD1rSZI3iM+Sz2gWSrQM/D40IJYj88CoEEhc=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=

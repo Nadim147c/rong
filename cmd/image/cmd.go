@@ -24,6 +24,7 @@ import (
 
 func init() {
 	Command.Flags().AddFlagSet(material.GeneratorFlags)
+	Command.Flags().AddFlagSet(base16.Flags)
 }
 
 // Command is the image command
@@ -93,8 +94,10 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
-		fg, bg := colorMap["on_background"], colorMap["background"]
-		based := base16.Generate(fg, bg, wu)
+		based, err := base16.Generate(colorMap, wu)
+		if err != nil {
+			return err
+		}
 
 		output := models.NewOutput(imagePath, based, colorMap)
 

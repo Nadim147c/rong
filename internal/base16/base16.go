@@ -1,178 +1,191 @@
 package base16
 
 import (
-	"log/slog"
-	"math"
-	"math/rand"
-	"sort"
+	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/num"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/go-viper/mapstructure/v2"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-// distance returns the shortest distance between two angles on a circle
-func distance(a, b float64) float64 {
-	diff := math.Abs(a - b)
-	return math.Min(diff, 360-diff)
+// BlendRatio is the default blend ratio from static color
+const BlendRatio float64 = 0.5
+
+// Flags are the flags used for generating colors
+var Flags = pflag.NewFlagSet("base16", pflag.ContinueOnError)
+
+func formatDefault(c color.ARGB) string {
+	hex := c.HexRGB()
+	return lipgloss.NewStyle().Foreground(lipgloss.Color(hex)).Render(hex)
 }
 
-func hueSpread(colors []color.Hct) float64 {
-	if len(colors) < 2 {
-		return 0
-	}
-	minHue, maxHue := 360.0, 0.0
-	for _, c := range colors {
-		if c.Hue < minHue {
-			minHue = c.Hue
-		}
-		if c.Hue > maxHue {
-			maxHue = c.Hue
-		}
-	}
-	return maxHue - minHue
+func init() {
+	Flags.Float64(
+		"base16.blend",
+		BlendRatio,
+		"blend ratio toward the primary color",
+	)
+	viper.SetDefault("base16.blend", BlendRatio)
+
+	Flags.String(
+		"base16.method",
+		"static",
+		"color generation method (static or dynamic)",
+	)
+	viper.SetDefault("base16.method", "static")
+
+	Flags.String(
+		"base16.colors.black",
+		formatDefault(defaultSrcColors.Black),
+		"black source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.black", defaultSrcColors.Black.HexRGB())
+
+	Flags.String(
+		"base16.colors.red",
+		formatDefault(defaultSrcColors.Red),
+		"red source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.red", defaultSrcColors.Red.HexRGB())
+
+	Flags.String(
+		"base16.colors.green",
+		formatDefault(defaultSrcColors.Green),
+		"green source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.green", defaultSrcColors.Green.HexRGB())
+
+	Flags.String(
+		"base16.colors.yellow",
+		formatDefault(defaultSrcColors.Yellow),
+		"yellow source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.yellow", defaultSrcColors.Yellow.HexRGB())
+
+	Flags.String(
+		"base16.colors.blue",
+		formatDefault(defaultSrcColors.Blue),
+		"blue source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.blue", defaultSrcColors.Blue.HexRGB())
+
+	Flags.String(
+		"base16.colors.magenta",
+		formatDefault(defaultSrcColors.Magenta),
+		"magenta source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.magenta", defaultSrcColors.Magenta.HexRGB())
+
+	Flags.String(
+		"base16.colors.cyan",
+		formatDefault(defaultSrcColors.Cyan),
+		"cyan source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.cyan", defaultSrcColors.Cyan.HexRGB())
+
+	Flags.String(
+		"base16.colors.white",
+		formatDefault(defaultSrcColors.White),
+		"white source color for base16 colors",
+	)
+	viper.SetDefault("base16.colors.white", defaultSrcColors.White.HexRGB())
 }
 
-func ensureHueVariety(colors []color.Hct) []color.Hct {
-	if len(colors) == 0 {
-		return []color.Hct{randomHct()}
+var opt = viper.DecodeHook(mapstructure.DecodeHookFuncValue(
+	func(from, _ reflect.Value) (any, error) {
+		if from.Kind() == reflect.String {
+			return color.ARGBFromHex(from.String())
+		}
+		return from.Interface(), nil
+	},
+))
+
+// Generate generates colors from material color name and quantized colors
+func Generate(
+	material map[string]color.ARGB,
+	quantized []color.ARGB,
+) (Base16, error) {
+	var static SourceColors
+	if err := viper.UnmarshalKey("base16.colors", &static, opt); err != nil {
+		return Base16{}, err
 	}
 
-	out := make([]color.Hct, len(colors))
-	copy(out, colors)
-
-	var i int
-	deg := 80.0
-	for hueSpread(out) < 100 {
-		base := colors[i]
-		newHue := num.NormalizeDegree(base.Hue + deg)
-		newColor := base
-		newColor.Hue = newHue
-		slog.Info("Generating random color", "hue", newHue)
-		out = append(out, newColor)
-		i = (i + 1) % len(colors)
-		deg *= 2
+	switch method := strings.ToLower(viper.GetString("base16.method")); method {
+	case "static":
+		return GenerateStatic(material["primary"], static), nil
+	case "dynamic":
+		fg, bg := material["on_background"], material["background"]
+		return GenerateDynamic(fg, bg, quantized), nil
+	default:
+		return Base16{}, fmt.Errorf(
+			"invalid base16 color generating method: %v",
+			method,
+		)
 	}
-
-	return out
 }
 
-// SelectColors selects k Hct colors maximizing angular separation
-func SelectColors(colors []color.Hct, k int) []color.Hct {
-	n := len(colors)
-	if k >= n {
-		return colors
-	}
-
-	selected := []color.Hct{colors[rand.Intn(n)]}
-	remaining := make([]color.Hct, 0, n-1)
-	for _, c := range colors {
-		if c != selected[0] {
-			remaining = append(remaining, c)
-		}
-	}
-
-	for len(selected) < k {
-		var best color.Hct
-		bestMinDist := -1.0
-
-		for _, candidate := range remaining {
-			minDist := math.MaxFloat64
-			for _, s := range selected {
-				d := distance(candidate.Hue, s.Hue)
-				if d < minDist {
-					minDist = d
-				}
-			}
-			if minDist > bestMinDist {
-				bestMinDist = minDist
-				best = candidate
-			}
-		}
-
-		selected = append(selected, best)
-
-		// Remove best from remaining
-		newRemaining := remaining[:0]
-		for _, c := range remaining {
-			if c != best {
-				newRemaining = append(newRemaining, c)
-			}
-		}
-		remaining = newRemaining
-	}
-
-	sort.Slice(selected, func(i, j int) bool {
-		return selected[i].Hue < selected[j].Hue
-	})
-
-	return selected
+// Base16 is the generated output
+type Base16 struct {
+	dark                   bool
+	Black, BrightBlack     color.ARGB
+	Red, BrightRed         color.ARGB
+	Green, BrightGreen     color.ARGB
+	Yellow, BrightYellow   color.ARGB
+	Blue, BrightBlue       color.ARGB
+	Magenta, BrightMagenta color.ARGB
+	Cyan, BrightCyan       color.ARGB
+	White, BrightWhite     color.ARGB
 }
 
-// Generate generates base16 colors from selecting quantizes color. It takes
-// color with long chroma distance to ensure colors has more variety
-func Generate(fg, bg color.ARGB, colors []color.ARGB) map[string]color.ARGB {
-	hct := make([]color.Hct, len(colors))
-	for i, v := range colors {
-		hct[i] = v.ToHct()
-	}
-
-	selected := SelectColors(ensureHueVariety(hct), 10)
-
-	dark := viper.GetBool("dark")
-	b := map[string]color.ARGB{}
-	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
-	b["color_1"], b["color_9"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 0),
-	)
-	b["color_2"], b["color_a"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 1),
-	)
-	b["color_3"], b["color_b"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 2),
-	)
-	b["color_4"], b["color_c"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 3),
-	)
-	b["color_5"], b["color_d"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 4),
-	)
-	b["color_6"], b["color_e"] = fix(
-		dark,
-		getColorWithRandFallback(selected, 5),
-	)
-	b["color_7"], b["color_f"] = fixfg(dark, fg.ToHct())
-
+// NewBase16 creates a new Base16
+func NewBase16() Base16 {
+	b := Base16{}
+	b.dark = viper.GetBool("dark")
 	return b
 }
 
-func getColorWithRandFallback(colors []color.Hct, i int) color.Hct {
-	if i < len(colors) {
-		return colors[i]
-	}
-	return randomHct()
+// SetBlack sets the Black and Bright Black color
+func (b *Base16) SetBlack(c color.Hct) {
+	b.Black, b.BrightBlack = fixBlack(b.dark, c)
 }
 
-func randomHct() color.Hct {
-	return color.Hct{
-		Hue:    rand.Float64() * 360.0,
-		Chroma: 40.0 + rand.Float64()*40.0, // Moderate to high chroma
-		Tone:   30.0 + rand.Float64()*40.0, // Middle tone range
-	}
+// SetRed sets the Red and Bright Red color
+func (b *Base16) SetRed(c color.Hct) {
+	b.Red, b.BrightRed = fix(b.dark, c)
 }
 
-func tc(c color.Hct, tone float64, chroma float64) color.ARGB {
-	c.Tone = tone
-	c.Chroma = chroma
-	if color.IsBlue(c.Hue) {
-		c.Chroma = chroma * 0.9
-	}
-	return c.ToARGB()
+// SetGreen sets the Green and Bright Green color
+func (b *Base16) SetGreen(c color.Hct) {
+	b.Green, b.BrightGreen = fix(b.dark, c)
+}
+
+// SetYellow sets the Yellow and Bright Yellow color
+func (b *Base16) SetYellow(c color.Hct) {
+	b.Yellow, b.BrightYellow = fix(b.dark, c)
+}
+
+// SetBlue sets the Blue and Bright Blue color
+func (b *Base16) SetBlue(c color.Hct) {
+	b.Blue, b.BrightBlue = fix(b.dark, c)
+}
+
+// SetMagenta sets the Magenta and Bright Magenta color
+func (b *Base16) SetMagenta(c color.Hct) {
+	b.Magenta, b.BrightMagenta = fix(b.dark, c)
+}
+
+// SetCyan sets the Cyan and Bright Cyan color
+func (b *Base16) SetCyan(c color.Hct) {
+	b.Cyan, b.BrightCyan = fix(b.dark, c)
+}
+
+// SetWhite sets the White and Bright White color
+func (b *Base16) SetWhite(c color.Hct) {
+	b.White, b.BrightWhite = fixWhite(b.dark, c)
 }
 
 const (
@@ -192,53 +205,35 @@ const (
 	fixToneLightHi = 25.0
 )
 
+func setToneChroma(c color.Hct, tone float64, chroma float64) color.ARGB {
+	c.Tone = tone
+	c.Chroma = chroma
+	return c.ToARGB()
+}
+
 // shared func for fg/bg
-func fixTone(dark, invert bool, c color.Hct) (color.ARGB, color.ARGB) {
+func fixBlackWhite(dark, invert bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark != invert {
-		return tc(c, toneDark, darkChromaScaled),
-			tc(c, toneDarkHi, darkChromaScaled)
+		return setToneChroma(c, toneDark, darkChromaScaled),
+			setToneChroma(c, toneDarkHi, darkChromaScaled)
 	}
-	return tc(c, toneLight, lightChromaScaled),
-		tc(c, toneLightHi, lightChromaScaled)
+	return setToneChroma(c, toneLight, lightChromaScaled),
+		setToneChroma(c, toneLightHi, lightChromaScaled)
 }
 
-func fixfg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
-	return fixTone(dark, false, c)
+func fixWhite(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
+	return fixBlackWhite(dark, false, c)
 }
 
-func fixbg(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
-	return fixTone(dark, true, c)
+func fixBlack(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
+	return fixBlackWhite(dark, true, c)
 }
 
 func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return tc(c, fixToneDark, darkChroma),
-			tc(c, fixToneDarkHi, darkChroma)
+		return setToneChroma(c, fixToneDark, darkChroma),
+			setToneChroma(c, fixToneDarkHi, darkChroma)
 	}
-	return tc(c, fixToneLight, lightChroma),
-		tc(c, fixToneLightHi, lightChroma)
-}
-
-// GenerateRandom generate random base16 colors with given fg,bg and dark
-func GenerateRandom(fg, bg color.ARGB) map[string]color.ARGB {
-	dark := viper.GetBool("dark")
-
-	b := map[string]color.ARGB{}
-	b["color_0"], b["color_8"] = fixbg(dark, bg.ToHct())
-
-	for _, code := range [6][2]string{
-		{"color_1", "color_9"},
-		{"color_2", "color_a"},
-		{"color_3", "color_b"},
-		{"color_4", "color_c"},
-		{"color_5", "color_d"},
-		{"color_6", "color_e"},
-	} {
-		h := randomHct()
-		b[code[0]], b[code[1]] = fix(dark, h)
-	}
-
-	b["color_7"], b["color_f"] = fixfg(dark, fg.ToHct())
-
-	return b
+	return setToneChroma(c, fixToneLight, lightChroma),
+		setToneChroma(c, fixToneLightHi, lightChroma)
 }
