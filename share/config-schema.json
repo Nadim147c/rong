@@ -1,0 +1,157 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Rong Configuration",
+    "description": "Configuration schema for generating color palettes",
+    "type": "object",
+    "properties": {
+        "dark": {
+            "type": "boolean",
+            "description": "Generate dark color palette",
+            "default": false
+        },
+        "dry_run": {
+            "type": "boolean",
+            "description": "Generate colors without applying templates",
+            "default": false
+        },
+        "json": {
+            "type": "boolean",
+            "description": "Print generated colors as JSON",
+            "default": false
+        },
+        "log_file": {
+            "type": "string",
+            "description": "File to save logs"
+        },
+        "quiet": {
+            "type": "boolean",
+            "description": "Suppress all logs",
+            "default": false
+        },
+        "verbose": {
+            "type": "integer",
+            "description": "Enable verbose logging",
+            "minimum": 0,
+            "maximum": 3,
+            "default": 0
+        },
+        "base16": {
+            "type": "object",
+            "description": "Base16 color generation settings",
+            "properties": {
+                "blend": {
+                    "type": "number",
+                    "description": "Blend ratio toward the primary color",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.5
+                },
+                "colors": {
+                    "type": "object",
+                    "description": "Source colors for base16 color generation",
+                    "properties": {
+                        "black": {
+                            "type": "string",
+                            "description": "Black source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#000000"
+                        },
+                        "blue": {
+                            "type": "string",
+                            "description": "Blue source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#0044FF"
+                        },
+                        "cyan": {
+                            "type": "string",
+                            "description": "Cyan source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#008080"
+                        },
+                        "green": {
+                            "type": "string",
+                            "description": "Green source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#008000"
+                        },
+                        "magenta": {
+                            "type": "string",
+                            "description": "Magenta source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#800080"
+                        },
+                        "red": {
+                            "type": "string",
+                            "description": "Red source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#800000"
+                        },
+                        "white": {
+                            "type": "string",
+                            "description": "White source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#C0C0C0"
+                        },
+                        "yellow": {
+                            "type": "string",
+                            "description": "Yellow source color",
+                            "pattern": "^#[0-9A-Fa-f]{6}$",
+                            "default": "#808000"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "method": {
+                    "type": "string",
+                    "description": "Color generation method",
+                    "enum": ["static", "dynamic"],
+                    "default": "static"
+                }
+            },
+            "additionalProperties": false
+        },
+        "material": {
+            "type": "object",
+            "description": "Material Design color generation settings",
+            "properties": {
+                "contrast": {
+                    "type": "number",
+                    "description": "Contrast adjustment",
+                    "minimum": -1.0,
+                    "maximum": 1.0,
+                    "default": 0.0
+                },
+                "platform": {
+                    "type": "string",
+                    "description": "Target platform",
+                    "enum": ["phone", "watch"],
+                    "default": "phone"
+                },
+                "variant": {
+                    "type": "string",
+                    "description": "Color variant to use",
+                    "enum": [
+                        "monochrome",
+                        "expressive",
+                        "vibrant",
+                        "neutral",
+                        "fidelity",
+                        "rainbow",
+                        "tonal_spot",
+                        "content",
+                        "fruit_salad"
+                    ],
+                    "default": "tonal_spot"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the theme",
+                    "enum": ["2021", "2025"],
+                    "default": "2025"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}
