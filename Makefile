@@ -12,6 +12,7 @@ BUILD_COMPLETION_DIR ?= $(BUILD_DIR)/completions
 
 INSTALL_BIN                 = $(shell realpath -m "$(PREFIX)/bin/$(NAME)")
 INSTALL_LICENSE             = $(shell realpath -m "$(PREFIX)/share/licenses/$(NAME)/LICENSE")
+INSTALL_SCHEMA              = $(shell realpath -m "$(PREFIX)/share/$(NAME)/config-schema.json")
 INSTALL_BASH_COMPLETION_DIR = $(shell realpath -m "$(PREFIX)/share/bash-completion/completions")
 INSTALL_ZSH_COMPLETION_DIR  = $(shell realpath -m "$(PREFIX)/share/zsh/site-functions")
 INSTALL_FISH_COMPLETION_DIR = $(shell realpath -m "$(PREFIX)/share/fish/vendor_completions.d")
@@ -26,6 +27,7 @@ build:
 install:
 	install -Dm755 $(BUILD_BIN) "$(INSTALL_BIN)"
 	install -Dm644 LICENSE "$(INSTALL_LICENSE)"
+	install -Dm644 share/config-schema.json "$(INSTALL_SCHEMA)"
 	install -Dm644 "$(BUILD_COMPLETION_DIR)/$(NAME).bash" "$(INSTALL_BASH_COMPLETION_DIR)/$(NAME)"
 	install -Dm644 "$(BUILD_COMPLETION_DIR)/$(NAME).zsh"  "$(INSTALL_ZSH_COMPLETION_DIR)/_$(NAME)"
 	install -Dm644 "$(BUILD_COMPLETION_DIR)/$(NAME).fish" "$(INSTALL_FISH_COMPLETION_DIR)/$(NAME).fish"

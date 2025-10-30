@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 
 	"github.com/Nadim147c/fang"
-	"github.com/Nadim147c/material/dynamic"
 	"github.com/Nadim147c/rong/cmd/cache"
 	"github.com/Nadim147c/rong/cmd/color"
 	"github.com/Nadim147c/rong/cmd/image"
@@ -83,7 +82,7 @@ func init() {
 
 	Command.PersistentFlags().CountP("verbose", "v", "enable verbose logging")
 	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
-	Command.PersistentFlags().String("log-file", "", "file to save logs")
+	Command.PersistentFlags().StringP("log-file", "l", "", "file to save logs")
 	Command.PersistentFlags().
 		StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
 	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
@@ -205,10 +204,6 @@ var Command = &cobra.Command{
 		viper.SetConfigName("config")
 
 		viper.SetEnvPrefix("rong")
-
-		viper.SetDefault("dark", true)
-		viper.SetDefault("variant", dynamic.VariantTonalSpot)
-		viper.SetDefault("platform", dynamic.PlatformPhone)
 
 		cfgFlag := cmd.Flags().Lookup("config")
 		if cfgFlag != nil && cfgFlag.Changed {

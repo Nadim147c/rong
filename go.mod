@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/Nadim147c/fang v0.5.0-fork
-	github.com/Nadim147c/material v1.0.0
+	github.com/Nadim147c/material v1.1.0
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.10.1
 	github.com/charmbracelet/bubbles v0.21.0

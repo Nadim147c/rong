@@ -23,7 +23,8 @@ import (
 )
 
 func init() {
-	Command.Flags().AddFlagSet(material.GeneratorFlags)
+	Command.Flags().AddFlagSet(material.Flags)
+	Command.Flags().AddFlagSet(base16.Flags)
 }
 
 // Command is the color command
@@ -82,8 +83,12 @@ rong color green --dry-run --json | jq
 			}
 		}
 
-		fg, bg := colorMap["on_background"], colorMap["background"]
-		based := base16.GenerateRandom(fg, bg)
+		// dynamic base16 generation is not possible with single source color
+		viper.Set("base16.method", "static")
+		based, err := base16.Generate(colorMap, nil)
+		if err != nil {
+			return err
+		}
 
 		output := models.NewOutput("", based, colorMap)
 
