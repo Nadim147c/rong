@@ -13,7 +13,7 @@ import (
 )
 
 // BlendRatio is the default blend ratio from static color
-const BlendRatio float64 = 0.5
+const BlendRatio float64 = 0.55
 
 // Flags are the flags used for generating colors
 var Flags = pflag.NewFlagSet("base16", pflag.ContinueOnError)

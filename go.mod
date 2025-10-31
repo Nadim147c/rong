@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/Nadim147c/fang v0.5.0-fork
-	github.com/Nadim147c/material v1.1.0
+	github.com/Nadim147c/material v1.1.1
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.10.1
 	github.com/charmbracelet/bubbles v0.21.0
@@ -13,6 +13,7 @@ require (
 	github.com/charmbracelet/log v0.4.2
 	github.com/charmbracelet/x/exp/charmtone v0.0.0-20251023181713-f594ac034d6b
 	github.com/gabriel-vasile/mimetype v1.4.10
+	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/samber/slog-multi v1.5.0
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.1
@@ -36,7 +37,6 @@ require (
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.1 // indirect
-	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

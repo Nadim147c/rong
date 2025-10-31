@@ -1,6 +1,8 @@
 package base16
 
 import (
+	"fmt"
+
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/num"
 )
@@ -42,16 +44,16 @@ var defaultSrcColors = SourceColors{
 
 // GenerateStatic generates base16 colors from pre-defined colors
 func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
-	primaryLab := primary.ToLab()
+	primaryLab := primary.ToXYZ().ToOkLab()
 
-	black := blend(src.Black.ToLab(), primaryLab, BlendRatio)
-	red := blend(src.Red.ToLab(), primaryLab, BlendRatio)
-	green := blend(src.Green.ToLab(), primaryLab, BlendRatio)
-	yellow := blend(src.Yellow.ToLab(), primaryLab, BlendRatio)
-	blue := blend(src.Blue.ToLab(), primaryLab, BlendRatio)
-	magenta := blend(src.Magenta.ToLab(), primaryLab, BlendRatio)
-	cyan := blend(src.Cyan.ToLab(), primaryLab, BlendRatio)
-	white := blend(src.White.ToLab(), primaryLab, BlendRatio)
+	black := blend(src.Black.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	red := blend(src.Red.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	green := blend(src.Green.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	yellow := blend(src.Yellow.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	blue := blend(src.Blue.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	magenta := blend(src.Magenta.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	cyan := blend(src.Cyan.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	white := blend(src.White.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
 
 	if num.DifferenceDegrees(blue.Hue, white.Hue) < 60 {
 		white.Hue = blue.Hue - 60
@@ -70,7 +72,8 @@ func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
 	return based
 }
 
-func blend(src color.Lab, dst color.Lab, ratio float64) color.Hct {
+func blend(src, dst color.OkLab, ratio float64) color.Hct {
+	fmt.Println(src, dst)
 	if ratio <= 0 {
 		return src.ToXYZ().ToHct()
 	}
@@ -78,7 +81,7 @@ func blend(src color.Lab, dst color.Lab, ratio float64) color.Hct {
 		return dst.ToXYZ().ToHct()
 	}
 
-	b := color.Lab{
+	b := color.OkLab{
 		L: src.L + (dst.L-src.L)*ratio,
 		A: src.A + (dst.A-src.A)*ratio,
 		B: src.B + (dst.B-src.B)*ratio,
