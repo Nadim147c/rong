@@ -5,6 +5,7 @@ import (
 
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/num"
+	"github.com/spf13/viper"
 )
 
 // standard ansi color
@@ -46,14 +47,16 @@ var defaultSrcColors = SourceColors{
 func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
 	primaryLab := primary.ToXYZ().ToOkLab()
 
-	black := blend(src.Black.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	red := blend(src.Red.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	green := blend(src.Green.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	yellow := blend(src.Yellow.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	blue := blend(src.Blue.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	magenta := blend(src.Magenta.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	cyan := blend(src.Cyan.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
-	white := blend(src.White.ToXYZ().ToOkLab(), primaryLab, BlendRatio)
+	ratio := viper.GetFloat64("base16.blend")
+
+	black := blend(src.Black.ToXYZ().ToOkLab(), primaryLab, ratio)
+	red := blend(src.Red.ToXYZ().ToOkLab(), primaryLab, ratio)
+	green := blend(src.Green.ToXYZ().ToOkLab(), primaryLab, ratio)
+	yellow := blend(src.Yellow.ToXYZ().ToOkLab(), primaryLab, ratio)
+	blue := blend(src.Blue.ToXYZ().ToOkLab(), primaryLab, ratio)
+	magenta := blend(src.Magenta.ToXYZ().ToOkLab(), primaryLab, ratio)
+	cyan := blend(src.Cyan.ToXYZ().ToOkLab(), primaryLab, ratio)
+	white := blend(src.White.ToXYZ().ToOkLab(), primaryLab, ratio)
 
 	if num.DifferenceDegrees(blue.Hue, white.Hue) < 60 {
 		white.Hue = blue.Hue - 60
