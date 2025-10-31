@@ -9,18 +9,18 @@
 }:
 buildGoModule rec {
   pname = "rong";
-  version = "1.0.0";
+  version = "2.0.0";
 
   src = fetchFromGitHub {
     owner = "Nadim147c";
     repo = "rong";
     rev = "v${version}";
-    hash = "sha256-+m4g4KGRMblrhw/8fSLiaBgtTypjMBx3r8cHvJrDkrg=";
+    hash = "sha256-tgeQ5dhIOHgNN4M9anA4xSOkvHwEAezCpmb0ggFdgDY=";
   };
 
-  vendorHash = "sha256-+JxKIOcSGhNslzfb6TDJkrPXaiqe60vcZk8fII+5dY8=";
+  vendorHash = "sha256-3FaFCgDkXSzs/WzQ6EPdS5acMM1ycSUbkFMuKnXgAAU=";
 
-  ldflags = ["-s" "-w" "-X" "main.Version=v${version}"];
+  ldflags = ["-s" "-w" "-X" "main.Version=${version}"];
 
   nativeBuildInputs = [installShellFiles makeWrapper];
   propagatedBuildInputs = [ffmpeg];
