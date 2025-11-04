@@ -1,8 +1,6 @@
 package base16
 
 import (
-	"fmt"
-
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/material/num"
 	"github.com/spf13/viper"
@@ -76,7 +74,6 @@ func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
 }
 
 func blend(src, dst color.OkLab, ratio float64) color.Hct {
-	fmt.Println(src, dst)
 	if ratio <= 0 {
 		return src.ToXYZ().ToHct()
 	}
