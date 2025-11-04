@@ -1,0 +1,125 @@
+# This theme is a copy of https://github.com/sharkdp/vivid/blob/master/themes/catppuccin-mocha.yml
+
+colors:
+  black:        '{{ .Color0.TrimmedHexRGB       }}'
+  red:          '{{ .Color1.TrimmedHexRGB       }}'
+  green:        '{{ .Color2.TrimmedHexRGB       }}'
+  yellow:       '{{ .Color3.TrimmedHexRGB       }}'
+  blue:         '{{ .Color4.TrimmedHexRGB       }}'
+  magenta:      '{{ .Color5.TrimmedHexRGB       }}'
+  cyan:         '{{ .Color6.TrimmedHexRGB       }}'
+  white:        '{{ .Color7.TrimmedHexRGB       }}'
+  gray:         '{{ .Color8.TrimmedHexRGB       }}'
+  primary:      '{{ .Primary.TrimmedHexRGB      }}'
+  on_primary:   '{{ .OnPrimary.TrimmedHexRGB    }}'
+  secondary:    '{{ .Secondary.TrimmedHexRGB    }}'
+  on_secondary: '{{ .OnSecondary.TrimmedHexRGB  }}'
+  tertiary:     '{{ .Tertiary.TrimmedHexRGB     }}'
+  on_tertiary:  '{{ .OnTertiary.TrimmedHexRGB   }}'
+  error:        '{{ .Error.TrimmedHexRGB        }}'
+  on_error:     '{{ .OnError.TrimmedHexRGB      }}'
+  text:         '{{ .OnBackground.TrimmedHexRGB }}'
+  subtext:      '{{ .Outline.TrimmedHexRGB      }}'
+  surface:      '{{ .Surface.TrimmedHexRGB      }}'
+  background:   '{{ .Background.TrimmedHexRGB   }}'
+
+core:
+  normal_text: {}
+  regular_file: {}
+  reset_to_normal: {}
+
+  directory:
+    foreground: blue
+
+  symlink:
+    foreground: magenta
+
+  multi_hard_link: {}
+
+  fifo:
+    foreground: on_tertiary
+    background: tertiary
+
+  socket:
+    foreground: on_secondary
+    background: secondary
+
+  door:
+    foreground: on_tertiary
+    background: tertiary
+
+  block_device:
+    foreground: text
+    background: surface
+
+  character_device:
+    foreground: magenta
+    background: background
+
+  broken_symlink:
+    foreground: on_error
+    background: error
+
+  missing_symlink_target:
+    foreground: on_error
+    background: error
+
+  setuid: {}
+
+  setgid: {}
+
+  file_with_capability: {}
+
+  sticky_other_writable: {}
+
+  other_writable: {}
+
+  sticky: {}
+
+  executable_file:
+    foreground: red
+    font-style: bold
+
+text:
+  special:
+    foreground: surface
+    background: yellow
+
+  todo:
+    font-style: bold
+
+  licenses:
+    foreground: primary
+
+  configuration:
+    foreground: yellow
+
+  other:
+    foreground: yellow
+
+markup:
+  foreground: yellow
+
+programming:
+  source:
+    foreground: green
+
+  tooling:
+    foreground: green
+
+media:
+  foreground: magenta
+
+office:
+  foreground: red
+
+archives:
+  foreground: cyan
+  font-style: underline
+
+executable:
+  foreground: red
+  font-style: bold
+
+unimportant:
+  foreground: subtext
