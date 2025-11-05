@@ -35,6 +35,7 @@ export default defineConfig({
             ],
           },
           { text: "Configuraion", link: "/configuration" },
+          { text: "Base16", link: "/base16" },
           { text: "Integration", link: "/integration" },
           { text: "Nix", link: "/nix" },
         ],
