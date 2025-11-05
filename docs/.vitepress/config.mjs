@@ -49,6 +49,7 @@ export default defineConfig({
           { text: "GTK", link: "gtk" },
           { text: "Hyprland", link: "hyprland" },
           { text: "Hyprlock", link: "hyprlock" },
+          { text: "Kitty", link: "kitty" },
           { text: "QT", link: "qtct" },
           { text: "Spotify", link: "spotify" },
           { text: "SwayNC", link: "swaync" },
