@@ -188,52 +188,90 @@ func (b *Base16) SetWhite(c color.Hct) {
 	b.White, b.BrightWhite = fixWhite(b.dark, c)
 }
 
+// Color adjustment parameters for theme variants.
 const (
-	darkChroma        = 80.0
-	lightChroma       = 100.0
-	darkChromaScaled  = 10.0
-	lightChromaScaled = 15.0
+	// Chroma value for dark theme colors
+	chromaDark = 80.0
+	// Chroma value for light theme colors
+	chromaLight = 100.0
 
-	toneDark    = 95.0
-	toneDarkHi  = 100.0
-	toneLight   = 5.0
-	toneLightHi = 15.0
+	// Reduced chroma for dark theme black/white fixes
+	chromaDarkMuted = 10.0
+	// Reduced chroma for light theme black/white fixes
+	chromaLightMuted = 15.0
 
-	fixToneDark    = 50.0
-	fixToneDarkHi  = 70.0
-	fixToneLight   = 35.0
-	fixToneLightHi = 25.0
+	// Dark theme black adjustments
+	toneNearWhiteDark = 15.0
+	tonePureWhiteDark = 25.0
+
+	// Dark theme white adjustments
+	toneNearBlackDark = 95.0
+	tonePureBlackDark = 100.0
+
+	// Light theme white adjustments
+	toneNearWhiteLight = 75.0
+	tonePureWhiteLight = 85.0
+
+	// Light theme black adjustments
+	toneNearBlackLight = 25.0
+	tonePureBlackLight = 35.0
+
+	// Base tone for dark theme general fixes
+	toneDarkBase = 50.0
+	// Bright tone for dark theme general fixes
+	toneDarkBright = 70.0
+
+	// Base tone for light theme general fixes
+	toneLightBase = 50.0
+	// Bright tone for light theme general fixes
+	toneLightBright = 65.0
 )
 
+// setToneChroma returns a new ARGB color with the specified tone and chroma
+// values.
 func setToneChroma(c color.Hct, tone float64, chroma float64) color.ARGB {
 	c.Tone = tone
 	c.Chroma = chroma
 	return c.ToARGB()
 }
 
-// shared func for fg/bg
-func fixBlackWhite(dark, invert bool, c color.Hct) (color.ARGB, color.ARGB) {
-	if dark != invert {
-		return setToneChroma(c, toneDark, darkChromaScaled),
-			setToneChroma(c, toneDarkHi, darkChromaScaled)
+// fixBlackWhite returns a pair of colors adjusted for black or white elements
+// based on the theme and inversion settings.
+func fixBlackWhite(dark, white bool, c color.Hct) (color.ARGB, color.ARGB) {
+	if dark {
+		if white {
+			return setToneChroma(c, toneNearWhiteDark, chromaDarkMuted),
+				setToneChroma(c, tonePureWhiteDark, chromaDarkMuted)
+		}
+		return setToneChroma(c, toneNearBlackDark, chromaDarkMuted),
+			setToneChroma(c, tonePureBlackDark, chromaDarkMuted)
 	}
-	return setToneChroma(c, toneLight, lightChromaScaled),
-		setToneChroma(c, toneLightHi, lightChromaScaled)
+	if white {
+		return setToneChroma(c, toneNearWhiteLight, chromaLightMuted),
+			setToneChroma(c, tonePureWhiteLight, chromaLightMuted)
+	}
+	return setToneChroma(c, toneNearBlackLight, chromaLightMuted),
+		setToneChroma(c, tonePureBlackLight, chromaLightMuted)
 }
 
+// fixWhite returns a pair of colors adjusted for white elements in the given
+// theme.
 func fixWhite(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	return fixBlackWhite(dark, false, c)
 }
 
+// fixBlack returns a pair of colors adjusted for black elements in the given
+// theme.
 func fixBlack(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	return fixBlackWhite(dark, true, c)
 }
 
+// fix returns a pair of colors with general theme-appropriate adjustments.
 func fix(dark bool, c color.Hct) (color.ARGB, color.ARGB) {
 	if dark {
-		return setToneChroma(c, fixToneDark, darkChroma),
-			setToneChroma(c, fixToneDarkHi, darkChroma)
+		return setToneChroma(c, toneDarkBase, chromaDark),
+			setToneChroma(c, toneDarkBright, chromaDark)
 	}
-	return setToneChroma(c, fixToneLight, lightChroma),
-		setToneChroma(c, fixToneLightHi, lightChroma)
+	return setToneChroma(c, toneLightBase, chromaLight),
+		setToneChroma(c, toneLightBright, chromaLight)
 }
