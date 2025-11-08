@@ -204,6 +204,7 @@ var Command = &cobra.Command{
 		viper.SetConfigName("config")
 
 		viper.SetEnvPrefix("rong")
+		viper.AutomaticEnv()
 
 		cfgFlag := cmd.Flags().Lookup("config")
 		if cfgFlag != nil && cfgFlag.Changed {
