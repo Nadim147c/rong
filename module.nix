@@ -1,11 +1,11 @@
-{
+self: {
   config,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib) types mkOption mkMerge mkEnableOption mkIf;
-  pkg = pkgs.callPackage ./. {};
+  pkg = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
   cfg = config.programs.rong;
   format = pkgs.formats.json {};
 in {

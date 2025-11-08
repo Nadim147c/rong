@@ -4,7 +4,11 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
+  outputs = inputs @ {
+    self,
+    flake-parts,
+    ...
+  }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
@@ -15,13 +19,12 @@
 
       perSystem = {pkgs, ...}: {
         packages.default = pkgs.callPackage ./. {};
-
         devShells.default = pkgs.callPackage ./shell.nix {};
       };
 
       flake = {
-        homeModules.rong = import ./module.nix;
-        homeModules.default = import ./module.nix;
+        homeModules.rong = import ./module.nix self;
+        homeModules.default = self.homeModules.rong;
       };
     };
 }
