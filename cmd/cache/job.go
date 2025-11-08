@@ -3,13 +3,17 @@ package cache
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/Nadim147c/rong/internal/cache"
 	"github.com/Nadim147c/rong/internal/ffmpeg"
 	"github.com/Nadim147c/rong/internal/material"
+	"github.com/adrg/xdg"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	lipgloss2 "github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/exp/charmtone"
 
 	"github.com/gabriel-vasile/mimetype"
@@ -119,6 +123,55 @@ func (j *job) Update(msg tea.Msg) {
 	}
 }
 
+func coloredTxt(txt string, c charmtone.Key) string {
+	return lipgloss2.NewStyle().Bold(true).Foreground(c).Render(txt)
+}
+
+func prettyPath(path string) string {
+	host, err := os.Hostname()
+	if err != nil {
+		return path
+	}
+
+	ud := xdg.UserDirs
+
+	pathMap := map[string]string{
+		// XDG Base Dirs
+		xdg.Home:       coloredTxt("HOME", charmtone.Violet),
+		xdg.ConfigHome: coloredTxt("CONFIG", charmtone.Charple),
+		xdg.CacheHome:  coloredTxt("CACHE", charmtone.Zest),
+		xdg.DataHome:   coloredTxt("DATA", charmtone.Julep),
+		xdg.StateHome:  coloredTxt("STATE", charmtone.Tuna),
+		xdg.RuntimeDir: coloredTxt("RUNTIME", charmtone.Butter),
+
+		// User Dirs
+		ud.Desktop:     coloredTxt("DESKTOP", charmtone.Malibu),
+		ud.Documents:   coloredTxt("DOCUMENTS", charmtone.Coral),
+		ud.Download:    coloredTxt("DOWNLOADS", charmtone.Zest),
+		ud.Music:       coloredTxt("MUSIC", charmtone.Uni),
+		ud.Pictures:    coloredTxt("PICTURES", charmtone.Blush),
+		ud.PublicShare: coloredTxt("PUBLIC", charmtone.Bok),
+		ud.Templates:   coloredTxt("TEMPLATES", charmtone.Dolly),
+		ud.Videos:      coloredTxt("VIDEOS", charmtone.Turtle),
+	}
+
+	var prefix string
+	for userPath := range pathMap {
+		if strings.HasPrefix(path, userPath) && len(userPath) > len(prefix) {
+			prefix = userPath
+		}
+	}
+
+	if short, ok := pathMap[prefix]; ok {
+		pretty := strings.Replace(path, prefix, short, 1)
+		return ansi.SetHyperlink(
+			"file://"+host+path,
+		) + pretty + ansi.ResetHyperlink()
+	}
+
+	return path
+}
+
 // This does breaks the tea.Model
 func (j *job) View(spiner string) string {
 	icon := spiner
@@ -161,5 +214,5 @@ func (j *job) View(spiner string) string {
 		Bold(true).
 		Render(status)
 
-	return fmt.Sprintf("%s %s %s", icon, status, j.filename)
+	return fmt.Sprintf("%s %s %s", icon, status, prettyPath(j.filename))
 }
