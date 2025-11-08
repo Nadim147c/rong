@@ -7,7 +7,7 @@ import (
 	"unicode"
 
 	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/rong/internal/base16"
+	"github.com/Nadim147c/rong/v3/internal/base16"
 )
 
 // Output contains all values that will execute templates

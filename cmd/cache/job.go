@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Nadim147c/rong/internal/cache"
-	"github.com/Nadim147c/rong/internal/ffmpeg"
-	"github.com/Nadim147c/rong/internal/material"
+	"github.com/Nadim147c/rong/v3/internal/cache"
+	"github.com/Nadim147c/rong/v3/internal/ffmpeg"
+	"github.com/Nadim147c/rong/v3/internal/material"
 	"github.com/adrg/xdg"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

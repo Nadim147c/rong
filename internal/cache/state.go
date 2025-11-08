@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Nadim147c/rong/internal/material"
-	"github.com/Nadim147c/rong/internal/pathutil"
+	"github.com/Nadim147c/rong/v3/internal/material"
+	"github.com/Nadim147c/rong/v3/internal/pathutil"
 )
 
 // State is the current generation state

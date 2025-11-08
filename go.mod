@@ -1,4 +1,4 @@
-module github.com/Nadim147c/rong
+module github.com/Nadim147c/rong/v3
 
 go 1.25
 

@@ -7,12 +7,12 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/Nadim147c/rong/internal/base16"
-	"github.com/Nadim147c/rong/internal/cache"
-	"github.com/Nadim147c/rong/internal/material"
-	"github.com/Nadim147c/rong/internal/models"
-	"github.com/Nadim147c/rong/internal/pathutil"
-	"github.com/Nadim147c/rong/templates"
+	"github.com/Nadim147c/rong/v3/internal/base16"
+	"github.com/Nadim147c/rong/v3/internal/cache"
+	"github.com/Nadim147c/rong/v3/internal/material"
+	"github.com/Nadim147c/rong/v3/internal/models"
+	"github.com/Nadim147c/rong/v3/internal/pathutil"
+	"github.com/Nadim147c/rong/v3/templates"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 

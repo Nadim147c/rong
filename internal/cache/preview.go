@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Nadim147c/rong/internal/ffmpeg"
-	"github.com/Nadim147c/rong/internal/pathutil"
+	"github.com/Nadim147c/rong/v3/internal/ffmpeg"
+	"github.com/Nadim147c/rong/v3/internal/pathutil"
 )
 
 // GetPreview returns the preview image
