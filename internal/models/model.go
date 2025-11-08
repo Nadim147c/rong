@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding"
 	"fmt"
 	"slices"
 	"strings"
@@ -69,26 +68,7 @@ type ColorName struct {
 	Pascal string `json:"pascal"`
 }
 
-var (
-	_ encoding.TextMarshaler   = (*ColorName)(nil)
-	_ encoding.TextUnmarshaler = (*ColorName)(nil)
-	_ fmt.Stringer             = (*ColorName)(nil)
-)
-
-// MarshalText implements encoding.TextMarshaler
-func (c ColorName) MarshalText() ([]byte, error) {
-	return []byte(c.Snake), nil
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler
-func (c *ColorName) UnmarshalText(b []byte) error {
-	key := string(b)
-	c.Snake = key
-	c.Camel = toCamelCase(key, false)
-	c.Kebab = strings.ReplaceAll(key, "_", "-")
-	c.Pascal = toCamelCase(key, true)
-	return nil
-}
+var _ fmt.Stringer = (*ColorName)(nil)
 
 // String implements fmt.Stringer
 func (c ColorName) String() string {
