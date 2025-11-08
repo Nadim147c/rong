@@ -3,9 +3,11 @@ package templates
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"strings"
 	"text/template"
 
+	"github.com/Masterminds/sprig/v3"
 	"github.com/Nadim147c/material/color"
 	"github.com/Nadim147c/rong/internal/models"
 )
@@ -19,6 +21,10 @@ var funcs = template.FuncMap{
 	"tone":    tone,
 	"quote":   quote,
 	"json":    jsonString,
+}
+
+func init() {
+	maps.Copy(funcs, sprig.TxtFuncMap())
 }
 
 func parse(s string) models.FormatedColor {

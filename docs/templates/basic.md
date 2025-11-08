@@ -79,6 +79,7 @@ Standard functions like `index`, `print`, and `printf` are supported.
 - **`tone`** – Adjusts the tone (lightness/darkness) of a color.
 - **`quote`** – Wraps the given value in double quotes as a string.
 - **`json`** – Converts a value to its JSON string representation or `"null"` on error.
+- **`sprig`** - A big list of templates functions: https://masterminds.github.io/sprig.
 
 Examples:
 
