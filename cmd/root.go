@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"syscall"
 
 	"github.com/Nadim147c/fang"
 	"github.com/Nadim147c/rong/cmd/cache"
@@ -102,7 +103,7 @@ func Execute(version string) error {
 		Command,
 		fang.WithErrorHandler(handleError),
 		fang.WithFlagTypes(),
-		fang.WithNotifySignal(os.Interrupt, os.Kill),
+		fang.WithNotifySignal(syscall.SIGINT, syscall.SIGTERM),
 		fang.WithShorthandPadding(),
 		fang.WithVersion(version),
 		fang.WithoutCompletions(),
