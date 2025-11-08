@@ -1,6 +1,6 @@
 {{- $lastIdx := add (len .Colors) -1 -}}
 {
 {{- range $i, $c := .Colors }}
-  "{{ $c.Name.Camel }}": "{{ $c.Color.HexRGB }}"{{ if ne $i $lastIdx }},{{ end }}
+  "my{{ $c.Name.Pascal }}": "{{ $c.Color.HexRGB }}"{{ if ne $i $lastIdx }},{{ end }}
 {{- end }}
 }
