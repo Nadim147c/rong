@@ -12,6 +12,7 @@ import (
 
 	"github.com/Nadim147c/rong/v3/internal/models"
 	"github.com/Nadim147c/rong/v3/internal/pathutil"
+	"github.com/google/renameio/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
@@ -76,33 +77,29 @@ func link() error {
 		return fmt.Errorf("failed to convert links: %v", links)
 	}
 
-	for src, target := range links {
+	for name, target := range links {
 		for path := range slices.Values(target) {
-			path, err := pathutil.FindPath(pathutil.ConfigDir, path)
+			dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
 			if err != nil {
 				slog.Error(
 					"Failed to find path",
-					"src",
-					src,
-					"path",
-					path,
-					"error",
-					err,
+					"src", name,
+					"path", dst,
+					"error", err,
 				)
 				continue // log and continue instead of returning
 			}
-			if err := hardlinkOrCopy(filepath.Join(pathutil.StateDir, src), path); err != nil {
+			src := filepath.Join(pathutil.StateDir, name)
+			if err := atomicCopy(src, dst); err != nil {
 				slog.Error(
-					"Failed to link or copy",
-					"src",
-					src,
-					"path",
-					path,
-					"error",
-					err,
+					"Failed to atomically copy",
+					"src", name,
+					"path", dst,
+					"error", err,
 				)
 				continue
 			}
+			slog.Info("Successfully copied", "src", name, "path", dst)
 		}
 	}
 
@@ -110,7 +107,7 @@ func link() error {
 }
 
 // execute executes a template using color
-func execute(tmpl *template.Template, color models.Output) {
+func execute(tmpl *template.Template, out models.Output) {
 	name := tmpl.Name()
 	saveFile := strings.TrimSuffix(name, ".tmpl")
 	outputPath := filepath.Join(pathutil.StateDir, saveFile)
@@ -119,17 +116,26 @@ func execute(tmpl *template.Template, color models.Output) {
 		slog.Warn("Overwriting templates", "name", name)
 	}
 
-	file, err := os.Create(outputPath)
+	f, err := renameio.TempFile("", outputPath)
 	if err != nil {
-		slog.Error("Error creating file", "file", outputPath, "error", err)
+		slog.Error("Error executing template", "template", name, "error", err)
 		success[saveFile] = false
 		return
 	}
-	defer file.Close()
+	defer f.Cleanup()
 
-	err = tmpl.Execute(file, color)
-	if err != nil {
+	if err := tmpl.Execute(f, out); err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
+		success[saveFile] = false
+		return
+	}
+
+	if err := f.CloseAtomicallyReplace(); err != nil {
+		slog.Error(
+			"Failed atomic of replace",
+			"file", outputPath,
+			"error", err,
+		)
 		success[saveFile] = false
 		return
 	}

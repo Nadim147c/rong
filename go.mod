@@ -11,10 +11,13 @@ require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta1
 	github.com/charmbracelet/log v0.4.2
+	github.com/charmbracelet/x/ansi v0.10.2
 	github.com/charmbracelet/x/exp/charmtone v0.0.0-20251023181713-f594ac034d6b
 	github.com/gabriel-vasile/mimetype v1.4.10
 	github.com/go-viper/mapstructure/v2 v2.4.0
+	github.com/google/renameio/v2 v2.0.0
 	github.com/samber/slog-multi v1.5.0
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.1
@@ -31,8 +34,6 @@ require (
 	github.com/carapace-sh/carapace-shlex v1.1.1 // indirect
 	github.com/charmbracelet/colorprofile v0.3.2 // indirect
 	github.com/charmbracelet/harmonica v0.2.0 // indirect
-	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta1 // indirect
-	github.com/charmbracelet/x/ansi v0.10.2 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
 	github.com/charmbracelet/x/exp/color v0.0.0-20251006100439-2151805163c8 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
