@@ -201,7 +201,6 @@ var Command = &cobra.Command{
 
 		viper.AddConfigPath("/etc/rong")
 		viper.AddConfigPath(pathutil.ConfigDir)
-		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
 
 		viper.SetEnvPrefix("rong")
