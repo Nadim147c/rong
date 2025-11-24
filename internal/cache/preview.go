@@ -7,11 +7,13 @@ import (
 
 	"github.com/Nadim147c/rong/v3/internal/ffmpeg"
 	"github.com/Nadim147c/rong/v3/internal/pathutil"
+	"github.com/spf13/viper"
 )
 
 // GetPreview returns the preview image
 func GetPreview(src string, hash string) (string, error) {
-	path := filepath.Join(pathutil.CacheDir, hash+".webp")
+	format := viper.GetString("preview-format")
+	path := filepath.Join(pathutil.CacheDir, hash+"."+format)
 	if _, err := os.Stat(path); err == nil {
 		return path, nil
 	}

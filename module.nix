@@ -37,7 +37,13 @@ in {
         description = "Generate dark color palette";
       };
 
-      dry_run = mkOption {
+      preview-format = mkOption {
+        type = types.str;
+        default = false;
+        description = "Format of the image preview generate for video input";
+      };
+
+      dry-run = mkOption {
         type = types.bool;
         default = false;
         description = "Generate colors without applying templates";

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -187,6 +188,9 @@ rong cache path/to/*.png
 rong cache path/to/directory
   `,
 	Args: cobra.MinimumNArgs(1),
+	PreRun: func(cmd *cobra.Command, _ []string) {
+		viper.BindPFlags(cmd.Flags())
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		frames, _ := cmd.Flags().GetInt("frames")

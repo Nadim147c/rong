@@ -2,7 +2,6 @@ package ffmpeg
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"math"
 	"os/exec"
@@ -96,42 +95,35 @@ func GetPixels(
 
 // GetDuration runs ffprobe to determine if the file is an image or video and
 // returns its duration
-func GetDuration(filePath string) (float64, error) {
-	cmd := exec.Command("ffprobe",
-		"-v", "quiet",
-		"-print_format", "json",
-		"-show_format",
-		filePath)
-	output, err := cmd.Output()
+func GetDuration(src string) (float64, error) {
+	out, err := exec.Command("ffprobe",
+		"-v", "error",
+		"-show_entries", "format=duration",
+		"-of", "default=noprint_wrappers=1:nokey=1",
+		src,
+	).Output()
 	if err != nil {
 		return 0, err
 	}
 
-	type Format struct {
-		Duration string `json:"duration"`
-	}
-	type FFProbeOutput struct {
-		Format Format `json:"format"`
-	}
-
-	// Parse JSON output
-	var data FFProbeOutput
-	if err := json.Unmarshal(output, &data); err != nil {
-		return 0, err
-	}
-	return strconv.ParseFloat(data.Format.Duration, 64)
+	return strconv.ParseFloat(strings.TrimSpace(string(out)), 64)
 }
 
 // GeneratePreview generates preview thumnail for given media
-func GeneratePreview(ctx context.Context, src string, dst string) error {
-	ffmpeg := exec.CommandContext(
-		ctx,
-		"ffmpeg",
-		"-i",
-		src,
-		"-vframes",
-		"1",
+func GeneratePreview(ctx context.Context, src, dst string) error {
+	dur, err := GetDuration(src)
+	if err != nil {
+		return err
+	}
+	seek := fmt.Sprintf("%.2f", dur*0.10) // 10%
+
+	cmd := exec.CommandContext(
+		ctx, "ffmpeg",
+		"-ss", seek,
+		"-i", src,
+		"-vframes", "1",
+		"-y",
 		dst,
 	)
-	return ffmpeg.Run()
+	return cmd.Run()
 }

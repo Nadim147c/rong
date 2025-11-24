@@ -22,6 +22,7 @@ import (
 	"github.com/charmbracelet/log"
 	slogmulti "github.com/samber/slog-multi"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -42,16 +43,24 @@ func init() {
 		"platform": carapace.ActionValues("phone", "watch"),
 	}
 
+	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
+	previewFlagSet.StringP("preview-format", "p",
+		"jpg", "format of video preview image",
+	)
+	viper.SetDefault("preview-format", "jpg")
+
 	carapace.Gen(color.Command).FlagCompletion(actions)
 
 	imageComp := carapace.Gen(image.Command)
 	imageComp.FlagCompletion(actions)
 	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
 
+	video.Command.Flags().AddFlagSet(previewFlagSet)
 	videoComp := carapace.Gen(video.Command)
 	videoComp.FlagCompletion(actions)
 	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
 
+	cache.Command.Flags().AddFlagSet(previewFlagSet)
 	cacheComp := carapace.Gen(cache.Command)
 	cacheComp.FlagCompletion(actions)
 	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())

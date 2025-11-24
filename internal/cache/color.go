@@ -9,6 +9,7 @@ import (
 
 	"github.com/Nadim147c/rong/v3/internal/material"
 	"github.com/Nadim147c/rong/v3/internal/pathutil"
+	"github.com/spf13/viper"
 )
 
 // Hash returns xxh3_128 sum
@@ -28,7 +29,8 @@ func IsCached(hash string, isVideo bool) bool {
 		_, err := os.Stat(jsonCache)
 		return err == nil
 	}
-	preview := filepath.Join(pathutil.CacheDir, hash+".webp")
+	format := viper.GetString("preview-format")
+	preview := filepath.Join(pathutil.CacheDir, hash+"."+format)
 	_, err := os.Stat(preview)
 	return err == nil
 }
