@@ -1,0 +1,3 @@
+{{ range .Colors -}}
+set -gq rong_{{ .Name.Snake }} "{{ .Color }}"
+{{end -}}
