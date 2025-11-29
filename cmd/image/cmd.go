@@ -101,10 +101,6 @@ var Command = &cobra.Command{
 
 		output := models.NewOutput(imagePath, based, colorMap)
 
-		if err := cache.SaveState(imagePath, hash, quantized); err != nil {
-			slog.Warn("Failed to save colors to cache", "error", err)
-		}
-
 		if viper.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
 				slog.Error("Failed to encode output", "error", err)
@@ -112,6 +108,10 @@ var Command = &cobra.Command{
 		}
 
 		if !viper.GetBool("dry-run") {
+			if err := cache.SaveState(imagePath, hash, quantized); err != nil {
+				slog.Warn("Failed to save colors to cache", "error", err)
+			}
+
 			return templates.Execute(output)
 		}
 
