@@ -1,7 +1,26 @@
-{{- $n := "Rong" -}}
+# Generated using rong: https://github.com/Nadim147c/rong (GPL-3.0)
+# Copied from matugen-themes: https://github.com/InioX/matugen-themes (MIT)
+
+[General]
+ColorScheme=Rong
+Name=Rong
+
+[Appearance]
+ColorScheme=Rong
+
+[KDE]
+Contrast=4
+
+[WM]
+ActiveBackground={{ .PrimaryContainer }}
+ActiveBlend={{ .OnPrimaryContainer }}
+ActiveForeground={{ .OnPrimaryContainer }}
+InactiveBackground={{ .Surface }}
+InactiveBlend={{ .OnSurfaceVariant }}
+InactiveForeground={{ .OnSurfaceVariant }}
 
 [ColorEffects:Disabled]
-Color=56,56,56
+Color={{ .SurfaceDim }}
 ColorAmount=0
 ColorEffect=0
 ContrastAmount=0.65
@@ -11,7 +30,7 @@ IntensityEffect=2
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=true
-Color=112,111,110
+Color={{ .SurfaceVariant }}
 ColorAmount=0.025
 ColorEffect=2
 ContrastAmount=0.1
@@ -21,129 +40,113 @@ IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
-BackgroundAlternate={{ .SurfaceContainerHigh.TrimmedRGB }}
-BackgroundNormal={{ .SurfaceContainerHighest.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .SurfaceContainerLow }}
+BackgroundNormal={{ .SurfaceContainerHigh }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnSurface }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Complementary]
-BackgroundAlternate={{ .SurfaceContainerHigh.TrimmedRGB }}
-BackgroundNormal={{ .Surface.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .SurfaceContainerLow }}
+BackgroundNormal={{ .Surface }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnPrimaryContainer }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Header]
-BackgroundAlternate={{ .Surface.TrimmedRGB }}
-BackgroundNormal={{ .SurfaceContainerHighest.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .Surface }}
+BackgroundNormal={{ .SurfaceContainer }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnSurface }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Header][Inactive]
-BackgroundAlternate={{ .SurfaceContainerHighest.TrimmedRGB }}
-BackgroundNormal={{ .Surface.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .SurfaceContainer }}
+BackgroundNormal={{ .Surface }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnSurface }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Selection]
-BackgroundAlternate={{ .PrimaryContainer.TrimmedRGB }}
-BackgroundNormal={{ .Primary.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .OnPrimary.TrimmedRGB }}
-ForegroundInactive={{ .OnPrimaryContainer.TrimmedRGB }}
-ForegroundLink={{ .Tertiary.TrimmedRGB }}
-ForegroundNegative={{ .OnError.TrimmedRGB }}
-ForegroundNeutral={{ .OnTertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnPrimary.TrimmedRGB }}
-ForegroundPositive={{ .OnSecondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .SurfaceContainerLow }}
+BackgroundNormal={{ .Primary }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .OnPrimary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .SecondaryFixed }}
+ForegroundNegative={{ .ErrorContainer }}
+ForegroundNeutral={{ .TertiaryFixedDim }}
+ForegroundNormal={{ .OnPrimary }}
+ForegroundPositive={{ .TertiaryContainer }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Tooltip]
-BackgroundAlternate={{ .SurfaceContainerHigh.TrimmedRGB }}
-BackgroundNormal={{ .SurfaceContainerHighest.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .Surface }}
+BackgroundNormal={{ .SurfaceContainer }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnBackground }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:View]
-BackgroundAlternate={{ .SurfaceContainerLow.TrimmedRGB }}
-BackgroundNormal={{ .Background.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnBackground.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
+BackgroundAlternate={{ .SurfaceContainer }}
+BackgroundNormal={{ .Background }}
+DecorationFocus={{ .OnPrimaryContainer }}
+DecorationHover={{ .OnPrimary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnBackground }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
 
 [Colors:Window]
-BackgroundAlternate={{ .SurfaceContainerHighest.TrimmedRGB }}
-BackgroundNormal={{ .Surface.TrimmedRGB }}
-DecorationFocus={{ .Primary.TrimmedRGB }}
-DecorationHover={{ .Primary.TrimmedRGB }}
-ForegroundActive={{ .Primary.TrimmedRGB }}
-ForegroundInactive={{ .OnSurfaceVariant.TrimmedRGB }}
-ForegroundLink={{ .Primary.TrimmedRGB }}
-ForegroundNegative={{ .Error.TrimmedRGB }}
-ForegroundNeutral={{ .Tertiary.TrimmedRGB }}
-ForegroundNormal={{ .OnSurface.TrimmedRGB }}
-ForegroundPositive={{ .Secondary.TrimmedRGB }}
-ForegroundVisited={{ .Tertiary.TrimmedRGB }}
-
-[General]
-ColorScheme={{ $n }}
-Name={{ $n }}
-shadeSortColumn=true
-
-[KDE]
-contrast=4
-
-[WM]
-activeBackground={{ .SurfaceContainerHighest.TrimmedRGB }}
-activeBlend={{ .OnSurface.TrimmedRGB }}
-activeForeground={{ .OnSurface.TrimmedRGB }}
-inactiveBackground={{ .SurfaceContainerLow.TrimmedRGB }}
-inactiveBlend={{ .OnSurfaceVariant.TrimmedRGB }}
-inactiveForeground={{ .OnSurfaceVariant.TrimmedRGB }}
+BackgroundAlternate={{ .PrimaryContainer }}
+BackgroundNormal={{ .SurfaceContainer }}
+DecorationFocus={{ .Primary }}
+DecorationHover={{ .Primary }}
+ForegroundActive={{ .Primary }}
+ForegroundInactive={{ .OnSurfaceVariant }}
+ForegroundLink={{ .Secondary }}
+ForegroundNegative={{ .Error }}
+ForegroundNeutral={{ .Tertiary }}
+ForegroundNormal={{ .OnBackground }}
+ForegroundPositive={{ .TertiaryFixed }}
+ForegroundVisited={{ .OnSecondaryContainer }}
