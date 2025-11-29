@@ -11,7 +11,7 @@ import (
 	"github.com/Nadim147c/rong/v3/internal/cache"
 	"github.com/Nadim147c/rong/v3/internal/material"
 	"github.com/Nadim147c/rong/v3/internal/models"
-	"github.com/Nadim147c/rong/v3/templates"
+	"github.com/Nadim147c/rong/v3/internal/templates"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
