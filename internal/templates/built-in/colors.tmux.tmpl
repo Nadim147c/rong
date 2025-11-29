@@ -1,3 +1,5 @@
+# Generated using rong: https://github.com/Nadim147c/rong (GPL-3.0)
+
 {{ range .Colors -}}
 set -gq @rong_{{ .Name.Snake }} "{{ .Color }}"
 {{end -}}
