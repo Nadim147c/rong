@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/dynamic"
-	"github.com/Nadim147c/material/quantizer"
-	"github.com/Nadim147c/material/score"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/dynamic"
+	"github.com/Nadim147c/material/v2/quantizer"
+	"github.com/Nadim147c/material/v2/score"
 )
 
 // Quantized is quantized colors

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Nadim147c/material/color"
+	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v3/internal/base16"
 )
 
@@ -160,7 +160,7 @@ func NewFormatedColor(rgb color.ARGB) FormatedColor {
 		return value
 	}
 
-	alpha, red, green, blue := rgb.Values()
+	alpha, red, green, blue := rgb.Components()
 
 	// Format color representations
 	value.HexRGB = fmt.Sprintf("#%02X%02X%02X", red, green, blue)

@@ -1,6 +1,6 @@
 package color
 
-import "github.com/Nadim147c/material/color"
+import "github.com/Nadim147c/material/v2/color"
 
 // Names contains color names with their HEX values
 var Names = map[string]color.ARGB{

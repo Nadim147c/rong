@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Nadim147c/material/color"
+	"github.com/Nadim147c/material/v2/color"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/pflag"

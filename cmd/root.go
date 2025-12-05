@@ -69,7 +69,7 @@ func init() {
 	colorComp.FlagCompletion(actions)
 	nameCompletions := make([]string, 0, len(color.Names)*2)
 	for name, value := range color.Names {
-		_, r, g, b := value.Values()
+		r, g, b := value.Red(), value.Green(), value.Blue()
 		nameCompletions = append(
 			nameCompletions,
 			name,

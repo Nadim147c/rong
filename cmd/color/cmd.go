@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/dynamic"
-	"github.com/Nadim147c/material/palettes"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/dynamic"
+	"github.com/Nadim147c/material/v2/palettes"
 	"github.com/Nadim147c/rong/v3/internal/base16"
 	"github.com/Nadim147c/rong/v3/internal/material"
 	"github.com/Nadim147c/rong/v3/internal/models"

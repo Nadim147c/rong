@@ -1,8 +1,8 @@
 package base16
 
 import (
-	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/num"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/num"
 	"github.com/spf13/viper"
 )
 

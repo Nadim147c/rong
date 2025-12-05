@@ -8,7 +8,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/Nadim147c/material/color"
+	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v3/internal/models"
 )
 

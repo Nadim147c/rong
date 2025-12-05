@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"sort"
 
-	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/num"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/num"
 )
 
 // GenerateDynamic generates base16 colors from selecting quantizes color. It

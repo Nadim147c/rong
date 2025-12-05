@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"image"
 
-	"github.com/Nadim147c/material/color"
-	"github.com/Nadim147c/material/dynamic"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
