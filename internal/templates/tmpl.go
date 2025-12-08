@@ -12,7 +12,6 @@ import (
 
 	"github.com/Nadim147c/rong/v3/internal/models"
 	"github.com/Nadim147c/rong/v3/internal/pathutil"
-	"github.com/google/renameio/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
@@ -32,8 +31,6 @@ var templates embed.FS
 
 // Execute runs built-in and user-defined templates and links user defined files
 func Execute(color models.Output) error {
-	defer link()
-
 	if err := os.MkdirAll(pathutil.StateDir, 0o755); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return err
@@ -50,6 +47,11 @@ func Execute(color models.Output) error {
 	for _, tmpl := range builtInTmpls.Templates() {
 		execute(tmpl, color)
 	}
+
+	defer func() {
+		install()
+		link()
+	}()
 
 	templateRoot := filepath.Join(pathutil.ConfigDir, "templates")
 
@@ -78,14 +80,14 @@ func Execute(color models.Output) error {
 	return nil
 }
 
-func link() error {
-	rawLinks := viper.Get("links")
-	links, err := cast.ToStringMapStringSliceE(rawLinks)
+func install() error {
+	rawInstalls := viper.Get("installs")
+	installs, err := cast.ToStringMapStringSliceE(rawInstalls)
 	if err != nil {
-		return fmt.Errorf("failed to convert links: %v", links)
+		return fmt.Errorf("failed to convert links: %v", installs)
 	}
 
-	for name, target := range links {
+	for name, target := range installs {
 		if !success.has(name) {
 			continue
 		}
@@ -117,6 +119,45 @@ func link() error {
 	return nil
 }
 
+func link() error {
+	rawLinks := viper.Get("links")
+	links, err := cast.ToStringMapStringSliceE(rawLinks)
+	if err != nil {
+		return fmt.Errorf("failed to convert links: %v", links)
+	}
+
+	for name, target := range links {
+		if !success.has(name) {
+			continue
+		}
+		for path := range slices.Values(target) {
+			dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
+			if err != nil {
+				slog.Error(
+					"Failed to find path",
+					"src", name,
+					"path", dst,
+					"error", err,
+				)
+				continue // log and continue instead of returning
+			}
+			src := filepath.Join(pathutil.StateDir, name)
+			if err := hardlinkOrCopy(src, dst); err != nil {
+				slog.Error(
+					"Failed to atomically copy",
+					"src", name,
+					"path", dst,
+					"error", err,
+				)
+				continue
+			}
+			slog.Info("Successfully copied", "src", name, "path", dst)
+		}
+	}
+
+	return nil
+}
+
 // execute executes a template using color
 func execute(tmpl *template.Template, out models.Output) {
 	name := tmpl.Name()
@@ -127,26 +168,16 @@ func execute(tmpl *template.Template, out models.Output) {
 		slog.Warn("Overwriting templates", "name", name)
 	}
 
-	f, err := renameio.TempFile("", outputPath)
+	file, err := os.Create(outputPath)
 	if err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
 		success.set(filename)
 		return
 	}
-	defer f.Cleanup()
+	defer file.Close()
 
-	if err := tmpl.Execute(f, out); err != nil {
+	if err := tmpl.Execute(file, out); err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
-		success.set(filename)
-		return
-	}
-
-	if err := f.CloseAtomicallyReplace(); err != nil {
-		slog.Error(
-			"Failed atomic of replace",
-			"file", outputPath,
-			"error", err,
-		)
 		success.set(filename)
 		return
 	}
