@@ -18,12 +18,12 @@
       ];
 
       perSystem = {pkgs, ...}: {
-        packages.default = pkgs.callPackage ./. {};
-        devShells.default = pkgs.callPackage ./shell.nix {};
+        packages.default = pkgs.callPackage ./nix/package.nix {};
+        devShells.default = pkgs.callPackage ./nix/shell.nix {};
       };
 
       flake = {
-        homeModules.rong = import ./module.nix self;
+        homeModules.rong = import ./home-module.nix self;
         homeModules.default = self.homeModules.rong;
       };
     };

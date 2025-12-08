@@ -36,19 +36,15 @@ generate-completion: build
 	$(BUILD_BIN) _carapace zsh  > "$(BUILD_COMPLETION_DIR)/$(NAME).zsh"
 	$(BUILD_BIN) _carapace fish > "$(BUILD_COMPLETION_DIR)/$(NAME).fish"
 
-tools-install:
-	$(GO) get $(TOOL_MOD) -tool github.com/mgechev/revive@latest
-	$(GO) get $(TOOL_MOD) -tool github.com/segmentio/golines@latest
-	$(GO) get $(TOOL_MOD) -tool mvdan.cc/gofumpt@latest
-	$(GO) mod tidy $(TOOL_MOD)
-
 format:
-	find -iname '*.go' -print0 | xargs -0 $(TOOL) golines --max-len 80 -w
-	find -iname '*.go' -print0 | xargs -0 $(TOOL) gofumpt -w
+	fd --extension go --exec sh -c 'golines --max-len 80 -w {} && gofumpt -w {} && echo {}'
+
+format-nix:
+	fd --extension nix --exec sh -c 'alejandra -q {} && echo {}'
 
 test:
 	$(GO) test -v ./...
-	$(TOOL) revive -config revive.toml -formatter friendly ./...
+	revive -config revive.toml -formatter friendly ./...
 
 docs-dev:
 	$(BUN) run dev
