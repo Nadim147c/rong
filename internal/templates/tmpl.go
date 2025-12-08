@@ -17,7 +17,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-var success = map[string]bool{}
+var success = successCounter{}
+
+type successCounter map[string]struct{}
+
+func (s successCounter) set(n string) { s[n] = struct{}{} }
+func (s successCounter) has(n string) bool {
+	_, ok := s[n]
+	return ok
+}
 
 //go:embed built-in/*.tmpl
 var templates embed.FS
@@ -78,6 +86,9 @@ func link() error {
 	}
 
 	for name, target := range links {
+		if !success.has(name) {
+			continue
+		}
 		for path := range slices.Values(target) {
 			dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
 			if err != nil {
@@ -109,24 +120,24 @@ func link() error {
 // execute executes a template using color
 func execute(tmpl *template.Template, out models.Output) {
 	name := tmpl.Name()
-	saveFile := strings.TrimSuffix(name, ".tmpl")
-	outputPath := filepath.Join(pathutil.StateDir, saveFile)
+	filename := strings.TrimSuffix(name, ".tmpl")
+	outputPath := filepath.Join(pathutil.StateDir, filename)
 
-	if _, ok := success[saveFile]; ok {
+	if success.has(filename) {
 		slog.Warn("Overwriting templates", "name", name)
 	}
 
 	f, err := renameio.TempFile("", outputPath)
 	if err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
-		success[saveFile] = false
+		success.set(filename)
 		return
 	}
 	defer f.Cleanup()
 
 	if err := tmpl.Execute(f, out); err != nil {
 		slog.Error("Error executing template", "template", name, "error", err)
-		success[saveFile] = false
+		success.set(filename)
 		return
 	}
 
@@ -136,10 +147,10 @@ func execute(tmpl *template.Template, out models.Output) {
 			"file", outputPath,
 			"error", err,
 		)
-		success[saveFile] = false
+		success.set(filename)
 		return
 	}
 
-	success[saveFile] = true
+	success.set(filename)
 	slog.Info("Template written", "template", name, "path", outputPath)
 }
