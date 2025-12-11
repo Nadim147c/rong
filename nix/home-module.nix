@@ -30,7 +30,7 @@ in {
       description = "Templates to use";
     };
 
-    settings = {
+    settings = mkOption {
       type = types.attrs;
       default = {};
       description = "Rong settings";

@@ -23,7 +23,7 @@
       };
 
       flake = {
-        homeModules.rong = import ./home-module.nix self;
+        homeModules.rong = import ./nix/home-module.nix self;
         homeModules.default = self.homeModules.rong;
       };
     };
