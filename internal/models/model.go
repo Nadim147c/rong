@@ -8,12 +8,13 @@ import (
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v3/internal/base16"
+	"github.com/Nadim147c/rong/v3/internal/material"
 )
 
 // Output contains all values that will execute templates
 type Output struct {
-	Material `        json:"material"`
-	Base16   `        json:"base16"`
+	Material `json:"material"`
+	Base16   `json:"base16"`
 	Image    string       `json:"image"`
 	Colors   []NamedColor `json:"colors"`
 }
@@ -21,23 +22,34 @@ type Output struct {
 // NewOutput create output struct for templates execution
 func NewOutput(
 	source string,
-	based base16.Base16,
-	colorMap map[string]color.ARGB,
+	base16Colors base16.Base16,
+	materialColors map[string]color.ARGB,
+	customColors map[string]material.CustomColor,
 ) Output {
-	colors := make([]NamedColor, 0, len(colorMap)+16)
+	colors := make([]NamedColor, 0, len(materialColors)+16)
 
-	b, basedSlice := NewBase16(based)
+	b, basedSlice := NewBase16(base16Colors)
 	colors = append(colors, basedSlice...)
 
-	for key, value := range colorMap {
+	for key, value := range materialColors {
 		colors = append(colors, NewNamedColor(key, value))
+	}
+
+	for key, value := range customColors {
+		colors = append(
+			colors,
+			NewNamedColor(key, value.Color),
+			NewNamedColor("on_"+key, value.OnColor),
+			NewNamedColor(key+"_container", value.ColorContainer),
+			NewNamedColor("on_"+key+"_container", value.OnColor),
+		)
 	}
 
 	slices.SortFunc(colors, func(a, b NamedColor) int {
 		return strings.Compare(a.Name.Snake, b.Name.Snake)
 	})
 
-	material := NewMaterial(colorMap)
+	material := NewMaterial(materialColors, customColors)
 
 	return Output{
 		Material: material,
@@ -142,6 +154,7 @@ func (cv FormatedColor) String() string {
 func NewNamedColor(key string, rgb color.ARGB) NamedColor {
 	// Convert snake_case to other cases
 	var name ColorName
+	key = strings.ToLower(key)
 	name.Snake = key
 	name.Camel = toCamelCase(key, false)
 	name.Kebab = strings.ReplaceAll(key, "_", "-")

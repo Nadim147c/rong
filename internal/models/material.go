@@ -1,13 +1,70 @@
 package models
 
 import (
+	"encoding/json"
+	"strings"
+	"unicode"
+
 	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/rong/v3/internal/material"
 )
+
+// CustomColors is map of user defined custom colors
+type CustomColors map[string]FormatedColor
+
+func pascalToSnake(s string) string {
+	var out []rune
+	for i, r := range s {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				out = append(out, '_')
+			}
+			out = append(out, unicode.ToLower(r))
+		} else {
+			out = append(out, r)
+		}
+	}
+	return string(out)
+}
+
+func snakeToPascal(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) > 0 {
+			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		}
+	}
+	return strings.Join(parts, "")
+}
+
+// MarshalJSON json implements json.Marshaller
+func (c CustomColors) MarshalJSON() ([]byte, error) {
+	tmp := make(map[string]FormatedColor, len(c))
+	for k, v := range c {
+		tmp[pascalToSnake(k)] = v
+	}
+	return json.Marshal(tmp)
+}
+
+// UnmarshalJSON json implements json.Unmarshaller
+func (c *CustomColors) UnmarshalJSON(data []byte) error {
+	tmp := map[string]FormatedColor{}
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+
+	out := make(CustomColors, len(tmp))
+	for snakeKey, v := range tmp {
+		out[snakeToPascal(snakeKey)] = v
+	}
+
+	*c = out
+	return nil
+}
 
 // Material contains all material colors
 type Material struct {
-	Background              FormatedColor `json:"background"                 toml:"background"`
-	Error                   FormatedColor `json:"error"                      toml:"error"`
+	Custom                  CustomColors  `json:"custom"`
 	Background              FormatedColor `json:"background"`
 	Error                   FormatedColor `json:"error"`
 	ErrorContainer          FormatedColor `json:"error_container"`
@@ -60,7 +117,10 @@ type Material struct {
 }
 
 // NewMaterial return material color type
-func NewMaterial(colorMap map[string]color.ARGB) Material {
+func NewMaterial(
+	colorMap map[string]color.ARGB,
+	customColors map[string]material.CustomColor,
+) Material {
 	get := func(name string) FormatedColor {
 		if dc, ok := colorMap[name]; ok {
 			return NewFormatedColor(dc)
@@ -68,7 +128,17 @@ func NewMaterial(colorMap map[string]color.ARGB) Material {
 		return NewFormatedColor(0) // default ARGB (fully transparent black)
 	}
 
+	custom := make(CustomColors, len(customColors)*4)
+	for name, col := range customColors {
+		name := toCamelCase(strings.ToLower(name), true)
+		custom[name] = NewFormatedColor(col.Color)
+		custom["On"+name] = NewFormatedColor(col.Color)
+		custom[name+"Container"] = NewFormatedColor(col.Color)
+		custom["On"+name+"Container"] = NewFormatedColor(col.Color)
+	}
+
 	return Material{
+		Custom:                  custom,
 		Background:              get("background"),
 		Error:                   get("error"),
 		ErrorContainer:          get("error_container"),

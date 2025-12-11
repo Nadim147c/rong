@@ -94,12 +94,17 @@ var Command = &cobra.Command{
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
+		customs, err := material.GenerateCustomColors(colorMap["primary"])
+		if err != nil {
+			return err
+		}
+
 		based, err := base16.Generate(colorMap, wu)
 		if err != nil {
 			return err
 		}
 
-		output := models.NewOutput(imagePath, based, colorMap)
+		output := models.NewOutput(imagePath, based, colorMap, customs)
 
 		if viper.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
