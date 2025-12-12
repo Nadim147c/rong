@@ -83,6 +83,11 @@ rong color green --dry-run --json | jq
 			}
 		}
 
+		customs, err := material.GenerateCustomColors(colorMap["primary"])
+		if err != nil {
+			return err
+		}
+
 		// dynamic base16 generation is not possible with single source color
 		viper.Set("base16.method", "static")
 		based, err := base16.Generate(colorMap, nil)
@@ -90,7 +95,7 @@ rong color green --dry-run --json | jq
 			return err
 		}
 
-		output := models.NewOutput("", based, colorMap)
+		output := models.NewOutput("", based, colorMap, customs)
 
 		if viper.GetBool("json") {
 			json.NewEncoder(os.Stdout).Encode(output)

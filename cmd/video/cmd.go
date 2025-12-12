@@ -96,6 +96,11 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
 
+		customs, err := material.GenerateCustomColors(colorMap["primary"])
+		if err != nil {
+			return err
+		}
+
 		based, err := base16.Generate(colorMap, wu)
 		if err != nil {
 			return err
@@ -109,7 +114,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			slog.Info("Using generated preview", "path", path)
 		}
 
-		output := models.NewOutput(path, based, colorMap)
+		output := models.NewOutput(path, based, colorMap, customs)
 
 		if viper.GetBool("json") {
 			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {

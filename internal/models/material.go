@@ -1,64 +1,126 @@
 package models
 
 import (
+	"encoding/json"
+	"strings"
+	"unicode"
+
 	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/rong/v3/internal/material"
 )
+
+// CustomColors is map of user defined custom colors
+type CustomColors map[string]FormatedColor
+
+func pascalToSnake(s string) string {
+	var out []rune
+	for i, r := range s {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				out = append(out, '_')
+			}
+			out = append(out, unicode.ToLower(r))
+		} else {
+			out = append(out, r)
+		}
+	}
+	return string(out)
+}
+
+func snakeToPascal(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) > 0 {
+			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		}
+	}
+	return strings.Join(parts, "")
+}
+
+// MarshalJSON json implements json.Marshaller
+func (c CustomColors) MarshalJSON() ([]byte, error) {
+	tmp := make(map[string]FormatedColor, len(c))
+	for k, v := range c {
+		tmp[pascalToSnake(k)] = v
+	}
+	return json.Marshal(tmp)
+}
+
+// UnmarshalJSON json implements json.Unmarshaller
+func (c *CustomColors) UnmarshalJSON(data []byte) error {
+	tmp := map[string]FormatedColor{}
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+
+	out := make(CustomColors, len(tmp))
+	for snakeKey, v := range tmp {
+		out[snakeToPascal(snakeKey)] = v
+	}
+
+	*c = out
+	return nil
+}
 
 // Material contains all material colors
 type Material struct {
-	Background              FormatedColor `json:"background"                 toml:"background"`
-	Error                   FormatedColor `json:"error"                      toml:"error"`
-	ErrorContainer          FormatedColor `json:"error_container"            toml:"error_container"`
-	InverseOnSurface        FormatedColor `json:"inverse_on_surface"         toml:"inverse_on_surface"`
-	InversePrimary          FormatedColor `json:"inverse_primary"            toml:"inverse_primary"`
-	InverseSurface          FormatedColor `json:"inverse_surface"            toml:"inverse_surface"`
-	OnBackground            FormatedColor `json:"on_background"              toml:"on_background"`
-	OnError                 FormatedColor `json:"on_error"                   toml:"on_error"`
-	OnErrorContainer        FormatedColor `json:"on_error_container"         toml:"on_error_container"`
-	OnPrimary               FormatedColor `json:"on_primary"                 toml:"on_primary"`
-	OnPrimaryContainer      FormatedColor `json:"on_primary_container"       toml:"on_primary_container"`
-	OnPrimaryFixed          FormatedColor `json:"on_primary_fixed"           toml:"on_primary_fixed"`
-	OnPrimaryFixedVariant   FormatedColor `json:"on_primary_fixed_variant"   toml:"on_primary_fixed_variant"`
-	OnSecondary             FormatedColor `json:"on_secondary"               toml:"on_secondary"`
-	OnSecondaryContainer    FormatedColor `json:"on_secondary_container"     toml:"on_secondary_container"`
-	OnSecondaryFixed        FormatedColor `json:"on_secondary_fixed"         toml:"on_secondary_fixed"`
-	OnSecondaryFixedVariant FormatedColor `json:"on_secondary_fixed_variant" toml:"on_secondary_fixed_variant"`
-	OnSurface               FormatedColor `json:"on_surface"                 toml:"on_surface"`
-	OnSurfaceVariant        FormatedColor `json:"on_surface_variant"         toml:"on_surface_variant"`
-	OnTertiary              FormatedColor `json:"on_tertiary"                toml:"on_tertiary"`
-	OnTertiaryContainer     FormatedColor `json:"on_tertiary_container"      toml:"on_tertiary_container"`
-	OnTertiaryFixed         FormatedColor `json:"on_tertiary_fixed"          toml:"on_tertiary_fixed"`
-	OnTertiaryFixedVariant  FormatedColor `json:"on_tertiary_fixed_variant"  toml:"on_tertiary_fixed_variant"`
-	Outline                 FormatedColor `json:"outline"                    toml:"outline"`
-	OutlineVariant          FormatedColor `json:"outline_variant"            toml:"outline_variant"`
-	Primary                 FormatedColor `json:"primary"                    toml:"primary"`
-	PrimaryContainer        FormatedColor `json:"primary_container"          toml:"primary_container"`
-	PrimaryFixed            FormatedColor `json:"primary_fixed"              toml:"primary_fixed"`
-	PrimaryFixedDim         FormatedColor `json:"primary_fixed_dim"          toml:"primary_fixed_dim"`
-	Scrim                   FormatedColor `json:"scrim"                      toml:"scrim"`
-	Secondary               FormatedColor `json:"secondary"                  toml:"secondary"`
-	SecondaryContainer      FormatedColor `json:"secondary_container"        toml:"secondary_container"`
-	SecondaryFixed          FormatedColor `json:"secondary_fixed"            toml:"secondary_fixed"`
-	SecondaryFixedDim       FormatedColor `json:"secondary_fixed_dim"        toml:"secondary_fixed_dim"`
-	Shadow                  FormatedColor `json:"shadow"                     toml:"shadow"`
-	Surface                 FormatedColor `json:"surface"                    toml:"surface"`
-	SurfaceBright           FormatedColor `json:"surface_bright"             toml:"surface_bright"`
-	SurfaceContainer        FormatedColor `json:"surface_container"          toml:"surface_container"`
-	SurfaceContainerHigh    FormatedColor `json:"surface_container_high"     toml:"surface_container_high"`
-	SurfaceContainerHighest FormatedColor `json:"surface_container_highest"  toml:"surface_container_highest"`
-	SurfaceContainerLow     FormatedColor `json:"surface_container_low"      toml:"surface_container_low"`
-	SurfaceContainerLowest  FormatedColor `json:"surface_container_lowest"   toml:"surface_container_lowest"`
-	SurfaceDim              FormatedColor `json:"surface_dim"                toml:"surface_dim"`
-	SurfaceTint             FormatedColor `json:"surface_tint"               toml:"surface_tint"`
-	SurfaceVariant          FormatedColor `json:"surface_variant"            toml:"surface_variant"`
-	Tertiary                FormatedColor `json:"tertiary"                   toml:"tertiary"`
-	TertiaryContainer       FormatedColor `json:"tertiary_container"         toml:"tertiary_container"`
-	TertiaryFixed           FormatedColor `json:"tertiary_fixed"             toml:"tertiary_fixed"`
-	TertiaryFixedDim        FormatedColor `json:"tertiary_fixed_dim"         toml:"tertiary_fixed_dim"`
+	Custom                  CustomColors  `json:"custom"`
+	Background              FormatedColor `json:"background"`
+	Error                   FormatedColor `json:"error"`
+	ErrorContainer          FormatedColor `json:"error_container"`
+	InverseOnSurface        FormatedColor `json:"inverse_on_surface"`
+	InversePrimary          FormatedColor `json:"inverse_primary"`
+	InverseSurface          FormatedColor `json:"inverse_surface"`
+	OnBackground            FormatedColor `json:"on_background"`
+	OnError                 FormatedColor `json:"on_error"`
+	OnErrorContainer        FormatedColor `json:"on_error_container"`
+	OnPrimary               FormatedColor `json:"on_primary"`
+	OnPrimaryContainer      FormatedColor `json:"on_primary_container"`
+	OnPrimaryFixed          FormatedColor `json:"on_primary_fixed"`
+	OnPrimaryFixedVariant   FormatedColor `json:"on_primary_fixed_variant"`
+	OnSecondary             FormatedColor `json:"on_secondary"`
+	OnSecondaryContainer    FormatedColor `json:"on_secondary_container"`
+	OnSecondaryFixed        FormatedColor `json:"on_secondary_fixed"`
+	OnSecondaryFixedVariant FormatedColor `json:"on_secondary_fixed_variant"`
+	OnSurface               FormatedColor `json:"on_surface"`
+	OnSurfaceVariant        FormatedColor `json:"on_surface_variant"`
+	OnTertiary              FormatedColor `json:"on_tertiary"`
+	OnTertiaryContainer     FormatedColor `json:"on_tertiary_container"`
+	OnTertiaryFixed         FormatedColor `json:"on_tertiary_fixed"`
+	OnTertiaryFixedVariant  FormatedColor `json:"on_tertiary_fixed_variant"`
+	Outline                 FormatedColor `json:"outline"`
+	OutlineVariant          FormatedColor `json:"outline_variant"`
+	Primary                 FormatedColor `json:"primary"`
+	PrimaryContainer        FormatedColor `json:"primary_container"`
+	PrimaryFixed            FormatedColor `json:"primary_fixed"`
+	PrimaryFixedDim         FormatedColor `json:"primary_fixed_dim"`
+	Scrim                   FormatedColor `json:"scrim"`
+	Secondary               FormatedColor `json:"secondary"`
+	SecondaryContainer      FormatedColor `json:"secondary_container"`
+	SecondaryFixed          FormatedColor `json:"secondary_fixed"`
+	SecondaryFixedDim       FormatedColor `json:"secondary_fixed_dim"`
+	Shadow                  FormatedColor `json:"shadow"`
+	Surface                 FormatedColor `json:"surface"`
+	SurfaceBright           FormatedColor `json:"surface_bright"`
+	SurfaceContainer        FormatedColor `json:"surface_container"`
+	SurfaceContainerHigh    FormatedColor `json:"surface_container_high"`
+	SurfaceContainerHighest FormatedColor `json:"surface_container_highest"`
+	SurfaceContainerLow     FormatedColor `json:"surface_container_low"`
+	SurfaceContainerLowest  FormatedColor `json:"surface_container_lowest"`
+	SurfaceDim              FormatedColor `json:"surface_dim"`
+	SurfaceTint             FormatedColor `json:"surface_tint"`
+	SurfaceVariant          FormatedColor `json:"surface_variant"`
+	Tertiary                FormatedColor `json:"tertiary"`
+	TertiaryContainer       FormatedColor `json:"tertiary_container"`
+	TertiaryFixed           FormatedColor `json:"tertiary_fixed"`
+	TertiaryFixedDim        FormatedColor `json:"tertiary_fixed_dim"`
 }
 
 // NewMaterial return material color type
-func NewMaterial(colorMap map[string]color.ARGB) Material {
+func NewMaterial(
+	colorMap map[string]color.ARGB,
+	customColors map[string]material.CustomColor,
+) Material {
 	get := func(name string) FormatedColor {
 		if dc, ok := colorMap[name]; ok {
 			return NewFormatedColor(dc)
@@ -66,7 +128,17 @@ func NewMaterial(colorMap map[string]color.ARGB) Material {
 		return NewFormatedColor(0) // default ARGB (fully transparent black)
 	}
 
+	custom := make(CustomColors, len(customColors)*4)
+	for name, col := range customColors {
+		name := toCamelCase(strings.ToLower(name), true)
+		custom[name] = NewFormatedColor(col.Color)
+		custom["On"+name] = NewFormatedColor(col.Color)
+		custom[name+"Container"] = NewFormatedColor(col.Color)
+		custom["On"+name+"Container"] = NewFormatedColor(col.Color)
+	}
+
 	return Material{
+		Custom:                  custom,
 		Background:              get("background"),
 		Error:                   get("error"),
 		ErrorContainer:          get("error_container"),
