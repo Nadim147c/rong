@@ -1,6 +1,6 @@
 package main
 
-import "github.com/Nadim147c/rong/v3/cmd"
+import "github.com/Nadim147c/rong/v4/cmd"
 
 var Version = "dev"
 

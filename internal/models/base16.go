@@ -1,6 +1,6 @@
 package models
 
-import "github.com/Nadim147c/rong/v3/internal/base16"
+import "github.com/Nadim147c/rong/v4/internal/base16"
 
 // Base16 is 16 colors
 type Base16 struct {
