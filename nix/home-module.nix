@@ -190,6 +190,27 @@ in {
         };
       };
 
+      installs = mkOption {
+        type = attrsOf (either str (listOf str));
+        default = {};
+        example = ''
+          {
+            "quickshell.json" = "~/.config/quickshell/material.json";
+          }
+        '';
+        description = ''
+          Map of theme files to target paths or list of paths.
+
+          These are installed using **atomic copy**, ensuring that applications
+          never read partially-written or incomplete theme files. This method is
+          safer for programs that load configuration very fast — for example,
+          *Quickshell*, which can break if a theme file is replaced mid-read.
+
+          Use `installs` when the target application requires atomic,
+          fully-written files and cannot tolerate partial updates.
+        '';
+      };
+
       links = mkOption {
         type = attrsOf (either str (listOf str));
         default = {};
@@ -198,14 +219,20 @@ in {
             "hyprland.conf" = "~/.config/hypr/colors.conf";
             "colors.lua" = "~/.config/wezterm/colors.lua";
             "spicetify-sleek.ini" = "~/.config/spicetify/Themes/Sleek/color.ini";
-            "kitty.conf" = "~/.config/kitty/colors.conf";
-            "pywalfox.json" = "~/.cache/wal/colors.json";
-            "rofi.rasi" = "~/.config/rofi/config.rasi";
-            "ghostty" = "~/.config/ghostty/colors";
-            "dunstrc" = "~/.config/dunst/dunstrc";
           }
         '';
-        description = "Map of theme files to target paths or list of paths";
+        description = ''
+          Map of theme files to target paths or list of paths.
+
+          These are installed using **hardlinks** whenever possible. If a
+          hardlink already exists, only the file timestamps are updated —
+          avoiding unnecessary writes and reducing filesystem churn. This method
+          is efficient and ideal for most applications.
+
+          Users should **prefer `links`** because it results in less disk I/O,
+          and programs like break when reading files that are updated via atomic
+          replacement. Only use `installs` when atomicity is required.
+        '';
       };
     };
   };
