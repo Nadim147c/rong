@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/Nadim147c/rong/v4/internal/base16"
 	"github.com/Nadim147c/rong/v4/internal/cache"
@@ -21,6 +22,8 @@ func init() {
 	Command.Flags().AddFlagSet(material.Flags)
 	Command.Flags().AddFlagSet(base16.Flags)
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
+	Command.Flags().
+		Duration("duration", 5*time.Second, "maxium number of duration to process")
 }
 
 // Command is the video command
@@ -70,7 +73,8 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			}
 
 			frames := viper.GetInt("frames")
-			pixels, err := ffmpeg.GetPixels(ctx, videoPath, frames)
+			duration := viper.GetDuration("duration").Seconds()
+			pixels, err := ffmpeg.GetPixels(ctx, videoPath, frames, duration)
 			if err != nil {
 				return fmt.Errorf("Failed to get pixels from media: %w", err)
 			}

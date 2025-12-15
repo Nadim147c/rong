@@ -42,6 +42,7 @@ type job struct {
 	ctx      context.Context
 	filename string
 	frames   int
+	duration float64
 
 	State     jobState
 	Error     error
@@ -49,11 +50,17 @@ type job struct {
 }
 
 // newJob creates a new job with a spinner
-func newJob(ctx context.Context, filename string, frames int) *job {
+func newJob(
+	ctx context.Context,
+	filename string,
+	frames int,
+	dur float64,
+) *job {
 	return &job{
 		ctx:      ctx,
 		filename: filename,
 		frames:   frames,
+		duration: dur,
 		State:    jobWaiting,
 	}
 }
@@ -76,7 +83,7 @@ func (j *job) processFile() error {
 
 	// Update state for extraction
 	j.State = jobExtracting
-	pixels, err := ffmpeg.GetPixels(j.ctx, j.filename, j.frames)
+	pixels, err := ffmpeg.GetPixels(j.ctx, j.filename, j.frames, j.duration)
 	if err != nil {
 		return err
 	}

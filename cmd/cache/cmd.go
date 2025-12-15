@@ -19,6 +19,8 @@ import (
 func init() {
 	Command.Flags().Int("frames", 5, "number of frames of video to process")
 	Command.Flags().
+		Duration("duration", 5*time.Second, "maxium number of duration to process")
+	Command.Flags().
 		Int("workers", runtime.NumCPU(), "number of concurrent workers")
 }
 
@@ -32,6 +34,7 @@ const (
 type model struct {
 	ctx             context.Context
 	frames, workers int
+	duration        time.Duration
 
 	active []*job
 	queue  queue
@@ -47,18 +50,23 @@ type model struct {
 }
 
 // NewModel creates a new model with the given paths
-func newModel(ctx context.Context, paths []string, frames, workers int) *model {
+func newModel(
+	ctx context.Context,
+	paths []string,
+	frames, workers int, duration time.Duration,
+) *model {
 	s := spinner.New(spinner.WithSpinner(spinner.MiniDot))
 	s.Spinner.FPS = time.Second / 30
 	m := &model{
 		total:    len(paths),
 		frames:   frames,
 		workers:  workers,
+		duration: duration,
 		progress: progress.New(),
 		spinner:  s,
 	}
 	for path := range slices.Values(paths) {
-		j := newJob(ctx, path, frames)
+		j := newJob(ctx, path, frames, duration.Seconds())
 		if len(m.active) < workers {
 			m.active = append(m.active, j)
 		} else {
@@ -193,8 +201,9 @@ rong cache path/to/directory
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		frames, _ := cmd.Flags().GetInt("frames")
-		workers, _ := cmd.Flags().GetInt("workers")
+		frames := viper.GetInt("frames")
+		workers := viper.GetInt("workers")
+		duration := viper.GetDuration("duration")
 
 		// Collect all paths first
 		paths, err := ScanPaths(ctx, args)
@@ -207,7 +216,7 @@ rong cache path/to/directory
 			return nil
 		}
 
-		model := newModel(ctx, paths, frames, workers)
+		model := newModel(ctx, paths, frames, workers, duration)
 		p := tea.NewProgram(model)
 		if _, err := p.Run(); err != nil {
 			return fmt.Errorf("error running program: %w", err)

@@ -18,6 +18,7 @@ func GetPixels(
 	ctx context.Context,
 	path string,
 	maxFrames int,
+	maxDuration float64,
 ) ([]color.ARGB, error) {
 	var pixels []color.ARGB
 
@@ -64,6 +65,8 @@ func GetPixels(
 		return nil, fmt.Errorf("failed to get duration: %v", err)
 	}
 
+	duration = min(duration, maxDuration)
+
 	fps := float64(maxFrames) / duration
 
 	if math.Floor(duration) < float64(maxFrames) {
@@ -73,6 +76,7 @@ func GetPixels(
 	ffmpeg := exec.CommandContext(ctx, "ffmpeg",
 		"-i", path,
 		"-vf", fmt.Sprintf("fps=%.8f", fps),
+		"-t", fmt.Sprintf("%.5f", duration),
 		"-f", "rawvideo",
 		"-pix_fmt", "rgb24",
 		"-")
