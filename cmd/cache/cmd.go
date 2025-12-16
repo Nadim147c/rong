@@ -2,18 +2,13 @@ package cache
 
 import (
 	"context"
-	"fmt"
 	"runtime"
-	"slices"
-	"strings"
+	"sync"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/charmbracelet/bubbles/progress"
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 func init() {
@@ -22,160 +17,6 @@ func init() {
 		Duration("duration", 5*time.Second, "maxium number of duration to process")
 	Command.Flags().
 		Int("workers", runtime.NumCPU(), "number of concurrent workers")
-}
-
-type processingDoneMsg struct{}
-
-const (
-	padding  = 2
-	maxWidth = 80
-)
-
-type model struct {
-	ctx             context.Context
-	frames, workers int
-	duration        time.Duration
-
-	active []*job
-	queue  queue
-
-	progress progress.Model
-	spinner  spinner.Model
-
-	width     int
-	height    int
-	completed int
-	total     int
-	done      bool
-}
-
-// NewModel creates a new model with the given paths
-func newModel(
-	ctx context.Context,
-	paths []string,
-	frames, workers int, duration time.Duration,
-) *model {
-	s := spinner.New(spinner.WithSpinner(spinner.MiniDot))
-	s.Spinner.FPS = time.Second / 30
-	m := &model{
-		total:    len(paths),
-		frames:   frames,
-		workers:  workers,
-		duration: duration,
-		progress: progress.New(),
-		spinner:  s,
-	}
-	for path := range slices.Values(paths) {
-		j := newJob(ctx, path, frames, duration.Seconds())
-		if len(m.active) < workers {
-			m.active = append(m.active, j)
-		} else {
-			m.queue.Enqueue(j)
-		}
-	}
-
-	return m
-}
-
-func (m *model) selectJob(filename string) *job {
-	for j := range slices.Values(m.active) {
-		if j.filename == filename {
-			return j
-		}
-	}
-	panic("invalid job name")
-}
-
-// Init is Init
-func (m model) Init() tea.Cmd {
-	cmds := make([]tea.Cmd, 0, m.workers+1)
-	for j := range slices.Values(m.active) {
-		cmds = append(cmds, j.Init())
-	}
-	cmds = append(cmds, m.spinner.Tick)
-	return tea.Batch(cmds...)
-}
-
-// Update updates Update
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.width, m.height = msg.Width, msg.Height
-		m.progress.Width = min(msg.Width-padding*2-4, maxWidth)
-		return m, nil
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "esc", "q":
-			return m, tea.Quit
-		}
-	case processingDoneMsg:
-		m.done = true
-		return m, tea.Quit
-	case jobDone:
-		m.completed++
-		j := m.selectJob(msg.Name)
-		j.Update(msg)
-		var cmds []tea.Cmd
-
-		cmds = append(cmds, tea.Println(j.View(m.spinner.View())))
-
-		m.active = slices.DeleteFunc(m.active, func(e *job) bool {
-			return e.filename == j.filename
-		})
-
-		progCmd := m.progress.SetPercent(float64(m.completed) / float64(m.total))
-		cmds = append(cmds, progCmd)
-
-		if len(m.active) == 0 && m.queue.Size() == 0 {
-			cmds = append(cmds, func() tea.Msg { return processingDoneMsg{} })
-			return m, tea.Sequence(cmds...)
-		}
-
-		if len(m.active) < m.workers {
-			newJob, ok := m.queue.Dequeue()
-			if ok {
-				m.active = append(m.active, newJob)
-				cmds = append(cmds, newJob.Init())
-			}
-		}
-
-		return m, tea.Sequence(cmds...)
-	case progress.FrameMsg:
-		p, cmd := m.progress.Update(msg)
-		m.progress = p.(progress.Model)
-		return m, cmd
-	case spinner.TickMsg:
-		s, cmd := m.spinner.Update(msg)
-		m.spinner = s
-		return m, cmd
-	}
-
-	return m, nil
-}
-
-// View views View
-func (m model) View() string {
-	if m.done {
-		return fmt.Sprintf(
-			"Done! Processed %d/%d files\n",
-			m.completed,
-			m.total,
-		)
-	}
-
-	var buf strings.Builder
-	for _, job := range m.active {
-		fmt.Fprintln(&buf, job.View(m.spinner.View()))
-	}
-
-	fmt.Fprintf(
-		&buf,
-		"\n%s%s\n",
-		strings.Repeat(" ", padding),
-		m.progress.View(),
-	)
-
-	return buf.String()
 }
 
 // Command is cache command
@@ -200,28 +41,20 @@ rong cache path/to/directory
 		viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := cmd.Context()
-		frames := viper.GetInt("frames")
-		workers := viper.GetInt("workers")
-		duration := viper.GetDuration("duration")
+		ctx, cancel := context.WithCancel(cmd.Context())
 
-		// Collect all paths first
-		paths, err := ScanPaths(ctx, args)
-		if err != nil {
-			return err
-		}
-
-		if len(paths) == 0 {
-			fmt.Println("No files found to process")
-			return nil
-		}
-
-		model := newModel(ctx, paths, frames, workers, duration)
+		states := make(chan state)
+		model := newModel(cancel)
 		p := tea.NewProgram(model)
-		if _, err := p.Run(); err != nil {
-			return fmt.Errorf("error running program: %w", err)
-		}
 
+		var wg sync.WaitGroup
+
+		wg.Go(func() { p.Run() })
+		wg.Go(func() { cacheRec(ctx, args, states) })
+		for state := range states {
+			p.Send(state)
+		}
+		wg.Wait()
 		return nil
 	},
 }

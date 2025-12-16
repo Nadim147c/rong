@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -23,34 +22,31 @@ func isMediaFile(path string) bool {
 
 // ScanPaths scans the given paths and returns absolute paths of image/video
 // files
-func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
-	var results []string
-
+func find(ctx context.Context, inputs []string, paths chan<- string) error {
 	handler := func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return nil
-		}
-
-		// Check context
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
 		}
 
+		if err != nil {
+			return err
+		}
+
 		if !info.IsDir() && isMediaFile(path) {
 			abs, err := filepath.Abs(path)
 			if err == nil {
-				results = append(results, abs)
+				paths <- abs
 			}
 		}
 		return nil
 	}
 
-	for _, p := range paths {
+	for _, p := range inputs {
 		select {
 		case <-ctx.Done():
-			return results, ctx.Err()
+			return ctx.Err()
 		default:
 		}
 
@@ -61,24 +57,17 @@ func ScanPaths(ctx context.Context, paths []string) ([]string, error) {
 		}
 
 		if fileInfo.IsDir() {
-			err := filepath.Walk(p, handler)
-			if err != nil {
-				if errors.Is(err, ctx.Err()) {
-					return results, ctx.Err()
-				}
-				return results, err
-			}
-
+			filepath.Walk(p, handler)
 			continue
 		}
 
 		if isMediaFile(p) {
 			abs, err := filepath.Abs(p)
 			if err == nil {
-				results = append(results, abs)
+				paths <- abs
 			}
 		}
 	}
 
-	return results, nil
+	return nil
 }
