@@ -200,6 +200,22 @@ in
         };
       };
 
+      post-hooks = mkOption {
+        type = attrsOf (either str (listOf str));
+        default = { };
+        example = ''
+          {
+            "kitty-full.conf" = "pidof kitty | xargs kill -SIGUSR1";
+          }
+        '';
+        description = ''
+          Map of theme files to target paths or list of paths.
+
+          This are command which will be executed after the **install** and
+          **link** of the named template.
+        '';
+      };
+
       installs = mkOption {
         type = attrsOf (either str (listOf str));
         default = { };
