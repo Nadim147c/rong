@@ -133,7 +133,7 @@ func postHook(colors models.Output) error {
 		)
 	}
 
-	hooksCfg, err := getConfig("post-hooks")
+	cmdsCfg, err := getConfig("post-cmds")
 	if err != nil {
 		allErrors = append(
 			allErrors,
@@ -214,7 +214,7 @@ func postHook(colors models.Output) error {
 		cmdEnv = addEnvPaths(cmdEnv, "RONG_COPIED", copied)
 
 		// Run hooks with the complete environment
-		if hooks, ok := hooksCfg[name]; ok && hooks != nil {
+		if hooks, ok := cmdsCfg[name]; ok && hooks != nil {
 			if err := runHooks(name, hooks, cmdEnv); err != nil {
 				allErrors = append(
 					allErrors,

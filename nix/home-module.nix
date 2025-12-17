@@ -200,7 +200,7 @@ in
         };
       };
 
-      post-hooks = mkOption {
+      post-cmds = mkOption {
         type = attrsOf (either str (listOf str));
         default = { };
         example = ''
