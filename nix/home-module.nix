@@ -78,7 +78,7 @@ in
         description = "Print generated colors as JSON";
       };
 
-      log_file = mkOption {
+      log-file = mkOption {
         type = nullOr str;
         default = null;
         description = "File to save logs";
