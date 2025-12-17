@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"bytes"
 	"embed"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"unicode"
 
 	"github.com/Nadim147c/rong/v4/internal/models"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
@@ -241,11 +243,14 @@ func postHook(colors models.Output) error {
 func runHooks(name string, hooks []string, env []string) error {
 	var errs []error
 
-	for _, hook := range hooks {
+	for hook := range slices.Values(hooks) {
 		cmd := exec.Command("sh", "-c", hook)
 		cmd.Env = env
 
+		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
+
 		out, err := cmd.CombinedOutput()
+		out = bytes.TrimRightFunc(out, unicode.IsSpace)
 		if err != nil {
 			slog.Error(
 				"Hook failed",
