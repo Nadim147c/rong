@@ -8,8 +8,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/Nadim147c/rong/v4/internal/models"
@@ -165,69 +167,75 @@ func postHook(colors models.Output) error {
 		"RONG_MATERIAL_PLATFORM": viper.GetString("material.platform"),
 	}
 
-	// Process links, installs, and hooks for successful templates
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	addErrs := func(errs ...error) {
+		mu.Lock()
+		allErrors = append(allErrors, errs...)
+		mu.Unlock()
+	}
+
+	lock := make(chan struct{}, runtime.NumCPU())
 	for name := range success {
-		// Build environment for this specific template
-		cmdEnv := make([]string, 0, len(baseEnv)+len(baseEnviron)+5)
-		cmdEnv = append(cmdEnv, baseEnv...)
+		lock <- struct{}{} // avoid creating too many goroutines
+		wg.Go(func() {
+			defer func() { <-lock }() // release the lock
 
-		// Add base environment variables
-		for k, v := range baseEnviron {
-			cmdEnv = addEnv(cmdEnv, k, v)
-		}
+			// Build environment for this specific template
+			cmdEnv := make([]string, 0, len(baseEnv)+len(baseEnviron)+5)
+			cmdEnv = append(cmdEnv, baseEnv...)
 
-		// Set source file information
-		sourcePath := filepath.Join(pathutil.StateDir, name)
-		cmdEnv = addEnv(cmdEnv, "RONG_SOURCE", sourcePath)
-		cmdEnv = addEnv(cmdEnv, "RONG_SOURCE_NAME", name)
-
-		// Track installed and linked paths
-		var installedPaths, linkedPaths []string
-
-		// Process links
-		if links, ok := linksCfg[name]; ok && links != nil {
-			linked, err := link(name, links)
-			if err != nil {
-				allErrors = append(
-					allErrors,
-					fmt.Errorf("failed to link %s: %w", name, err),
-				)
+			// Add base environment variables
+			for k, v := range baseEnviron {
+				cmdEnv = addEnv(cmdEnv, k, v)
 			}
-			linkedPaths = linked
-		}
 
-		// Process installs
-		if installs, ok := installsCfg[name]; ok && installs != nil {
-			installed, err := install(name, installs)
-			if err != nil {
-				allErrors = append(
-					allErrors,
-					fmt.Errorf("failed to install %s: %w", name, err),
-				)
+			// Set source file information
+			sourcePath := filepath.Join(pathutil.StateDir, name)
+			cmdEnv = addEnv(cmdEnv, "RONG_SOURCE", sourcePath)
+			cmdEnv = addEnv(cmdEnv, "RONG_SOURCE_NAME", name)
+
+			// Track installed and linked paths
+			var installedPaths, linkedPaths []string
+
+			// Process links
+			if links, ok := linksCfg[name]; ok && links != nil {
+				linked, err := link(name, links)
+				if err != nil {
+					addErrs(fmt.Errorf("failed to link %s: %w", name, err))
+				}
+				linkedPaths = linked
 			}
-			installedPaths = installed
-		}
 
-		cmdEnv = addEnvPaths(cmdEnv, "RONG_INSTALLED", installedPaths)
-		cmdEnv = addEnvPaths(cmdEnv, "RONG_LINKED", linkedPaths)
-		copied := slices.Concat(installedPaths, linkedPaths)
-		cmdEnv = addEnvPaths(cmdEnv, "RONG_COPIED", copied)
-
-		// Run hooks with the complete environment
-		if hooks, ok := cmdsCfg[name]; ok && hooks != nil {
-			if err := runHooks(name, hooks, cmdEnv); err != nil {
-				allErrors = append(
-					allErrors,
-					fmt.Errorf("failed to run hooks for %s: %w", name, err),
-				)
+			// Process installs
+			if installs, ok := installsCfg[name]; ok && installs != nil {
+				installed, err := install(name, installs)
+				if err != nil {
+					addErrs(fmt.Errorf("failed to install %s: %w", name, err))
+				}
+				installedPaths = installed
 			}
-		}
+
+			cmdEnv = addEnvPaths(cmdEnv, "RONG_INSTALLED", installedPaths)
+			cmdEnv = addEnvPaths(cmdEnv, "RONG_LINKED", linkedPaths)
+			copied := slices.Concat(installedPaths, linkedPaths)
+			cmdEnv = addEnvPaths(cmdEnv, "RONG_COPIED", copied)
+
+			// Run hooks with the complete environment
+			if hooks, ok := cmdsCfg[name]; ok && hooks != nil {
+				if err := runHooks(name, hooks, cmdEnv); err != nil {
+					addErrs(
+						fmt.Errorf("failed to run hooks for %s: %w", name, err),
+					)
+				}
+			}
+		})
 	}
 
-	if len(allErrors) > 0 {
-		return errors.Join(allErrors...)
-	}
-	return nil
+	wg.Wait()
+
+	return errors.Join(allErrors...)
 }
 
 func runHooks(name string, hooks []string, env []string) error {
