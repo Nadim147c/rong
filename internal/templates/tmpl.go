@@ -133,7 +133,7 @@ func postHook(colors models.Output) error {
 		)
 	}
 
-	hooksCfg, err := getConfig("post_hooks")
+	hooksCfg, err := getConfig("post-hooks")
 	if err != nil {
 		allErrors = append(
 			allErrors,
