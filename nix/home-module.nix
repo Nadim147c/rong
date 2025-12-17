@@ -1,19 +1,19 @@
-self: {
+self:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     types
     mkOption
     mkMerge
     mkEnableOption
     mkIf
     ;
-  inherit
-    (types)
+  inherit (types)
     attrsOf
     bool
     either
@@ -29,8 +29,9 @@ self: {
 
   pkg = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
   cfg = config.programs.rong;
-  format = pkgs.formats.json {};
-in {
+  format = pkgs.formats.json { };
+in
+{
   options.programs.rong = {
     enable = mkEnableOption "Enable rong color generator";
 
@@ -48,7 +49,7 @@ in {
 
     templates = mkOption {
       type = attrsOf str;
-      default = {};
+      default = { };
       description = "Templates to use";
     };
 
@@ -129,7 +130,10 @@ in {
         };
 
         method = mkOption {
-          type = enum ["static" "dynamic"];
+          type = enum [
+            "static"
+            "dynamic"
+          ];
           default = "static";
           description = "Color generation method";
         };
@@ -162,7 +166,10 @@ in {
         };
 
         platform = mkOption {
-          type = enum ["phone" "watch"];
+          type = enum [
+            "phone"
+            "watch"
+          ];
           default = "phone";
           description = "Target platform";
         };
@@ -184,7 +191,10 @@ in {
         };
 
         version = mkOption {
-          type = enum ["2021" "2025"];
+          type = enum [
+            "2021"
+            "2025"
+          ];
           default = "2025";
           description = "Version of the theme (2021 or 2025)";
         };
@@ -192,7 +202,7 @@ in {
 
       installs = mkOption {
         type = attrsOf (either str (listOf str));
-        default = {};
+        default = { };
         example = ''
           {
             "quickshell.json" = "~/.config/quickshell/material.json";
@@ -213,7 +223,7 @@ in {
 
       links = mkOption {
         type = attrsOf (either str (listOf str));
-        default = {};
+        default = { };
         example = ''
           {
             "hyprland.conf" = "~/.config/hypr/colors.conf";
@@ -238,34 +248,35 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = mkIf (cfg.package != null) [cfg.package];
+    home.packages = mkIf (cfg.package != null) [ cfg.package ];
 
     home.activation.generateRongThemes = lib.mkIf (cfg.wallpaper != null) (
       let
         rong = "${cfg.package}/bin/rong";
         state = "${config.xdg.stateHome}/rong/state.json";
       in
-        lib.hm.dag.entryAfter ["checkLinkTargets"] ''
-          if [ -f "${state}" ]; then
-            run --silence ${rong} regen $VERBOSE_ARG
-          else
-            run --silence ${rong} video $VERBOSE_ARG "${cfg.wallpaper}"
-          fi
-        ''
+      lib.hm.dag.entryAfter [ "checkLinkTargets" ] ''
+        if [ -f "${state}" ]; then
+          run --silence ${rong} regen $VERBOSE_ARG
+        else
+          run --silence ${rong} video $VERBOSE_ARG "${cfg.wallpaper}"
+        fi
+      ''
     );
 
     xdg.configFile = mkMerge [
-      (mkIf (cfg.settings != {}) {
+      (mkIf (cfg.settings != { }) {
         "rong/config.json" = {
           source = format.generate "rong.json" cfg.settings;
         };
       })
 
-      (mkIf (cfg.templates != {}) (
-        mkMerge (lib.mapAttrsToList (name: text: {
+      (mkIf (cfg.templates != { }) (
+        mkMerge (
+          lib.mapAttrsToList (name: text: {
             "rong/templates/${name}".text = text;
-          })
-          cfg.templates)
+          }) cfg.templates
+        )
       ))
     ];
   };

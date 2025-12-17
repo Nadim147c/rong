@@ -1,8 +1,8 @@
-{pkgs ? import <nixpkgs> {}}:
+{ pkgs, ... }:
 pkgs.mkShell {
   name = "rong";
   # Get dependencies from the main package
-  inputsFrom = [(pkgs.callPackage ./package.nix {})];
+  inputsFrom = [ (pkgs.callPackage ./package.nix { }) ];
   # Additional tooling
   buildInputs = with pkgs; [
     go

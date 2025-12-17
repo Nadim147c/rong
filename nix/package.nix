@@ -20,19 +20,27 @@ buildGoModule rec {
 
   vendorHash = "sha256-+uD3aZtKDmC4ExpctwYIgiFycztEKHkAY4Rof1d4WlE=";
 
-  ldflags = ["-s" "-w" "-X" "main.Version=${version}"];
+  ldflags = [
+    "-s"
+    "-w"
+    "-X"
+    "main.Version=${version}"
+  ];
 
-  nativeBuildInputs = [installShellFiles makeWrapper];
-  propagatedBuildInputs = [ffmpeg];
+  nativeBuildInputs = [
+    installShellFiles
+    makeWrapper
+  ];
+  propagatedBuildInputs = [ ffmpeg ];
 
-  postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+  postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) /* bash */ ''
     installShellCompletion --cmd rong \
       --bash <($out/bin/rong _carapace bash) \
       --fish <($out/bin/rong _carapace fish) \
       --zsh <($out/bin/rong _carapace zsh)
 
     wrapProgram $out/bin/rong \
-      --prefix PATH : ${lib.makeBinPath [ffmpeg]}
+      --prefix PATH : ${lib.makeBinPath [ ffmpeg ]}
   '';
 
   meta = {
