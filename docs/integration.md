@@ -18,6 +18,9 @@ find ~/Pictures/Wallpapers/ -type f \( \
     -iname "*.webp" \)
 ```
 
+Alternatively, you can use [fd](https://github.com/sharkdp/fd); `fd
+'\.(jpg|jpeg|png|webp)' ~/Pictures/Wallpapers --type f`.
+
 This finds all `jpg`, `jpeg`, `png`, and `webp` files in the specified directory.
 
 To randomly select one:
@@ -56,57 +59,58 @@ Next, use the wallpaper to generate a new color scheme:
 rong image "$WALLPAPER"
 ```
 
-## Post-Change Hook
+::: info IMPORTANT
+For video (animated) wallpapers, use `rong video "$WALLPAPER"`.
+:::
 
-Some applications may require a manual reload after the theme has changed. You can
-handle this with a `post_hooks` function, defined at the top of your script for easy
-access and modification.
+This step generates the theme and applies templates to their configured destinations.
 
-```bash
-post_hooks() {
-    # Compile SCSS files for Waybar (see GTK/SCSS theming docs)
-    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR2 waybar
+## Post-Change Commands
 
-    # Reload dunst without resetting pause level
-    local dunst_level=$(dunstctl get-pause-level)
-    dunstctl reload && dunstctl set-pause-level "$dunst_level"
+Some applications need to be reloaded **after** their config files are updated.
+Instead of handling this in your shell script, you can now define commands that run
+automatically after a template is rendered and copied.
 
-    # Update Pywalfox
-    pywalfox --verbose update
+This is done via a `[post-cmds]` section in your configuration:
 
-    # Reload Hyprland config
-    hyprctl reload
-}
+```toml
+[post-cmds]
+"cava.ini"        = "pidof cava | xargs -r kill -SIGUSR2"
+"hyprland.conf"   = "hyprctl reload"
+"kitty-full.conf" = """
+  PID=$(pidof kitty)
+  if [[ -n "$PID" ]]; then
+  | kill -SIGUSR1 $PID
+  fi
+"""
+"some-other-template" = [
+  "first command",
+  "second command",
+]
 ```
+
+Each key is the name of a generated template file, and the value is the command that
+should be executed once that file is updated. This keeps reload logic close to the
+config it affects and removes the need for custom post-hook scripts.
 
 ## Final Script
 
-Now put everything together into a single executable script—e.g.,
-`~/.local/bin/wallpaper.sh`:
+With everything wired up, the shell script becomes very small and focused.
+For example, `~/.local/bin/wallpaper.sh`:
 
 ```bash
-#!/bin/bash
+#!/usr/bin/env bash
 
 WALLPAPER=$1
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers/"
 
-# Post-configuration hook
-post_hooks() {
-    compile-scss ~/.config/waybar/style.scss && killall -v -SIGUSR2 waybar
-
-    local dunst_level=$(dunstctl get-pause-level)
-    dunstctl reload && dunstctl set-pause-level "$dunst_level"
-
-    pywalfox --verbose update
-    hyprctl reload
-}
-
 if [ -z "$WALLPAPER" ]; then
   WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( \
-      -iname "*.jpg" -o \
-      -iname "*.jpeg" -o \
-      -iname "*.png" -o \
-      -iname "*.webp" \) | shuf -n1)
+    -iname "*.jpg" -o \
+    -iname "*.jpeg" -o \
+    -iname "*.png" -o \
+    -iname "*.webp" \
+    \) | shuf -n1)
 fi
 
 if [ -z "$WALLPAPER" ]; then
@@ -114,18 +118,19 @@ if [ -z "$WALLPAPER" ]; then
   exit 1
 fi
 
-# Apply wallpaper using swww
-swww img \
-  --transition-duration 2 \
-  --transition-bezier ".09,.91,.52,.93" \
-  --transition-fps 60 \
-  --invert-y \
-  "$WALLPAPER" &
+# Apply wallpaper
+(
+  exec setid swww img \
+    --transition-duration 2 \
+    --transition-bezier ".09,.91,.52,.93" \
+    --transition-fps 60 \
+    --invert-y \
+    "$WALLPAPER" &
+  disown
+) & # Prevent swww from stopping if script exists too early
 
-# Generate color scheme
+# Generate colors and apply templates
 rong image "$WALLPAPER"
-
-post_hooks
 ```
 
 Make it executable:
@@ -134,10 +139,14 @@ Make it executable:
 chmod +x ~/.local/bin/wallpaper.sh
 ```
 
-You're good to go. Run the script with or without an argument to set the theme and
-wallpaper:
+## Usage
+
+Run the script with or without an argument:
 
 ```bash
 wallpaper.sh                    # random wallpaper
 wallpaper.sh path/to/image.png  # specific wallpaper
 ```
+
+The wallpaper is applied, colors are generated, templates are updated, and any
+configured post-commands are executed automatically.
