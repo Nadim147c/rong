@@ -119,15 +119,13 @@ if [ -z "$WALLPAPER" ]; then
 fi
 
 # Apply wallpaper
-(
-  exec setid swww img \
-    --transition-duration 2 \
-    --transition-bezier ".09,.91,.52,.93" \
-    --transition-fps 60 \
-    --invert-y \
-    "$WALLPAPER" &
-  disown
-) & # Prevent swww from stopping if script exists too early
+setsid swww img \
+  --transition-duration 2 \
+  --transition-bezier ".09,.91,.52,.93" \
+  --transition-fps 60 \
+  --invert-y \
+  "$WALLPAPER" &
+disown # Prevent swww from stopping if script exists too early
 
 # Generate colors and apply templates
 rong image "$WALLPAPER"
