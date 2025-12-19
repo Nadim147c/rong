@@ -51,11 +51,13 @@ material:
 ### Core Settings
 
 - `dark`: Generate dark color palette (`true`) or light palette (`false`)
-- `dry_run`: Generate colors without applying templates
+- `dry-run`: Generate colors without applying templates
 - `json`: Print generated colors as JSON to stdout
-- `log_file`: File path to save logs
+- `log-file`: File path to save logs
 - `quiet`: Suppress all log output
 - `verbose`: Verbose logging level (0-3, where 3 is most verbose)
+- `frames`: Number of frames to process for videos
+- `preview-format`: Format generated thumbnail for videos
 
 ### Material Design Settings
 
@@ -96,9 +98,9 @@ The `[base16]` section controls Base16 color generation:
 - `colors`: Source colors for base16 color generation (all hex colors):
   - `black`, `blue`, `cyan`, `green`, `magenta`, `red`, `white`, `yellow`
 
-## Linking Generated Files
+## Copying Generated Files
 
-The `[links]` section tells `rong` where to copy/hardlink each generated theme file.
+The `[links]` section tells `rong` where to hardlink/copy each generated theme file.
 You can assign a single path or an array of paths if you want the same file
 copied/linked to multiple locations.
 
@@ -111,14 +113,38 @@ copied/linked to multiple locations.
 ```
 
 ::: info IMPORTANT
-Each key must match the name of a template in the theme templates directory.
+Each key must match the name of a template in the theme templates' output directory.
+Usually, `~/.local/state/rong`.
 :::
+
+For some themes, you might need to use `[installs]`. The structure exactly same as
+`[links]`. The difference is that fill will be _installed_ by atomic copy. This
+ensure apps don't see incomplete theme files.
+
+```toml
+[installs]
+"quickshell.json" = "~/.local/state/quickshell/colors.json"
+```
 
 ### Notes
 
 - Paths support `~` for your home directory.
 - Existing files at the destination will be overwritten or replaced by symlinks.
-- Template file names in `[links]` must match exactly with the template directory.
+
+## Post Commands
+
+The `post-cmds` section tells `rong` to run some command in POSIX shell. For example,
+`pidof kitty | xargs -r kill -SIGUSR1` to reload kitty terminal.
+
+```toml
+[post-cmds]
+"hyprland.conf" = "hyprctl reload"
+"kitty-full.conf" = "pidof kitty | xargs -r kill -SIGUSR1"
+"spicetify-sleek.ini" = """
+# If spotify is already running in debug mode
+timeout 2s spicetify watch -s >/dev/null 2>&1 || true
+"""
+```
 
 ## Examples
 
@@ -138,6 +164,9 @@ method = "dynamic"
 blend = 0.7
 colors.black = "#0a0a0a"
 colors.blue = "#1e90ff"
+
+[installs]
+"quickshell.json" = "~/.local/state/quickshell/colors.json"
 
 [links]
 "hyprland.conf" = "~/.config/hypr/colors.conf"
@@ -170,6 +199,11 @@ base16:
     cyan: "#008080"
     green: "#008000"
 
+post-cmds:
+  cava.ini: pidof cava | xargs -r kill -SIGUSR2
+  kitty-full.conf: pidof kitty | xargs -r kill -SIGUSR1
+  colors.tmux: |
+    tmux source-file ~/.config/tmux/tmux.conf || true
 links:
   "kitty.conf": "~/.config/kitty/colors.conf"
   "gtk.css":
