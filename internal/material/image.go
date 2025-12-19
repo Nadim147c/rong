@@ -63,31 +63,41 @@ func init() {
 	Flags.BoolP("dark", "D", false, "generate dark color palette")
 	Flags.BoolP("json", "j", false, "print generated colors as json")
 	Flags.BoolP(
-		"dry-run",
-		"d",
-		false,
+		"dry-run", "d", false,
 		"generate colors without applying templates",
 	)
 
 	Flags.Float64("material.contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
+
 	Flags.String(
-		"material.version",
-		dynamic.Version2025.String(),
+		"material.version", dynamic.Version2025.String(),
 		"version of the theme (2021 or 2025)",
 	)
 	viper.SetDefault("material.version", dynamic.Version2025.String())
+
 	Flags.String(
-		"material.platform",
-		dynamic.PlatformPhone.String(),
+		"material.platform", dynamic.PlatformPhone.String(),
 		"target platform (phone or watch)",
 	)
 	viper.SetDefault("material.platform", dynamic.PlatformPhone.String())
+
 	Flags.String(
-		"material.variant",
-		dynamic.VariantTonalSpot.String(),
+		"material.variant", dynamic.VariantTonalSpot.String(),
 		"variant to use (e.g., tonal_spot, vibrant, expressive)",
 	)
 	viper.SetDefault("material.variant", dynamic.VariantTonalSpot.String())
+
+	Flags.Bool(
+		"material.custom.blend", true,
+		"blend custom colors with primary",
+	)
+	viper.SetDefault("material.custom.blend", true)
+
+	Flags.Float64(
+		"material.custom.ratio", 0.3,
+		"blend custom colors with primary",
+	)
+	viper.SetDefault("material.custom.blend", 0.3)
 }
 
 // GetPixelsFromImage returns pixels from image.Imaget interface
