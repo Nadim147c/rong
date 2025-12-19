@@ -65,6 +65,9 @@ Now, use this module anywhere in your configuration.
         version = "2025";
       };
       post-cmds."pywalfox.json" = /* bash */ "pywalfox --verbose update";
+      installs = {
+        "quickshell.json" = "${xdg.stateHome}/quickshell/colors.json";
+      };
       links = {
         "hyprland.conf" = "~/.config/hypr/colors.conf";
         "colors.lua" = "~/.config/wezterm/colors.lua";
