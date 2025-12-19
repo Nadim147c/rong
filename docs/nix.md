@@ -20,22 +20,25 @@ Add Rong flake to your flake input.
     };
   };
 
-  outputs = {
-    nixpkgs,
-    rong,
-    ...
-  }: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
-  in {
-    homeConfigurations."<username>" = home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
-      modules = [
-        rong.homeModules.default
-        ./home
-      ];
+  outputs =
+    {
+      nixpkgs,
+      rong,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
+    {
+      homeConfigurations."<username>" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [
+          rong.homeModules.default
+          ./home
+        ];
+      };
     };
-  };
 }
 ```
 
@@ -44,7 +47,8 @@ Add Rong flake to your flake input.
 Now, use this module anywhere in your configuration.
 
 ```nix
-{...}: {
+{ ... }:
+{
   programs.rong = {
     enable = true;
     settings = {
@@ -52,7 +56,7 @@ Now, use this module anywhere in your configuration.
       base16 = {
         blend = 0.5;
         method = "static";
-        colors.green = "#00FF00"
+        colors.green = "#00FF00";
       };
       material = {
         contrast = 0.0;
@@ -60,6 +64,7 @@ Now, use this module anywhere in your configuration.
         variant = "tonal_spot";
         version = "2025";
       };
+      post-cmds."pywalfox.json" = /* bash */ "pywalfox --verbose update";
       links = {
         "hyprland.conf" = "~/.config/hypr/colors.conf";
         "colors.lua" = "~/.config/wezterm/colors.lua";
@@ -74,7 +79,7 @@ Now, use this module anywhere in your configuration.
     };
 
     # Create or overwrite templates
-    templates."cava.ini" = ''
+    templates."cava.ini" = /* ini */ ''
       [color]
       ; background = '{{ .Background }}'
       background = 'default'
