@@ -1,0 +1,74 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement for Rong
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to improve Rong?
+        We’d love to hear it 🎨🚀
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem does this feature solve?
+      placeholder: |
+        It's currently hard to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe your ideal solution
+      placeholder: |
+        Add support for...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Color extraction
+        - Templates
+        - CLI UX
+        - Performance
+        - Documentation
+        - New app integration
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples / mock usage
+      description: CLI examples, config snippets, or screenshots
+      placeholder: |
+        rong image wallpaper.jpg --new-flag
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: |
+        Other approaches you’ve thought about
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked existing issues and discussions
+          required: true

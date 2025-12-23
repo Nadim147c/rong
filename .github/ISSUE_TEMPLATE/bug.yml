@@ -1,0 +1,114 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in Rong
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug!
+        Please fill out the sections below to help us reproduce and fix the issue faster.
+
+  - type: input
+    id: version
+    attributes:
+      label: Rong version
+      description: Output of `rong --version` or git commit hash
+      placeholder: "v0.x.x / commit abc123"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation method
+      options:
+        - Nix flake
+        - Arch Linux (AUR)
+        - go install
+        - Built from source
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: input_type
+    attributes:
+      label: Input type
+      options:
+        - Image
+        - Video
+        - Both
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS / Distribution
+      placeholder: "NixOS 24.05, Arch Linux, Fedora 40"
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command used
+      description: The exact command you ran
+      placeholder: |
+        rong image ~/Pictures/wallpaper.jpg
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What happened? What did you expect instead?
+      placeholder: |
+        Describe the issue clearly and concisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run rong with an image
+        2. Apply template to Waybar
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Error output
+      description: Paste relevant terminal output or error messages
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: templates
+    attributes:
+      label: Template or config (if relevant)
+      description: Paste the template or mapping that caused the issue
+      render: go-template
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked existing issues
+          required: true
+        - label: I am using the latest version of Rong
+          required: true
+        - label: The issue is reproducible
+          required: true
