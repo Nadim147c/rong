@@ -16,6 +16,7 @@ import (
 	"text/template"
 	"unicode"
 
+	"github.com/MatusOllah/stripansi"
 	"github.com/Nadim147c/rong/v4/internal/models"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
 	"github.com/spf13/cast"
@@ -250,6 +251,7 @@ func runHooks(name string, hooks []string, env []string) error {
 		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
 
 		out, err := cmd.CombinedOutput()
+		out = stripansi.Bytes(out)
 		out = bytes.TrimRightFunc(out, unicode.IsSpace)
 		if err != nil {
 			slog.Error(

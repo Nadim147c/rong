@@ -4,6 +4,7 @@ go 1.25
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
+	github.com/MatusOllah/stripansi v1.1.0
 	github.com/Nadim147c/fang v0.5.0-fork
 	github.com/Nadim147c/material/v2 v2.0.0-beta.11
 	github.com/adrg/xdg v0.5.3
