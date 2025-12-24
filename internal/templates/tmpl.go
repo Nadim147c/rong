@@ -251,8 +251,11 @@ func runHooks(name string, hooks []string, env []string) error {
 		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
 
 		out, err := cmd.CombinedOutput()
+		// ansi fixup
+		out = bytes.ReplaceAll(out, []byte{'\r'}, []byte{'\n'})
 		out = stripansi.Bytes(out)
-		out = bytes.TrimRightFunc(out, unicode.IsSpace)
+		// trim space
+		out = bytes.TrimSpace(out)
 		if err != nil {
 			slog.Error(
 				"Hook failed",
