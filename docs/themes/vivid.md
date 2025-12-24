@@ -10,7 +10,13 @@ the colorized output of
 
 ## Install
 
-Install [vivid](https://github.com/sharkdp/vivid?tab=readme-ov-file#installation).
+Install [vivid](https://github.com/sharkdp/vivid?tab=readme-ov-file#installation)
+from your preferred package manager.
+
+```bash
+# With pacman
+sudo pacman -S vivid
+```
 
 ## Apply
 
@@ -38,5 +44,13 @@ $env.LS_COLORS = (vivid generate $"($env.XDG_STATE_HOME | default $"($env.HOME)/
 ## Reload
 
 Themes will reload on shell restart. Sourcing shell init script will also reload the
-theme (`source ~/.bashrc`). It might be possible to live reload `LS_COLORS` variable
-by watching `$XDG_STATE_HOME/rong/vivid.yml` file.
+theme (`source ~/.bashrc`).
+
+However, if live reload is a must than you can generate a `LS_COLORS` using
+`dircolors`.
+
+```bash
+source <(dircolors)
+```
+
+This will use basic terminal colors and will be updated when you update the terminal.
