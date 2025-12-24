@@ -3,11 +3,17 @@ pagefind-indexed: false
 ---
 
 ::: info
-You need to [generate](/getting-started#generate-colors) colors for these
-configuration files to be created. Run:
 
-```bash
-rong video path/to/image/or/video
-```
+You need to [generate](/getting-started#generate-colors) colors for these theme files
+to be created.
+
+- If you're running `rong` for the first time:
+  ```bash
+  rong video -vv path/to/image/or/video
+  ```
+- Else re-generate colors from current image:
+  ```bash
+  rong regen -vv
+  ```
 
 :::

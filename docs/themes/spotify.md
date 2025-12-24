@@ -15,7 +15,7 @@ only for theming.
 
 Follow the installation
 [guide](https://spicetify.app/docs/getting-started#linux-and-macos) of spicetify and
-continue
+continue.
 
 ## Link
 
@@ -50,40 +50,38 @@ spicetify apply
 ## Reload
 
 You need to run `spicetify apply` and restart Spotify to apply new generated theme.
-However, it is possible to live reload theme by starting spicetify in watch mode
+Live theme reload is possible by starting spicetify in watch mode
 (`spicetify watch -s`).
 
 ::: info
-For flatpak version of spotify, `spicetify watch -s` **might** fail to restart spotify.
-In that case, you can install run spotify with debug flags and run `spicetify watch
--s` after generating colors.
+
+For flatpak version of spotify, `spicetify watch -s` **might** fail to (re)start
+spotify. In that case, you can do the following step.
 
 - Start spotify:
 
 ```bash
-flatpak run com.spotify.Client --remote-debugging-port=9222 --remote-allow-origins='*'
+flatpak run com.spotify.Client \
+  --remote-debugging-port=9222 \
+  --remote-allow-origins='*'
 ```
 
-- Live reload after color generation:
+- Live reload after generating colors color:
 
 ```bash
-timeout 2s spicetify watch -s
+spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
+```
+
+> `sed '/Reloaded Spotify/q'` exits whenever it match output `Reloaded Spotify`.
+
+- Final `config.yaml`:
+
+```yaml
+links:
+  spicetify-sleek.ini: ~/.config/spicetify/Themes/Sleek/color.ini
+post-cmds:
+  spicetify-sleek.ini: |
+    spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
 ```
 
 :::
-
-### Reload with Hyprland
-
-To auto reload Spotify on Hyprland compositor, make these changes to your Hyprland
-configuration
-
-```ini
-$music = spotify # [!code --]
-$music = spicetify watch -s # [!code ++]
-
-# To start Spotify on 4th workspace with watch mode on start
-exec-once = [workspace 4 silent] $music
-
-# To start Spotify on with $mainMod (usually SUPER) + M shortcut
-bind = $mainMod, M, exec, $music
-```
