@@ -27,13 +27,13 @@ func init() {
 	Command.Flags().AddFlagSet(base16.Flags)
 }
 
-// Command is the image command
+// Command is the image command.
 var Command = &cobra.Command{
 	Use:   "image <image>",
 	Short: "Generate colors from a image",
 	Args:  cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
@@ -53,7 +53,7 @@ var Command = &cobra.Command{
 
 		hash, err := cache.Hash(imagePath)
 		if err != nil {
-			return fmt.Errorf("failed to get xxh sum: %v", err)
+			return fmt.Errorf("failed to get xxh sum: %w", err)
 		}
 
 		quantized, err := cache.LoadCache(hash)
@@ -117,7 +117,7 @@ var Command = &cobra.Command{
 				slog.Warn("Failed to save colors to cache", "error", err)
 			}
 
-			return templates.Execute(output)
+			return templates.Execute(ctx, output)
 		}
 
 		return nil

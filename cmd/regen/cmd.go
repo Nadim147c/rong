@@ -22,17 +22,19 @@ func init() {
 	Command.Flags().AddFlagSet(base16.Flags)
 }
 
-// Command is the image command
+// Command is the image command.
 var Command = &cobra.Command{
 	Use:   "regen [flags]",
 	Short: "Regenerate colors from previous generation",
 	Args:  cobra.NoArgs,
-	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return viper.BindPFlags(cmd.Flags())
 	},
-	RunE: func(_ *cobra.Command, _ []string) error {
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		ctx := cmd.Context()
 		state, err := cache.LoadState()
 		if err != nil {
+			//nolint
 			return fmt.Errorf("failed load current state: %v", err)
 		}
 
@@ -78,7 +80,7 @@ var Command = &cobra.Command{
 		}
 
 		if !viper.GetBool("dry-run") {
-			return templates.Execute(output)
+			return templates.Execute(ctx, output)
 		}
 
 		return nil

@@ -10,13 +10,13 @@ import (
 	"github.com/Nadim147c/material/v2/score"
 )
 
-// Quantized is quantized colors
+// Quantized is quantized colors.
 type Quantized struct {
 	Celebi map[color.ARGB]int `json:"celebi"`
 	Wu     []color.ARGB       `json:"wu"`
 }
 
-// Quantize quantizes list of pixels
+// Quantize quantizes list of pixels.
 func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
 	wu, err := quantizer.QuantizeWuContext(ctx, pixels, 100)
 	if err != nil {
@@ -36,13 +36,13 @@ func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
 	return Quantized{celebi, wu}, nil
 }
 
-// ErrNoColorFound is a error
+// ErrNoColorFound means no color found from imput image.
 var ErrNoColorFound = errors.New("no color found")
 
-// Colors is key and color
+// Colors is key and color.
 type Colors = map[string]color.ARGB
 
-// GenerateFromPixels generates color from a slice of pixels
+// GenerateFromPixels generates color from a slice of pixels.
 func GenerateFromPixels(
 	ctx context.Context,
 	pixels []color.ARGB,
@@ -56,7 +56,7 @@ func GenerateFromPixels(
 	return GenerateFromQuantized(q, cfg)
 }
 
-// GenerateFromQuantized generates color from a cached quantized
+// GenerateFromQuantized generates color from a cached quantized.
 func GenerateFromQuantized(
 	quantized Quantized,
 	cfg Config,

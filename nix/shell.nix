@@ -7,15 +7,16 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     go
     gopls
-    gofumpt
-    golines
-    revive
-    gnumake
-    findutils
+    golangci-lint
+    gotestsum
+
+    just
+    just-lsp
 
     bun
     prettier
 
-    alejandra
+    nixfmt-tree
+    nixfmt-rfc-style
   ];
 }

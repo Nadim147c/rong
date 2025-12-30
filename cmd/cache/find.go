@@ -5,10 +5,11 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
-// Supported image and video extensions
+// Supported image and video extensions.
 var mediaExtensions = map[string]bool{
 	".jpg": true, ".jpeg": true, ".png": true, ".gif": true, ".bmp": true, ".webp": true,
 	".mp4": true, ".mov": true, ".avi": true, ".mkv": true, ".flv": true, ".wmv": true,
@@ -21,7 +22,7 @@ func isMediaFile(path string) bool {
 }
 
 // ScanPaths scans the given paths and returns absolute paths of image/video
-// files
+// files.
 func find(ctx context.Context, inputs []string, paths chan<- string) error {
 	handler := func(path string, info os.FileInfo, err error) error {
 		select {
@@ -43,7 +44,7 @@ func find(ctx context.Context, inputs []string, paths chan<- string) error {
 		return nil
 	}
 
-	for _, p := range inputs {
+	for p := range slices.Values(inputs) {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -57,7 +58,8 @@ func find(ctx context.Context, inputs []string, paths chan<- string) error {
 		}
 
 		if fileInfo.IsDir() {
-			filepath.Walk(p, handler)
+			// TODO: handle me
+			_ = filepath.Walk(p, handler)
 			continue
 		}
 

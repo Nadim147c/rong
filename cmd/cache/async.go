@@ -74,7 +74,7 @@ func (j *job) process(
 	return nil
 }
 
-// This does breaks the tea.Model
+// This does breaks the tea.Model.
 type state struct {
 	done      bool
 	queued    int
@@ -95,7 +95,7 @@ func cacheRec(ctx context.Context, inputs []string, ch chan<- state) {
 
 	paths := make(chan string, 100)
 	go func() {
-		find(ctx, inputs, paths)
+		_ = find(ctx, inputs, paths)
 		close(paths)
 	}()
 

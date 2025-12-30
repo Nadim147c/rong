@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"log/slog"
 	"runtime"
 	"sync"
 	"time"
@@ -19,7 +20,7 @@ func init() {
 		Int("workers", runtime.NumCPU(), "number of concurrent workers")
 }
 
-// Command is cache command
+// Command is cache command.
 var Command = &cobra.Command{
 	Use:   "cache <path...>",
 	Short: "Generate color cache from images or videos",
@@ -37,8 +38,8 @@ rong cache path/to/*.png
 rong cache path/to/directory
   `,
 	Args: cobra.MinimumNArgs(1),
-	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithCancel(cmd.Context())
@@ -49,7 +50,12 @@ rong cache path/to/directory
 
 		var wg sync.WaitGroup
 
-		wg.Go(func() { p.Run() })
+		wg.Go(func() {
+			_, err := p.Run()
+			if err != nil {
+				slog.Info("Tui program failed", "error", err)
+			}
+		})
 		wg.Go(func() { cacheRec(ctx, args, states) })
 		for state := range states {
 			p.Send(state)

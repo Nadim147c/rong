@@ -26,7 +26,7 @@ func init() {
 		Duration("duration", 5*time.Second, "maxium number of duration to process")
 }
 
-// Command is the video command
+// Command is the video command.
 var Command = &cobra.Command{
 	Use:   "video <video>",
 	Short: "Generate colors from a video",
@@ -41,8 +41,8 @@ rong video path/to/image.webp
 rong video path/to/image.mp4 --dry-run --json | jq
   `,
 	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return viper.BindPFlags(cmd.Flags())
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
@@ -63,7 +63,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		hash, err := cache.Hash(videoPath)
 		if err != nil {
-			return fmt.Errorf("failed to get xxh sum: %v", err)
+			return fmt.Errorf("failed to get xxh sum: %w", err)
 		}
 
 		quantized, err := cache.LoadCache(hash)
@@ -76,7 +76,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			duration := viper.GetDuration("duration").Seconds()
 			pixels, err := ffmpeg.GetPixels(ctx, videoPath, frames, duration)
 			if err != nil {
-				return fmt.Errorf("Failed to get pixels from media: %w", err)
+				return fmt.Errorf("failed to get pixels from media: %w", err)
 			}
 			quantized, err = material.Quantize(ctx, pixels)
 			if err != nil {
@@ -131,7 +131,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 				slog.Warn("Failed to save colors to cache", "error", err)
 			}
 
-			return templates.Execute(output)
+			return templates.Execute(ctx, output)
 		}
 
 		return nil

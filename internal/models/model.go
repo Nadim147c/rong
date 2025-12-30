@@ -11,7 +11,7 @@ import (
 	"github.com/Nadim147c/rong/v4/internal/material"
 )
 
-// Output contains all values that will execute templates
+// Output contains all values that will execute templates.
 type Output struct {
 	Material `json:"material"`
 	Base16   `json:"base16"`
@@ -19,7 +19,7 @@ type Output struct {
 	Colors   []NamedColor `json:"colors"`
 }
 
-// NewOutput create output struct for templates execution
+// NewOutput create output struct for templates execution.
 func NewOutput(
 	source string,
 	base16Colors base16.Base16,
@@ -49,10 +49,10 @@ func NewOutput(
 		return strings.Compare(a.Name.Snake, b.Name.Snake)
 	})
 
-	material := NewMaterial(materialColors, customColors)
+	m := NewMaterial(materialColors, customColors)
 
 	return Output{
-		Material: material,
+		Material: m,
 		Base16:   b,
 		Image:    source,
 		Colors:   colors,
@@ -82,7 +82,7 @@ type ColorName struct {
 
 var _ fmt.Stringer = (*ColorName)(nil)
 
-// String implements fmt.Stringer
+// String implements Stringer.
 func (c ColorName) String() string {
 	return c.Snake
 }
@@ -150,7 +150,7 @@ func (cv FormatedColor) String() string {
 	return cv.HexRGB
 }
 
-// NewNamedColor creates a Color
+// NewNamedColor creates a Color.
 func NewNamedColor(key string, rgb color.ARGB) NamedColor {
 	// Convert snake_case to other cases
 	var name ColorName
@@ -166,7 +166,7 @@ func NewNamedColor(key string, rgb color.ARGB) NamedColor {
 
 func lf(c uint8) float64 { return float64(c) / 255.0 }
 
-// NewFormatedColor create a ColorValue
+// NewFormatedColor create a ColorValue.
 func NewFormatedColor(rgb color.ARGB) FormatedColor {
 	var value FormatedColor
 	if rgb == 0 {

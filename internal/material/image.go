@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config is configuration used to generate colors
+// Config is configuration used to generate colors.
 type Config struct {
 	Variant   dynamic.Variant
 	Platform  dynamic.Platform
@@ -20,7 +20,7 @@ type Config struct {
 	Constrast float64
 }
 
-// GetConfig return Config from viper
+// GetConfig return Config from viper.
 func GetConfig() (Config, error) {
 	config := Config{}
 
@@ -44,7 +44,7 @@ func GetConfig() (Config, error) {
 
 	config.Constrast = viper.GetFloat64("material.contrast")
 	if config.Constrast < -1 || config.Constrast > 1 {
-		return config, fmt.Errorf(
+		return config, fmt.Errorf( //nolint
 			"contrast must between -1 to 1 but got %.2f",
 			config.Constrast,
 		)
@@ -55,7 +55,7 @@ func GetConfig() (Config, error) {
 	return config, nil
 }
 
-// Flags are the flags used for generating colors
+// Flags are the flags used for generating colors.
 var Flags = pflag.NewFlagSet("material", pflag.ContinueOnError)
 
 func init() {
@@ -100,7 +100,7 @@ func init() {
 	viper.SetDefault("material.custom.blend", 0.3)
 }
 
-// GetPixelsFromImage returns pixels from image.Imaget interface
+// GetPixelsFromImage returns pixels from image.Imaget interface.
 func GetPixelsFromImage(img image.Image) []color.ARGB {
 	bounds := img.Bounds()
 	pixels := make([]color.ARGB, 0, bounds.Dx()*bounds.Dy())
@@ -116,7 +116,7 @@ func GetPixelsFromImage(img image.Image) []color.ARGB {
 	return pixels
 }
 
-// GenerateFromImage colors from an image.Image
+// GenerateFromImage colors from an image.Image.
 func GenerateFromImage(
 	ctx context.Context,
 	img image.Image,

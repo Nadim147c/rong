@@ -13,7 +13,7 @@ import (
 )
 
 // GetPixels decodes media using ffmpeg and returns slices of pixels for given
-// maxFrames numbers
+// maxFrames numbers.
 func GetPixels(
 	ctx context.Context,
 	path string,
@@ -24,13 +24,13 @@ func GetPixels(
 
 	mtype, err := mimetype.DetectFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get media type: %w", err)
+		return nil, fmt.Errorf("failed to get media type: %w", err)
 	}
 
 	kind := mtype.String()
 
 	if !strings.HasPrefix(kind, "video") && !strings.HasPrefix(kind, "image") {
-		return pixels, fmt.Errorf("Invalid media type: %s", kind)
+		return pixels, fmt.Errorf("invalid media type: %s", kind) //nolint
 	}
 
 	if strings.HasPrefix(kind, "image") {
@@ -62,7 +62,7 @@ func GetPixels(
 
 	duration, err := GetDuration(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get duration: %v", err)
+		return nil, fmt.Errorf("failed to get duration: %w", err)
 	}
 
 	duration = min(duration, maxDuration)
@@ -73,10 +73,13 @@ func GetPixels(
 		fps = 1
 	}
 
+	filterGraph := fmt.Sprintf("fps=%.8f", fps)
+	processTime := fmt.Sprintf("%.5f", duration)
+
 	ffmpeg := exec.CommandContext(ctx, "ffmpeg",
 		"-i", path,
-		"-vf", fmt.Sprintf("fps=%.8f", fps),
-		"-t", fmt.Sprintf("%.5f", duration),
+		"-vf", filterGraph,
+		"-t", processTime,
 		"-f", "rawvideo",
 		"-pix_fmt", "rgb24",
 		"-")
@@ -98,8 +101,9 @@ func GetPixels(
 }
 
 // GetDuration runs ffprobe to determine if the file is an image or video and
-// returns its duration
+// returns its duration.
 func GetDuration(src string) (float64, error) {
+	//nolint // its too fast
 	out, err := exec.Command("ffprobe",
 		"-v", "error",
 		"-show_entries", "format=duration",
@@ -113,7 +117,7 @@ func GetDuration(src string) (float64, error) {
 	return strconv.ParseFloat(strings.TrimSpace(string(out)), 64)
 }
 
-// GeneratePreview generates preview thumnail for given media
+// GeneratePreview generates preview thumnail for given media.
 func GeneratePreview(ctx context.Context, src, dst string) error {
 	dur, err := GetDuration(src)
 	if err != nil {

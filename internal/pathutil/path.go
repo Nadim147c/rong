@@ -13,13 +13,16 @@ const app = "rong"
 var separator = regexp.MustCompile(`[/\\]+`)
 
 var (
-	// ConfigDir is the rong config directory
+	// ConfigDir is the rong config directory.
 	ConfigDir = filepath.Clean(filepath.Join(xdg.ConfigHome, app))
-	// CacheDir is the rong cache directory
+	// CacheDir is the rong cache directory.
 	CacheDir = filepath.Clean(filepath.Join(xdg.CacheHome, app))
-	// StateDir is the rong state directory
+	// StateDir is the rong state directory.
 	StateDir = filepath.Clean(filepath.Join(xdg.StateHome, app))
 )
+
+// ErrEmptyPath means user difined an empty string as path.
+var ErrEmptyPath = errors.New("empty path")
 
 // FindPath expands environment-aware variables and returns an absolute path
 // from a given base path (not CWD).
@@ -33,7 +36,7 @@ var (
 //   - $RONG_DATA      : xdg.DataHome + "rong"
 func FindPath(basePath, inputPath string) (string, error) {
 	if inputPath == "" {
-		return "", errors.New("empty path")
+		return "", ErrEmptyPath
 	}
 
 	if filepath.IsAbs(inputPath) {

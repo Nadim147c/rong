@@ -9,7 +9,7 @@ import (
 	"github.com/Nadim147c/rong/v4/internal/material"
 )
 
-// CustomColors is map of user defined custom colors
+// CustomColors is map of user defined custom colors.
 type CustomColors map[string]FormatedColor
 
 func pascalToSnake(s string) string {
@@ -37,7 +37,7 @@ func snakeToPascal(s string) string {
 	return strings.Join(parts, "")
 }
 
-// MarshalJSON json implements json.Marshaller
+// MarshalJSON json implements json.Marshaller.
 func (c CustomColors) MarshalJSON() ([]byte, error) {
 	tmp := make(map[string]FormatedColor, len(c))
 	for k, v := range c {
@@ -46,7 +46,7 @@ func (c CustomColors) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tmp)
 }
 
-// UnmarshalJSON json implements json.Unmarshaller
+// UnmarshalJSON json implements json.Unmarshaller.
 func (c *CustomColors) UnmarshalJSON(data []byte) error {
 	tmp := map[string]FormatedColor{}
 	if err := json.Unmarshal(data, &tmp); err != nil {
@@ -62,7 +62,7 @@ func (c *CustomColors) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Material contains all material colors
+// Material contains all material colors.
 type Material struct {
 	Custom                  CustomColors  `json:"custom"`
 	Background              FormatedColor `json:"background"`
@@ -116,7 +116,7 @@ type Material struct {
 	TertiaryFixedDim        FormatedColor `json:"tertiary_fixed_dim"`
 }
 
-// NewMaterial return material color type
+// NewMaterial return material color type.
 func NewMaterial(
 	colorMap map[string]color.ARGB,
 	customColors map[string]material.CustomColor,

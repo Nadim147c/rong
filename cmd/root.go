@@ -100,14 +100,14 @@ func init() {
 
 func handleError(w io.Writer, styles fang.Styles, err error) {
 	if errors.Is(err, context.Canceled) {
-		err = errors.New("operation cancelled by user")
+		err = errors.New("operation cancelled by user") //nolint
 	}
 	fang.DefaultErrorHandler(w, styles, err)
 }
 
-// Execute runs the cobra cli
-func Execute(version string) error {
-	return fang.Execute(
+// Execute runs the cobra cli.
+func Execute(version string) {
+	err := fang.Execute(
 		context.Background(),
 		Command,
 		fang.WithErrorHandler(handleError),
@@ -117,6 +117,9 @@ func Execute(version string) error {
 		fang.WithVersion(version),
 		fang.WithoutCompletions(),
 	)
+	if err != nil {
+		os.Exit(1)
+	}
 }
 
 func should[T any](v T, _ error) T {
@@ -125,16 +128,17 @@ func should[T any](v T, _ error) T {
 
 var logfile *os.File
 
-// Command is root command of the cli
+// Command is root command of the cli.
 var Command = &cobra.Command{
 	Use:          "rong",
 	Short:        "A material you color generator from image or video.",
 	SilenceUsage: true,
-	PersistentPostRun: func(_ *cobra.Command, _ []string) {
+	PersistentPostRunE: func(*cobra.Command, []string) error {
 		slog.Info("Exiting rong")
 		if logfile != nil {
-			logfile.Close()
+			return logfile.Close()
 		}
+		return nil
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 		if cmd.Name() == "_carapace" {
@@ -167,10 +171,7 @@ var Command = &cobra.Command{
 		if cmd.Flags().Changed("log-file") {
 			logFilePath := should(cmd.Flags().GetString("log-file"))
 
-			if err := os.MkdirAll(
-				filepath.Dir(logFilePath),
-				0o755,
-			); err != nil {
+			if err := os.MkdirAll(filepath.Dir(logFilePath), 0o750); err != nil {
 				slog.Error(
 					"Failed to create parent directory for log file",
 					"error",
@@ -178,11 +179,8 @@ var Command = &cobra.Command{
 				)
 			}
 
-			file, err := os.OpenFile(
-				logFilePath,
-				os.O_CREATE|os.O_APPEND|os.O_WRONLY,
-				0o666,
-			)
+			mod := os.O_CREATE | os.O_APPEND | os.O_WRONLY
+			file, err := os.OpenFile(logFilePath, mod, 0o600)
 			if err != nil {
 				logger := slog.New(stderrHandler)
 				slog.SetDefault(logger)

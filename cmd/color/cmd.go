@@ -3,7 +3,6 @@ package color
 import (
 	"encoding/json"
 	"log/slog"
-	"os"
 	"strings"
 
 	"github.com/Nadim147c/material/v2/color"
@@ -27,7 +26,7 @@ func init() {
 	Command.Flags().AddFlagSet(base16.Flags)
 }
 
-// Command is the color command
+// Command is the color command.
 var Command = &cobra.Command{
 	Use:   "color <color>",
 	Short: "Generate colors from a color",
@@ -45,10 +44,12 @@ rong color '#00FF00'
 rong color green --dry-run --json | jq
   `,
 	Args: cobra.ExactArgs(1),
-	PreRun: func(cmd *cobra.Command, _ []string) {
-		viper.BindPFlags(cmd.Flags())
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return viper.BindPFlags(cmd.Flags())
 	},
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+
 		name := strings.ToLower(args[0])
 		source, ok := Names[name]
 		if !ok {
@@ -98,11 +99,13 @@ rong color green --dry-run --json | jq
 		output := models.NewOutput("", based, colorMap, customs)
 
 		if viper.GetBool("json") {
-			json.NewEncoder(os.Stdout).Encode(output)
+			if err := json.NewEncoder(cmd.OutOrStdout()).Encode(output); err != nil {
+				slog.Error("Failed to encode json", "error", err)
+			}
 		}
 
 		if !viper.GetBool("dry-run") {
-			return templates.Execute(output)
+			return templates.Execute(ctx, output)
 		}
 
 		return nil

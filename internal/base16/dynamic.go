@@ -11,7 +11,7 @@ import (
 )
 
 // GenerateDynamic generates base16 colors from selecting quantizes color. It
-// takes color with long chroma distance to ensure colors has more variety
+// takes color with long chroma distance to ensure colors has more variety.
 func GenerateDynamic(
 	fg, bg color.ARGB,
 	colors []color.ARGB,
@@ -44,7 +44,7 @@ func getColor(colors []color.Hct, i int) color.Hct {
 	return color.Hct{}
 }
 
-// distance returns the shortest distance between two angles on a circle
+// distance returns the shortest distance between two angles on a circle.
 func distance(a, b float64) float64 {
 	diff := math.Abs(a - b)
 	return math.Min(diff, 360-diff)
@@ -90,14 +90,14 @@ func ensureHueVariety(colors []color.Hct) []color.Hct {
 	return out
 }
 
-// SelectColors selects k Hct colors maximizing angular separation
+// SelectColors selects k Hct colors maximizing angular separation.
 func SelectColors(colors []color.Hct, k int) []color.Hct {
 	n := len(colors)
 	if k >= n {
 		return colors
 	}
 
-	selected := []color.Hct{colors[rand.Intn(n)]}
+	selected := []color.Hct{colors[rand.Intn(n)]} //nolint:gosec
 	remaining := make([]color.Hct, 0, n-1)
 	for _, c := range colors {
 		if c != selected[0] {

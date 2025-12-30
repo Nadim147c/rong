@@ -35,7 +35,7 @@ type model struct {
 	width, height int
 }
 
-// NewModel creates a new model with the given paths
+// NewModel creates a new model with the given paths.
 func newModel(exit context.CancelFunc) *model {
 	m := new(model)
 	m.exit = exit
@@ -44,7 +44,6 @@ func newModel(exit context.CancelFunc) *model {
 	return m
 }
 
-// Init is Init
 func (m model) Init() tea.Cmd {
 	return m.spinner.Tick
 }
@@ -108,7 +107,6 @@ func prettyPath(path string) string {
 	return path
 }
 
-// Update updates Update
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -163,7 +161,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// View views View
 func (m model) View() string {
 	if m.done {
 		return fmt.Sprintf("Done! Processed %d files\n", len(m.completed))

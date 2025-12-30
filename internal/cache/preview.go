@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// GetPreview returns the preview image
+// GetPreview returns the preview image.
 func GetPreview(src string, hash string) (string, error) {
 	format := viper.GetString("preview-format")
 	path := filepath.Join(pathutil.CacheDir, hash+"."+format)

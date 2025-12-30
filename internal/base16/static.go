@@ -6,11 +6,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// standard ansi color
-var staticColors = []string{}
-
 // SourceColors is all source colors for static generation and fallback for
-// dynamic generation
+// dynamic generation.
 type SourceColors struct {
 	// Black is terminal color 0,8
 	Black color.ARGB
@@ -41,7 +38,7 @@ var defaultSrcColors = SourceColors{
 	White:   0xFFC0C0C0, // #C0C0C0
 }
 
-// GenerateStatic generates base16 colors from pre-defined colors
+// GenerateStatic generates base16 colors from pre-defined colors.
 func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
 	primaryLab := primary.ToXYZ().ToOkLab()
 

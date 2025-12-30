@@ -24,7 +24,7 @@ func init() {
 	viper.SetDefault("material.custom.ratio", 0.35)
 }
 
-// GenerateCustomColors returns all custom colors
+// GenerateCustomColors returns all custom colors.
 func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
 	defined := viper.GetStringMapString("material.custom.colors")
 	if len(defined) == 0 {
@@ -37,7 +37,7 @@ func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
 
 	for name, col := range defined {
 		if !nameRe.MatchString(name) {
-			return nil, fmt.Errorf(
+			return nil, fmt.Errorf( //nolint
 				"custom color name should only contains alphanumeric values or underscore: name=%s",
 				name,
 			)

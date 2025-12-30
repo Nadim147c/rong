@@ -9,18 +9,18 @@ import (
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
 )
 
-// State is the current generation state
+// State is the current generation state.
 type State struct {
 	Path      string             `json:"filename"`
 	Hash      string             `json:"hash"`
 	Quantized material.Quantized `json:"quantized"`
 }
 
-// SaveState saves state to state dir
+// SaveState saves state to state dir.
 func SaveState(source, hash string, output material.Quantized) error {
 	path := filepath.Join(pathutil.StateDir, "state.json")
 
-	if err := os.MkdirAll(pathutil.CacheDir, 0o755); err != nil {
+	if err := os.MkdirAll(pathutil.CacheDir, 0o750); err != nil {
 		return err
 	}
 
@@ -35,7 +35,7 @@ func SaveState(source, hash string, output material.Quantized) error {
 	return json.NewEncoder(file).Encode(state)
 }
 
-// LoadState saves state to state dir
+// LoadState saves state to state dir.
 func LoadState() (State, error) {
 	path := filepath.Join(pathutil.StateDir, "state.json")
 

@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"crypto/md5"
+	"crypto/md5" //nolint:gosec
 	"encoding/hex"
 	"encoding/json"
 	"os"
@@ -12,17 +12,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Hash returns xxh3_128 sum
+// Hash returns md5 sum.
 func Hash(path string) (string, error) {
 	name, err := filepath.Abs(path)
 	if err != nil {
 		return "", err
 	}
-	b := md5.Sum([]byte(name))
+	b := md5.Sum([]byte(name)) //nolint:gosec
 	return hex.EncodeToString(b[:]), nil
 }
 
-// IsCached checks if the file is colors is cached or not
+// IsCached checks if the file is colors is cached or not.
 func IsCached(hash string, isVideo bool) bool {
 	if !isVideo {
 		jsonCache := filepath.Join(pathutil.CacheDir, hash+".json")
@@ -35,7 +35,7 @@ func IsCached(hash string, isVideo bool) bool {
 	return err == nil
 }
 
-// LoadCache tries to load cached colors for this image
+// LoadCache tries to load cached colors for this image.
 func LoadCache(hash string) (material.Quantized, error) {
 	var output material.Quantized
 	path := filepath.Join(pathutil.CacheDir, hash+".json")
@@ -50,11 +50,11 @@ func LoadCache(hash string) (material.Quantized, error) {
 	return output, err
 }
 
-// SaveCache saves output colors to cache dir
+// SaveCache saves output colors to cache dir.
 func SaveCache(hash string, output material.Quantized) error {
 	path := filepath.Join(pathutil.CacheDir, hash+".json")
 
-	if err := os.MkdirAll(pathutil.CacheDir, 0o755); err != nil {
+	if err := os.MkdirAll(pathutil.CacheDir, 0o750); err != nil {
 		return err
 	}
 

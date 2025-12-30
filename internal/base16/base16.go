@@ -12,10 +12,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-// BlendRatio is the default blend ratio from static color
+// BlendRatio is the default blend ratio from static color.
 const BlendRatio float64 = 0.55
 
-// Flags are the flags used for generating colors
+// Flags are the flags used for generating colors.
 var Flags = pflag.NewFlagSet("base16", pflag.ContinueOnError)
 
 func formatDefault(c color.ARGB) string {
@@ -104,7 +104,7 @@ var opt = viper.DecodeHook(mapstructure.DecodeHookFuncValue(
 	},
 ))
 
-// Generate generates colors from material color name and quantized colors
+// Generate generates colors from material color name and quantized colors.
 func Generate(
 	material map[string]color.ARGB,
 	quantized []color.ARGB,
@@ -121,14 +121,14 @@ func Generate(
 		fg, bg := material["on_background"], material["background"]
 		return GenerateDynamic(fg, bg, quantized), nil
 	default:
-		return Base16{}, fmt.Errorf(
+		return Base16{}, fmt.Errorf( //nolint
 			"invalid base16 color generating method: %v",
 			method,
 		)
 	}
 }
 
-// Base16 is the generated output
+// Base16 is the generated output.
 type Base16 struct {
 	dark                   bool
 	Black, BrightBlack     color.ARGB
@@ -141,89 +141,89 @@ type Base16 struct {
 	White, BrightWhite     color.ARGB
 }
 
-// NewBase16 creates a new Base16
+// NewBase16 creates a new Base16.
 func NewBase16() Base16 {
 	b := Base16{}
 	b.dark = viper.GetBool("dark")
 	return b
 }
 
-// SetBlack sets the Black and Bright Black color
+// SetBlack sets the Black and Bright Black color.
 func (b *Base16) SetBlack(c color.Hct) {
 	b.Black, b.BrightBlack = fixBlack(b.dark, c)
 }
 
-// SetRed sets the Red and Bright Red color
+// SetRed sets the Red and Bright Red color.
 func (b *Base16) SetRed(c color.Hct) {
 	b.Red, b.BrightRed = fix(b.dark, c)
 }
 
-// SetGreen sets the Green and Bright Green color
+// SetGreen sets the Green and Bright Green color.
 func (b *Base16) SetGreen(c color.Hct) {
 	b.Green, b.BrightGreen = fix(b.dark, c)
 }
 
-// SetYellow sets the Yellow and Bright Yellow color
+// SetYellow sets the Yellow and Bright Yellow color.
 func (b *Base16) SetYellow(c color.Hct) {
 	b.Yellow, b.BrightYellow = fix(b.dark, c)
 }
 
-// SetBlue sets the Blue and Bright Blue color
+// SetBlue sets the Blue and Bright Blue color.
 func (b *Base16) SetBlue(c color.Hct) {
 	b.Blue, b.BrightBlue = fix(b.dark, c)
 }
 
-// SetMagenta sets the Magenta and Bright Magenta color
+// SetMagenta sets the Magenta and Bright Magenta color.
 func (b *Base16) SetMagenta(c color.Hct) {
 	b.Magenta, b.BrightMagenta = fix(b.dark, c)
 }
 
-// SetCyan sets the Cyan and Bright Cyan color
+// SetCyan sets the Cyan and Bright Cyan color.
 func (b *Base16) SetCyan(c color.Hct) {
 	b.Cyan, b.BrightCyan = fix(b.dark, c)
 }
 
-// SetWhite sets the White and Bright White color
+// SetWhite sets the White and Bright White color.
 func (b *Base16) SetWhite(c color.Hct) {
 	b.White, b.BrightWhite = fixWhite(b.dark, c)
 }
 
 // Color adjustment parameters for theme variants.
 const (
-	// Chroma value for dark theme colors
+	// Chroma value for dark theme colors.
 	chromaDark = 80.0
-	// Chroma value for light theme colors
+	// Chroma value for light theme colors.
 	chromaLight = 100.0
 
-	// Reduced chroma for dark theme black/white fixes
+	// Reduced chroma for dark theme black/white fixes.
 	chromaDarkMuted = 10.0
-	// Reduced chroma for light theme black/white fixes
+	// Reduced chroma for light theme black/white fixes.
 	chromaLightMuted = 15.0
 
-	// Dark theme black adjustments
+	// Dark theme black adjustments.
 	toneNearWhiteDark = 15.0
 	tonePureWhiteDark = 25.0
 
-	// Dark theme white adjustments
+	// Dark theme white adjustments.
 	toneNearBlackDark = 95.0
 	tonePureBlackDark = 100.0
 
-	// Light theme white adjustments
+	// Light theme white adjustments.
 	toneNearWhiteLight = 75.0
 	tonePureWhiteLight = 85.0
 
-	// Light theme black adjustments
+	// Light theme black adjustments.
 	toneNearBlackLight = 25.0
 	tonePureBlackLight = 35.0
 
-	// Base tone for dark theme general fixes
+	// Base tone for dark theme general fixes.
 	toneDarkBase = 50.0
-	// Bright tone for dark theme general fixes
+	// Bright tone for dark theme general fixes.
 	toneDarkBright = 70.0
 
-	// Base tone for light theme general fixes
+	// Base tone for light theme general fixes.
 	toneLightBase = 50.0
-	// Bright tone for light theme general fixes
+	// Bright tone for light theme general fixes.
 	toneLightBright = 65.0
 )
 

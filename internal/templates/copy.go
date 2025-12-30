@@ -14,7 +14,7 @@ import (
 func atomicCopy(src, dst string) error {
 	dir := filepath.Dir(dst)
 	// Ensure directory exists
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 
@@ -37,6 +37,10 @@ func atomicCopy(src, dst string) error {
 	return dstFile.CloseAtomicallyReplace()
 }
 
+// ErrNotRegularFile indicated hardlink target is not a regular file. Thus rong
+// will not try to remove it.
+var ErrNotRegularFile = errors.New("source is not a regular file")
+
 // hardlinkOrCopy tries to hardlink src to dst.
 // - If dst already exists and is the same inode as src, it does nothing.
 // - If dst exists but is different, it removes dst and recreates it.
@@ -48,10 +52,10 @@ func hardlinkOrCopy(src, dst string) error {
 		return err
 	}
 	if !srcInfo.Mode().IsRegular() {
-		return errors.New("source is not a regular file")
+		return ErrNotRegularFile
 	}
 
-	// Fast path: dst exists and already hardlinked to src
+	// Fast path: dst exists and already hard-linked to src
 	if dstInfo, err := os.Stat(dst); err == nil {
 		if os.SameFile(srcInfo, dstInfo) {
 			return nil
@@ -62,7 +66,7 @@ func hardlinkOrCopy(src, dst string) error {
 	}
 
 	// Ensure parent dirs exist
-	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o750); err != nil {
 		return err
 	}
 
@@ -88,8 +92,8 @@ func copyFile(src, dst string) error {
 	}
 	defer func() {
 		if err != nil {
-			out.Close()
-			os.Remove(dst)
+			_ = out.Close()
+			_ = os.Remove(dst)
 		}
 	}()
 

@@ -2,7 +2,7 @@ package models
 
 import "github.com/Nadim147c/rong/v4/internal/base16"
 
-// Base16 is 16 colors
+// Base16 is 16 colors.
 type Base16 struct {
 	Color0 FormatedColor `json:"color_0"`
 	Color1 FormatedColor `json:"color_1"`
@@ -22,7 +22,7 @@ type Base16 struct {
 	ColorF FormatedColor `json:"color_f"`
 }
 
-// NewBase16 creates a Base16 from a base16.Base16 definition
+// NewBase16 creates a Base16 from a base16.Base16 definition.
 func NewBase16(based base16.Base16) (Base16, []NamedColor) {
 	var b Base16
 

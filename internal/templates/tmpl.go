@@ -2,6 +2,7 @@ package templates
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"errors"
 	"fmt"
@@ -36,11 +37,12 @@ func (s successCounter) has(n string) bool {
 //go:embed built-in/*.tmpl
 var templates embed.FS
 
-// Execute runs built-in and user-defined templates and links user defined files
-func Execute(colors models.Output) error {
+// Execute runs built-in and user-defined templates and links user defined
+// files.
+func Execute(ctx context.Context, colors models.Output) error {
 	var allErrors []error
 
-	if err := os.MkdirAll(pathutil.StateDir, 0o755); err != nil {
+	if err := os.MkdirAll(pathutil.StateDir, 0o750); err != nil {
 		slog.Error("Failed to create app cache directory", "error", err)
 		return fmt.Errorf("failed to create state directory: %w", err)
 	}
@@ -69,7 +71,7 @@ func Execute(colors models.Output) error {
 
 	templateRoot := filepath.Join(pathutil.ConfigDir, "templates")
 	templatePaths, err := filepath.Glob(templateRoot + "/*.tmpl")
-	if err != nil {
+	if err != nil { //nolint:nestif
 		slog.Error("Failed to find templates", "error", err)
 		allErrors = append(
 			allErrors,
@@ -95,7 +97,7 @@ func Execute(colors models.Output) error {
 	}
 
 	// Run post-hook and collect any errors
-	postHookErrs := postHook(colors)
+	postHookErrs := postHook(ctx, colors)
 	if postHookErrs != nil {
 		allErrors = append(allErrors, postHookErrs)
 	}
@@ -119,7 +121,7 @@ func getConfig(key string) (map[string][]string, error) {
 	return cast.ToStringMapStringSliceE(rawCfg)
 }
 
-func postHook(colors models.Output) error {
+func postHook(ctx context.Context, colors models.Output) error {
 	var allErrors []error
 
 	linksCfg, err := getConfig("links")
@@ -227,7 +229,7 @@ func postHook(colors models.Output) error {
 
 			// Run hooks with the complete environment
 			if hooks, ok := cmdsCfg[name]; ok && hooks != nil {
-				if err := runHooks(name, hooks, cmdEnv); err != nil {
+				if err := runHooks(ctx, name, hooks, cmdEnv); err != nil {
 					addErrs(
 						fmt.Errorf("failed to run hooks for %s: %w", name, err),
 					)
@@ -241,11 +243,16 @@ func postHook(colors models.Output) error {
 	return errors.Join(allErrors...)
 }
 
-func runHooks(name string, hooks []string, env []string) error {
+func runHooks(
+	ctx context.Context,
+	name string,
+	hooks []string,
+	env []string,
+) error {
 	var errs []error
 
 	for hook := range slices.Values(hooks) {
-		cmd := exec.Command("sh", "-c", hook)
+		cmd := exec.CommandContext(ctx, "sh", "-c", hook)
 		cmd.Env = env
 
 		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
@@ -292,7 +299,7 @@ func addEnvPaths(envs []string, key string, vals []string) []string {
 
 func install(src string, targets []string) ([]string, error) {
 	var errs []error
-	var installedPaths []string
+	installedPaths := make([]string, 0, len(targets))
 
 	for _, path := range targets {
 		dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
@@ -335,7 +342,7 @@ func install(src string, targets []string) ([]string, error) {
 
 func link(src string, targets []string) ([]string, error) {
 	var errs []error
-	var linkedPaths []string
+	linkedPaths := make([]string, 0, len(targets))
 
 	for _, path := range targets {
 		dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
@@ -379,7 +386,7 @@ func link(src string, targets []string) ([]string, error) {
 	return linkedPaths, nil
 }
 
-// execute executes a template using color and returns any error
+// execute executes a template using color and returns any error.
 func execute(tmpl *template.Template, out models.Output) error {
 	name := tmpl.Name()
 	filename := strings.TrimSuffix(name, ".tmpl")

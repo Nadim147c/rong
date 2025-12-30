@@ -2,7 +2,7 @@ package color
 
 import "github.com/Nadim147c/material/v2/color"
 
-// Names contains color names with their HEX values
+// Names contains color names with their HEX values.
 var Names = map[string]color.ARGB{
 	"air_force_blue_raf":            0x5d8aa8, // #5d8aa8
 	"air_force_blue_usaf":           0x00308f, // #00308f
