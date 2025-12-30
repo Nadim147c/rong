@@ -19,8 +19,6 @@ import (
 )
 
 func init() {
-	Command.Flags().AddFlagSet(material.Flags)
-	Command.Flags().AddFlagSet(base16.Flags)
 	Command.Flags().Int("frames", 5, "number of frames of vidoe to process")
 	Command.Flags().
 		Duration("duration", 5*time.Second, "maxium number of duration to process")

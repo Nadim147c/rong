@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"syscall"
 
 	"github.com/Nadim147c/fang"
@@ -16,6 +17,8 @@ import (
 	"github.com/Nadim147c/rong/v4/cmd/image"
 	"github.com/Nadim147c/rong/v4/cmd/regen"
 	"github.com/Nadim147c/rong/v4/cmd/video"
+	"github.com/Nadim147c/rong/v4/internal/base16"
+	"github.com/Nadim147c/rong/v4/internal/material"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	"github.com/carapace-sh/carapace/pkg/style"
@@ -43,21 +46,27 @@ func init() {
 		"platform": carapace.ActionValues("phone", "watch"),
 	}
 
-	generateFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
-	generateFlags.BoolP("dark", "D", false, "generate dark color palette")
-	generateFlags.BoolP("json", "j", false, "print generated colors as json")
-	generateFlags.BoolP(
-		"simple-json", "s", false,
-		"print generated colors as json",
-	)
-	generateFlags.BoolP(
+	commonGenerate := pflag.NewFlagSet("generate", pflag.ContinueOnError)
+	commonGenerate.BoolP("dark", "D", false, "generate dark color palette")
+	commonGenerate.BoolP("json", "j", false, "print generated colors as json")
+	commonGenerate.
+		BoolP("simple-json", "s", false, "print generated colors as json")
+	commonGenerate.BoolP(
 		"dry-run", "d", false,
 		"generate colors without applying templates",
 	)
-	color.Command.Flags().AddFlagSet(generateFlags)
-	image.Command.Flags().AddFlagSet(generateFlags)
-	regen.Command.Flags().AddFlagSet(generateFlags)
-	video.Command.Flags().AddFlagSet(generateFlags)
+
+	generateCmds := []*cobra.Command{
+		color.Command,
+		image.Command,
+		regen.Command,
+		video.Command,
+	}
+	for cmd := range slices.Values(generateCmds) {
+		cmd.Flags().AddFlagSet(commonGenerate)
+		cmd.Flags().AddFlagSet(material.Flags)
+		cmd.Flags().AddFlagSet(base16.Flags)
+	}
 
 	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
 	previewFlagSet.StringP("preview-format", "p",

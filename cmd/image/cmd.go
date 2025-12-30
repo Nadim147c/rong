@@ -22,11 +22,6 @@ import (
 	_ "golang.org/x/image/webp" // for webp encoding
 )
 
-func init() {
-	Command.Flags().AddFlagSet(material.Flags)
-	Command.Flags().AddFlagSet(base16.Flags)
-}
-
 // Command is the image command.
 var Command = &cobra.Command{
 	Use:   "image <image>",

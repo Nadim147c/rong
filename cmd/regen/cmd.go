@@ -16,11 +16,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func init() {
-	Command.Flags().AddFlagSet(material.Flags)
-	Command.Flags().AddFlagSet(base16.Flags)
-}
-
 // Command is the image command.
 var Command = &cobra.Command{
 	Use:   "regen [flags]",
