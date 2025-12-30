@@ -40,8 +40,10 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
-      - name: Download dependencies
-        run: go install github.com/mgechev/revive@latest
+      - name: Golangci Lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.6
 
-      - name: Run tests
-        run: make test
+      - name: Go tests
+        run: go test -v ./...
