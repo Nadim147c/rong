@@ -217,9 +217,9 @@ const (
 	tonePureBlackLight = 35.0
 
 	// Base tone for dark theme general fixes.
-	toneDarkBase = 50.0
+	toneDarkBase = 65.0
 	// Bright tone for dark theme general fixes.
-	toneDarkBright = 70.0
+	toneDarkBright = 80.0
 
 	// Base tone for light theme general fixes.
 	toneLightBase = 50.0
@@ -232,6 +232,10 @@ const (
 func setToneChroma(c color.Hct, tone float64, chroma float64) color.ARGB {
 	c.Tone = tone
 	c.Chroma = chroma
+	if c.IsBlue() {
+		c.Tone *= 0.8
+		c.Chroma *= 1.1
+	}
 	return c.ToARGB()
 }
 
