@@ -59,14 +59,6 @@ func GetConfig() (Config, error) {
 var Flags = pflag.NewFlagSet("material", pflag.ContinueOnError)
 
 func init() {
-	// TODO: These flags should be here
-	Flags.BoolP("dark", "D", false, "generate dark color palette")
-	Flags.BoolP("json", "j", false, "print generated colors as json")
-	Flags.BoolP(
-		"dry-run", "d", false,
-		"generate colors without applying templates",
-	)
-
 	Flags.Float64("material.contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
 
 	Flags.String(

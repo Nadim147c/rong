@@ -99,8 +99,16 @@ rong color green --dry-run --json | jq
 		output := models.NewOutput("", based, colorMap, customs)
 
 		if viper.GetBool("json") {
-			if err := json.NewEncoder(cmd.OutOrStdout()).Encode(output); err != nil {
-				slog.Error("Failed to encode json", "error", err)
+			err := json.NewEncoder(cmd.OutOrStdout()).Encode(output)
+			if err != nil {
+				slog.Error("Failed to encode output", "error", err)
+			}
+		}
+
+		if viper.GetBool("simple-json") {
+			err := models.WriteSimpleJSON(cmd.OutOrStdout(), output)
+			if err != nil {
+				slog.Error("Failed to encode output", "error", err)
 			}
 		}
 

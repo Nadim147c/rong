@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
 
 	"github.com/Nadim147c/rong/v4/internal/base16"
@@ -74,7 +73,15 @@ var Command = &cobra.Command{
 		output := models.NewOutput(path, based, colorMap, customs)
 
 		if viper.GetBool("json") {
-			if err := json.NewEncoder(os.Stdout).Encode(output); err != nil {
+			err := json.NewEncoder(cmd.OutOrStdout()).Encode(output)
+			if err != nil {
+				slog.Error("Failed to encode output", "error", err)
+			}
+		}
+
+		if viper.GetBool("simple-json") {
+			err := models.WriteSimpleJSON(cmd.OutOrStdout(), output)
+			if err != nil {
 				slog.Error("Failed to encode output", "error", err)
 			}
 		}

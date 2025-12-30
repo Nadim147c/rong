@@ -43,6 +43,22 @@ func init() {
 		"platform": carapace.ActionValues("phone", "watch"),
 	}
 
+	generateFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
+	generateFlags.BoolP("dark", "D", false, "generate dark color palette")
+	generateFlags.BoolP("json", "j", false, "print generated colors as json")
+	generateFlags.BoolP(
+		"simple-json", "s", false,
+		"print generated colors as json",
+	)
+	generateFlags.BoolP(
+		"dry-run", "d", false,
+		"generate colors without applying templates",
+	)
+	color.Command.Flags().AddFlagSet(generateFlags)
+	image.Command.Flags().AddFlagSet(generateFlags)
+	regen.Command.Flags().AddFlagSet(generateFlags)
+	video.Command.Flags().AddFlagSet(generateFlags)
+
 	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
 	previewFlagSet.StringP("preview-format", "p",
 		"jpg", "format of video preview image",
@@ -171,7 +187,8 @@ var Command = &cobra.Command{
 		if cmd.Flags().Changed("log-file") {
 			logFilePath := should(cmd.Flags().GetString("log-file"))
 
-			if err := os.MkdirAll(filepath.Dir(logFilePath), 0o750); err != nil {
+			err := os.MkdirAll(filepath.Dir(logFilePath), 0o750)
+			if err != nil {
 				slog.Error(
 					"Failed to create parent directory for log file",
 					"error",
