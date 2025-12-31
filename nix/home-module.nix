@@ -12,8 +12,10 @@ let
     mkMerge
     mkEnableOption
     mkIf
+    mkRenamedOptionModule
     ;
   inherit (types)
+    submodule
     attrsOf
     bool
     either
@@ -32,6 +34,12 @@ let
   format = pkgs.formats.json { };
 in
 {
+  imports = [
+    (mkRenamedOptionModule
+      [ "programs" "rong" "settings" "post-cmds" ]
+      [ "programs" "rong" "settings" "cmds" ]
+    )
+  ];
   options.programs.rong = {
     enable = mkEnableOption "Enable rong color generator";
 
@@ -200,7 +208,80 @@ in
         };
       };
 
-      post-cmds = mkOption {
+      themes = mkOption {
+        type = listOf (submodule {
+          options =
+            let
+              outType = nullOr (either str (listOf str));
+            in
+            {
+              target = mkOption {
+                type = str;
+                example = "spicetify-sleek.ini";
+                description = "String of target template name.";
+              };
+              cmds = mkOption {
+                type = outType;
+                default = null;
+                example = "pidof kitty | xargs kill -SIGUSR1";
+                description = ''
+                  String or List of string of command(s).
+
+                  These are command which will be executed after the **install**
+                  and **link** of the named template.
+                '';
+              };
+
+              installs = mkOption {
+                type = outType;
+                default = null;
+                example = "~/.config/quickshell/material.json";
+                description = ''
+                  String or List of string of path(s).
+
+                  These are installed using **atomic copy**, ensuring that
+                  applications never read partially-written or incomplete theme
+                  files. This method is safer for programs that load
+                  configuration very fast — for example, *Quickshell*, which can
+                  break if a theme file is replaced mid-read.
+
+                  Use `installs` when the target application requires atomic,
+                  fully-written files and cannot tolerate partial updates.
+                '';
+              };
+
+              links = mkOption {
+                type = outType;
+                default = null;
+                example = ''
+                  [
+                    "~/.config/hypr/colors.conf";
+                    "~/.config/wezterm/colors.lua";
+                    "~/.config/spicetify/Themes/Sleek/color.ini";
+                  ]
+                '';
+                description = ''
+                  String or List of string of path(s).
+
+                  These are installed using **hardlinks** whenever possible. If
+                  a hardlink already exists, only the file timestamps are
+                  updated — avoiding unnecessary writes and reducing filesystem
+                  churn. This method is efficient and ideal for most
+                  applications.
+
+                  Users should **prefer `links`** because it results in less
+                  disk I/O, and programs like break when reading files that are
+                  updated via atomic replacement. Only use `installs` when
+                  atomicity is required.
+                '';
+              };
+            };
+        });
+
+        default = [ ];
+      };
+
+      cmds = mkOption {
         type = attrsOf (either str (listOf str));
         default = { };
         example = ''

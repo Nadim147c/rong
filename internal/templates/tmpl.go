@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -20,7 +21,6 @@ import (
 	"github.com/MatusOllah/stripansi"
 	"github.com/Nadim147c/rong/v4/internal/models"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
-	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
 
@@ -84,13 +84,22 @@ func Execute(ctx context.Context, colors models.Output) error {
 		userTmpls, err := userTmpl.ParseFiles(templatePaths...)
 		if err != nil {
 			slog.Error("Failed to parse user templates", "error", err)
-			allErrors = append(allErrors, fmt.Errorf("failed to parse user templates: %w", err))
+			allErrors = append(
+				allErrors,
+				fmt.Errorf("failed to parse user templates: %w", err),
+			)
 		} else {
 			// Execute user templates and collect errors
 			for _, tmpl := range userTmpls.Templates() {
 				if err := execute(tmpl, colors); err != nil {
 					allErrors = append(allErrors, err)
-					slog.Error("Error executing user template", "template", tmpl.Name(), "error", err)
+					slog.Error(
+						"Error executing user template",
+						"template",
+						tmpl.Name(),
+						"error",
+						err,
+					)
 				}
 			}
 		}
@@ -113,26 +122,17 @@ func Execute(ctx context.Context, colors models.Output) error {
 	return nil
 }
 
-func getConfig(key string) (map[string][]string, error) {
-	rawCfg := viper.Get(key)
-	if rawCfg == nil {
-		return map[string][]string{}, nil // user has not specified config
-	}
-	return cast.ToStringMapStringSliceE(rawCfg)
-}
-
 func postHook(ctx context.Context, colors models.Output) error {
 	var allErrors []error
 
-	linksCfg, err := getConfig("links")
+	links, err := getConfig("links")
 	if err != nil {
 		allErrors = append(
-			allErrors,
-			fmt.Errorf("failed to parse links config: %w", err),
+			allErrors, fmt.Errorf("failed to parse links config: %w", err),
 		)
 	}
 
-	installsCfg, err := getConfig("installs")
+	installs, err := getConfig("installs")
 	if err != nil {
 		allErrors = append(
 			allErrors,
@@ -140,13 +140,26 @@ func postHook(ctx context.Context, colors models.Output) error {
 		)
 	}
 
-	cmdsCfg, err := getConfig("post-cmds")
+	newCmds, err := getConfig("cmds")
 	if err != nil {
 		allErrors = append(
-			allErrors,
-			fmt.Errorf("failed to parse post_hooks config: %w", err),
+			allErrors, fmt.Errorf("failed to parse post_hooks config: %w", err),
 		)
 	}
+
+	// DEPRECATED: use cmds instead.
+	cmds, err := getConfig("post-cmds")
+	if err != nil {
+		allErrors = append(
+			allErrors, fmt.Errorf("failed to parse post-cmds config: %w", err),
+		)
+	}
+
+	// cmds should override old post-cmds
+	maps.Copy(cmds, newCmds)
+
+	// convert themes blocks simple config
+	convertThemes(links, installs, cmds)
 
 	exe, err := os.Executable()
 	if err != nil {
@@ -205,7 +218,7 @@ func postHook(ctx context.Context, colors models.Output) error {
 			var installedPaths, linkedPaths []string
 
 			// Process links
-			if links, ok := linksCfg[name]; ok && links != nil {
+			if links, ok := links[name]; ok && links != nil {
 				linked, err := link(name, links)
 				if err != nil {
 					addErrs(fmt.Errorf("failed to link %s: %w", name, err))
@@ -214,7 +227,7 @@ func postHook(ctx context.Context, colors models.Output) error {
 			}
 
 			// Process installs
-			if installs, ok := installsCfg[name]; ok && installs != nil {
+			if installs, ok := installs[name]; ok && installs != nil {
 				installed, err := install(name, installs)
 				if err != nil {
 					addErrs(fmt.Errorf("failed to install %s: %w", name, err))
@@ -228,7 +241,7 @@ func postHook(ctx context.Context, colors models.Output) error {
 			cmdEnv = addEnvPaths(cmdEnv, "RONG_COPIED", copied)
 
 			// Run hooks with the complete environment
-			if hooks, ok := cmdsCfg[name]; ok && hooks != nil {
+			if hooks, ok := cmds[name]; ok && hooks != nil {
 				if err := runHooks(ctx, name, hooks, cmdEnv); err != nil {
 					addErrs(
 						fmt.Errorf("failed to run hooks for %s: %w", name, err),
