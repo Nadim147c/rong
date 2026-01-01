@@ -71,7 +71,6 @@ issues:
 formatters:
   enable:
     - goimports
-    - golines
     - gofumpt
   exclusions:
     generated: lax

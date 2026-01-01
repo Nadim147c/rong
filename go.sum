@@ -10,8 +10,16 @@ github.com/MatusOllah/stripansi v1.1.0 h1:VLfRIKixTBXb4cNS0gc98MPmwPgmne0w76XfAk
 github.com/MatusOllah/stripansi v1.1.0/go.mod h1:jzuGbsMnkftuO0CFjHPnp9Xm2rE8YjC4wVBjjASpSGI=
 github.com/Nadim147c/fang v0.5.0-fork h1:qV2AhItccTMLu5fOxMsrI4KhiM7AqxcM86C2NC6czxg=
 github.com/Nadim147c/fang v0.5.0-fork/go.mod h1:dRy4C4H/sC0GXcAkrVos3ppWn/YNX3KJNU8mcCcGP0U=
+github.com/Nadim147c/fang v0.5.1-0.20260101140500-341793a4f725 h1:nIb3XAe5Zcx+qv/fsia90SAcNMjofW7oc2DWGXcl7DQ=
+github.com/Nadim147c/fang v0.5.1-0.20260101140500-341793a4f725/go.mod h1:1hKnZix970hEl+xeZAyEmZRyYEcbu3BvhUO8KUOzpjg=
+github.com/Nadim147c/fang v0.5.1-0.20260101140648-60709559e390 h1:6SZaWUPHW8qNvQNhczKGEeDh8KNhtfE9P1OKEP61btk=
+github.com/Nadim147c/fang v0.5.1-0.20260101140648-60709559e390/go.mod h1:1hKnZix970hEl+xeZAyEmZRyYEcbu3BvhUO8KUOzpjg=
+github.com/Nadim147c/fang v0.5.1-0.20260101141117-90f3f8f4a14d h1:BpDX9NHhM9D8VGCiX5orVy8hL+OL8jriqwovA7kBN2o=
+github.com/Nadim147c/fang v0.5.1-0.20260101141117-90f3f8f4a14d/go.mod h1:1hKnZix970hEl+xeZAyEmZRyYEcbu3BvhUO8KUOzpjg=
 github.com/Nadim147c/material/v2 v2.0.0-beta.11 h1:F9vQnSCjU1KpDW1Tq6Qn1f1uBSnr+mfuJqfrWlEzSLw=
 github.com/Nadim147c/material/v2 v2.0.0-beta.11/go.mod h1:LXAWTexhA91RM4BpL/vmDrAH/xVxSlEXfmTF4HB85wU=
+github.com/Nadim147c/material/v2 v2.0.1-0.20260101131953-45363d4e2ac4 h1:UzuwjbJ90/MnM35s8ywyLWP8H/TDVFUz/fekJzhdNFk=
+github.com/Nadim147c/material/v2 v2.0.1-0.20260101131953-45363d4e2ac4/go.mod h1:LXAWTexhA91RM4BpL/vmDrAH/xVxSlEXfmTF4HB85wU=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=

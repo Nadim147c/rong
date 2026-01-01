@@ -12,13 +12,13 @@ import (
 	"syscall"
 
 	"github.com/Nadim147c/fang"
+	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/rong/v4/cmd/cache"
 	"github.com/Nadim147c/rong/v4/cmd/color"
 	"github.com/Nadim147c/rong/v4/cmd/image"
 	"github.com/Nadim147c/rong/v4/cmd/regen"
 	"github.com/Nadim147c/rong/v4/cmd/video"
-	"github.com/Nadim147c/rong/v4/internal/base16"
-	"github.com/Nadim147c/rong/v4/internal/material"
+	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	"github.com/carapace-sh/carapace/pkg/style"
@@ -37,24 +37,34 @@ func init() {
 	Command.AddCommand(regen.Command)
 
 	actions := carapace.ActionMap{
-		"variant": carapace.ActionValues(
-			"monochrome", "neutral", "tonal_spot",
-			"vibrant", "expressive", "fidelity",
-			"content", "rainbow", "fruit_salad",
-		),
-		"version":  carapace.ActionValues("2021", "2025"),
-		"platform": carapace.ActionValues("phone", "watch"),
+		"variant":  carapace.ActionValues(dynamic.VariantNames()...),
+		"version":  carapace.ActionValues(dynamic.VersionNames()...),
+		"platform": carapace.ActionValues(dynamic.PlatformNames()...),
 	}
 
-	commonGenerate := pflag.NewFlagSet("generate", pflag.ContinueOnError)
-	commonGenerate.BoolP("dark", "D", false, "generate dark color palette")
-	commonGenerate.BoolP("json", "j", false, "print generated colors as json")
-	commonGenerate.
-		BoolP("simple-json", "s", false, "print generated colors as json")
-	commonGenerate.BoolP(
-		"dry-run", "d", false,
-		"generate colors without applying templates",
-	)
+	commonFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
+	config.Dark.RegisterFlag(commonFlags)
+	config.JSON.RegisterFlag(commonFlags)
+	config.SimpleJSON.RegisterFlag(commonFlags)
+	config.DryRun.RegisterFlag(commonFlags)
+
+	config.MaterialContrast.RegisterFlag(commonFlags)
+	config.MaterialCustomBlend.RegisterFlag(commonFlags)
+	config.MaterialPlatformt.RegisterFlag(commonFlags)
+	config.MaterialVariant.RegisterFlag(commonFlags)
+	config.MaterialVersion.RegisterFlag(commonFlags)
+
+	config.Base16Blend.RegisterFlag(commonFlags)
+	config.Base16Method.RegisterFlag(commonFlags)
+
+	config.Base16Black.RegisterFlag(commonFlags)
+	config.Base16Blue.RegisterFlag(commonFlags)
+	config.Base16Cyan.RegisterFlag(commonFlags)
+	config.Base16Green.RegisterFlag(commonFlags)
+	config.Base16Magenta.RegisterFlag(commonFlags)
+	config.Base16Red.RegisterFlag(commonFlags)
+	config.Base16White.RegisterFlag(commonFlags)
+	config.Base16Yellow.RegisterFlag(commonFlags)
 
 	generateCmds := []*cobra.Command{
 		color.Command,
@@ -63,16 +73,13 @@ func init() {
 		video.Command,
 	}
 	for cmd := range slices.Values(generateCmds) {
-		cmd.Flags().AddFlagSet(commonGenerate)
-		cmd.Flags().AddFlagSet(material.Flags)
-		cmd.Flags().AddFlagSet(base16.Flags)
+		cmd.Flags().AddFlagSet(commonFlags)
 	}
 
-	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
-	previewFlagSet.StringP("preview-format", "p",
-		"jpg", "format of video preview image",
-	)
-	viper.SetDefault("preview-format", "jpg")
+	videoFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
+	config.PreviewFormat.RegisterFlag(videoFlagSet)
+	config.FFmpegDuration.RegisterFlag(videoFlagSet)
+	config.FFmpegFrames.RegisterFlag(videoFlagSet)
 
 	carapace.Gen(color.Command).FlagCompletion(actions)
 
@@ -80,12 +87,12 @@ func init() {
 	imageComp.FlagCompletion(actions)
 	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	video.Command.Flags().AddFlagSet(previewFlagSet)
+	video.Command.Flags().AddFlagSet(videoFlagSet)
 	videoComp := carapace.Gen(video.Command)
 	videoComp.FlagCompletion(actions)
 	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	cache.Command.Flags().AddFlagSet(previewFlagSet)
+	cache.Command.Flags().AddFlagSet(videoFlagSet)
 	cacheComp := carapace.Gen(cache.Command)
 	cacheComp.FlagCompletion(actions)
 	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())
@@ -115,12 +122,11 @@ func init() {
 		"log-file": carapace.ActionFiles(),
 	})
 
-	Command.PersistentFlags().CountP("verbose", "v", "enable verbose logging")
-	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
-	Command.PersistentFlags().StringP("log-file", "l", "", "file to save logs")
-	Command.PersistentFlags().
-		StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
-	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
+	persFlags := Command.PersistentFlags()
+	config.Verbose.RegisterFlag(persFlags)
+	config.Quiet.RegisterFlag(persFlags)
+	config.LogFile.RegisterFlag(persFlags)
+	config.Config.RegisterFlag(persFlags)
 }
 
 func handleError(w io.Writer, styles fang.Styles, err error) {

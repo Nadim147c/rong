@@ -2,13 +2,11 @@ package material
 
 import (
 	"context"
-	"fmt"
 	"image"
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"github.com/Nadim147c/rong/v4/internal/config"
 )
 
 // Config is configuration used to generate colors.
@@ -20,76 +18,14 @@ type Config struct {
 	Constrast float64
 }
 
-// GetConfig return Config from viper.
-func GetConfig() (Config, error) {
-	config := Config{}
-
-	variant, err := dynamic.ParseVariant(viper.GetString("material.variant"))
-	if err != nil {
-		return config, err
+func GetConfig() Config {
+	return Config{
+		Variant:   config.MaterialVariant.Value(),
+		Version:   config.MaterialVersion.Value(),
+		Platform:  config.MaterialPlatformt.Value(),
+		Constrast: config.MaterialContrast.Value(),
+		Dark:      config.Dark.Value(),
 	}
-	config.Variant = variant
-
-	version, err := dynamic.ParseVersion(viper.GetString("material.version"))
-	if err != nil {
-		return config, err
-	}
-	config.Version = version
-
-	platform, err := dynamic.ParsePlatform(viper.GetString("material.platform"))
-	if err != nil {
-		return config, err
-	}
-	config.Platform = platform
-
-	config.Constrast = viper.GetFloat64("material.contrast")
-	if config.Constrast < -1 || config.Constrast > 1 {
-		return config, fmt.Errorf( //nolint
-			"contrast must between -1 to 1 but got %.2f",
-			config.Constrast,
-		)
-	}
-
-	config.Dark = viper.GetBool("dark")
-
-	return config, nil
-}
-
-// Flags are the flags used for generating colors.
-var Flags = pflag.NewFlagSet("material", pflag.ContinueOnError)
-
-func init() {
-	Flags.Float64("material.contrast", 0.0, "contrast adjustment (-1.0 to 1.0)")
-
-	Flags.String(
-		"material.version", dynamic.Version2025.String(),
-		"version of the theme (2021 or 2025)",
-	)
-	viper.SetDefault("material.version", dynamic.Version2025.String())
-
-	Flags.String(
-		"material.platform", dynamic.PlatformPhone.String(),
-		"target platform (phone or watch)",
-	)
-	viper.SetDefault("material.platform", dynamic.PlatformPhone.String())
-
-	Flags.String(
-		"material.variant", dynamic.VariantTonalSpot.String(),
-		"variant to use (e.g., tonal_spot, vibrant, expressive)",
-	)
-	viper.SetDefault("material.variant", dynamic.VariantTonalSpot.String())
-
-	Flags.Bool(
-		"material.custom.blend", true,
-		"blend custom colors with primary",
-	)
-	viper.SetDefault("material.custom.blend", true)
-
-	Flags.Float64(
-		"material.custom.ratio", 0.3,
-		"blend custom colors with primary",
-	)
-	viper.SetDefault("material.custom.blend", 0.3)
 }
 
 // GetPixelsFromImage returns pixels from image.Imaget interface.

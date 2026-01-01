@@ -3,7 +3,7 @@ package base16
 import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/num"
-	"github.com/spf13/viper"
+	"github.com/Nadim147c/rong/v4/internal/config"
 )
 
 // SourceColors is all source colors for static generation and fallback for
@@ -42,7 +42,7 @@ var defaultSrcColors = SourceColors{
 func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
 	primaryLab := primary.ToXYZ().ToOkLab()
 
-	ratio := viper.GetFloat64("base16.blend")
+	ratio := config.Base16Blend.Value()
 
 	black := blend(src.Black.ToXYZ().ToOkLab(), primaryLab, ratio)
 	red := blend(src.Red.ToXYZ().ToOkLab(), primaryLab, ratio)
