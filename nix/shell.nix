@@ -10,6 +10,8 @@ pkgs.mkShell {
     golangci-lint
     gotestsum
 
+    (pkgs.callPackage ./go-enum.nix { })
+
     just
     just-lsp
 

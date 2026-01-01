@@ -19,11 +19,6 @@ type CustomColor struct {
 
 var nameRe = regexp.MustCompile("^([A-Za-z0-9_])+$")
 
-func init() {
-	viper.SetDefault("material.custom.blend", true)
-	viper.SetDefault("material.custom.ratio", 0.35)
-}
-
 // GenerateCustomColors returns all custom colors.
 func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
 	defined := viper.GetStringMapString("material.custom.colors")

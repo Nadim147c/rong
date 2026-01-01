@@ -88,10 +88,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		slog.Info("Generating colors from source")
 
-		cfg, err := material.GetConfig()
-		if err != nil {
-			return err
-		}
+		cfg := material.GetConfig()
 
 		colorMap, wu, err := material.GenerateFromQuantized(quantized, cfg)
 		if err != nil {

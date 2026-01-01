@@ -59,10 +59,7 @@ rong color green --dry-run --json | jq
 
 		primary := palettes.NewFromARGB(source)
 
-		cfg, err := material.GetConfig()
-		if err != nil {
-			return err
-		}
+		cfg := material.GetConfig()
 
 		scheme := dynamic.NewDynamicScheme(source.ToHct(),
 			cfg.Variant, cfg.Constrast, cfg.Dark,

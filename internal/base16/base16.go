@@ -6,94 +6,14 @@ import (
 	"strings"
 
 	"github.com/Nadim147c/material/v2/color"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/go-viper/mapstructure/v2"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-// BlendRatio is the default blend ratio from static color.
-const BlendRatio float64 = 0.55
-
-// Flags are the flags used for generating colors.
-var Flags = pflag.NewFlagSet("base16", pflag.ContinueOnError)
-
-func formatDefault(c color.ARGB) string {
-	hex := c.HexRGB()
-	return lipgloss.NewStyle().Foreground(lipgloss.Color(hex)).Render(hex)
-}
-
-func init() {
-	Flags.Float64(
-		"base16.blend",
-		BlendRatio,
-		"blend ratio toward the primary color",
-	)
-	viper.SetDefault("base16.blend", BlendRatio)
-
-	Flags.String(
-		"base16.method",
-		"static",
-		"color generation method (static or dynamic)",
-	)
-	viper.SetDefault("base16.method", "static")
-
-	Flags.String(
-		"base16.colors.black",
-		formatDefault(defaultSrcColors.Black),
-		"black source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.black", defaultSrcColors.Black.HexRGB())
-
-	Flags.String(
-		"base16.colors.red",
-		formatDefault(defaultSrcColors.Red),
-		"red source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.red", defaultSrcColors.Red.HexRGB())
-
-	Flags.String(
-		"base16.colors.green",
-		formatDefault(defaultSrcColors.Green),
-		"green source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.green", defaultSrcColors.Green.HexRGB())
-
-	Flags.String(
-		"base16.colors.yellow",
-		formatDefault(defaultSrcColors.Yellow),
-		"yellow source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.yellow", defaultSrcColors.Yellow.HexRGB())
-
-	Flags.String(
-		"base16.colors.blue",
-		formatDefault(defaultSrcColors.Blue),
-		"blue source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.blue", defaultSrcColors.Blue.HexRGB())
-
-	Flags.String(
-		"base16.colors.magenta",
-		formatDefault(defaultSrcColors.Magenta),
-		"magenta source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.magenta", defaultSrcColors.Magenta.HexRGB())
-
-	Flags.String(
-		"base16.colors.cyan",
-		formatDefault(defaultSrcColors.Cyan),
-		"cyan source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.cyan", defaultSrcColors.Cyan.HexRGB())
-
-	Flags.String(
-		"base16.colors.white",
-		formatDefault(defaultSrcColors.White),
-		"white source color for base16 colors",
-	)
-	viper.SetDefault("base16.colors.white", defaultSrcColors.White.HexRGB())
-}
+// Method is the method used for generating base16 colors.
+//
+// ENUM(static, dynamic).
+type Method uint
 
 var opt = viper.DecodeHook(mapstructure.DecodeHookFuncValue(
 	func(from, _ reflect.Value) (any, error) {

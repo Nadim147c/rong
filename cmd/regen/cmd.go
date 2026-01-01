@@ -34,10 +34,7 @@ var Command = &cobra.Command{
 
 		slog.Info("Generating color from cached state", "path", state.Path)
 
-		cfg, err := material.GetConfig()
-		if err != nil {
-			return err
-		}
+		cfg := material.GetConfig()
 
 		colorMap, wu, err := material.GenerateFromQuantized(
 			state.Quantized,
