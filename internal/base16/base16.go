@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Method is the method used for generating base16 colors.
-//
-// ENUM(static, dynamic).
-type Method uint
-
 var opt = viper.DecodeHook(mapstructure.DecodeHookFuncValue(
 	func(from, _ reflect.Value) (any, error) {
 		if from.Kind() == reflect.String {
