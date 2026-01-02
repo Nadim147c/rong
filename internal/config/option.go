@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Nadim147c/material/v2/color"
+	"github.com/carapace-sh/carapace"
 	"github.com/spf13/cast"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -314,6 +315,7 @@ func newEnumOption[T any](
 	parser func(s string) (T, error),
 ) *enumOption[T] {
 	description := fmt.Sprintf("%s. choice: (%s).", desc, joinWithOr(names))
+	CarapaceAction[key] = carapace.ActionValues(names...)
 	return &enumOption[T]{
 		names: names,
 		option: newOption(short, key, defval, description, "enum", func(a any) (T, error) {
