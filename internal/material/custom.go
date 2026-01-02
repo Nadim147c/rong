@@ -6,6 +6,7 @@ import (
 
 	blendPkg "github.com/Nadim147c/material/v2/blend"
 	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/spf13/viper"
 )
 
@@ -17,12 +18,7 @@ type CustomColor struct {
 	OnColorContainer color.ARGB
 }
 
-var nameRe = regexp.MustCompile("^([A-Za-z0-9_])+$")
-
-func init() {
-	viper.SetDefault("material.custom.blend", true)
-	viper.SetDefault("material.custom.ratio", 0.35)
-}
+var nameRe = regexp.MustCompile("^[A-Za-z0-9][A-Za-z0-9_]+$")
 
 // GenerateCustomColors returns all custom colors.
 func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
@@ -30,36 +26,31 @@ func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
 	if len(defined) == 0 {
 		return map[string]CustomColor{}, nil
 	}
-	m := make(map[string]CustomColor, len(defined))
-	dark := viper.GetBool("dark")
-	blend := viper.GetBool("material.custom.blend")
-	ratio := viper.GetFloat64("material.custom.ratio")
+	dark := config.Dark.Value()
+	blend := config.MaterialCustomBlend.Value()
 
+	m := make(map[string]CustomColor, len(defined))
 	for name, col := range defined {
 		if !nameRe.MatchString(name) {
-			return nil, fmt.Errorf( //nolint
-				"custom color name should only contains alphanumeric values or underscore: name=%s",
-				name,
-			)
+			//nolint
+			return nil, fmt.Errorf("custom color name should only contains alphanumeric values or underscore: name=%s", name)
 		}
+
 		argb, err := color.ARGBFromHex(col)
 		if err != nil {
 			return nil, err
 		}
-		m[name] = createCustomColor(argb, primary, dark, blend, ratio)
+
+		m[name] = createCustomColor(argb, primary, dark, blend)
 	}
 	return m, nil
 }
 
-func createCustomColor(
-	src, to color.ARGB,
-	dark, blend bool,
-	ratio float64,
-) CustomColor {
+func createCustomColor(src, to color.ARGB, dark bool, blend float64) CustomColor {
 	var hct color.Hct
 
-	if blend {
-		hct = blendPkg.HctHueDirect(src, to, ratio)
+	if blend != 0 {
+		hct = blendPkg.HctHueDirect(src, to, blend)
 	} else {
 		hct = src.ToHct()
 	}

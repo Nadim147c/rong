@@ -9,11 +9,12 @@ import (
 	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/material/v2/palettes"
 	"github.com/Nadim147c/rong/v4/internal/base16"
+	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v4/internal/config/enums"
 	"github.com/Nadim147c/rong/v4/internal/material"
 	"github.com/Nadim147c/rong/v4/internal/models"
 	"github.com/Nadim147c/rong/v4/internal/templates"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	_ "image/jpeg" // for jpeg encoding
 	_ "image/png"  // for png encoding
@@ -39,9 +40,6 @@ rong color '#00FF00'
 rong color green --dry-run --json | jq
   `,
 	Args: cobra.ExactArgs(1),
-	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		return viper.BindPFlags(cmd.Flags())
-	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 
@@ -59,10 +57,7 @@ rong color green --dry-run --json | jq
 
 		primary := palettes.NewFromARGB(source)
 
-		cfg, err := material.GetConfig()
-		if err != nil {
-			return err
-		}
+		cfg := material.GetConfig()
 
 		scheme := dynamic.NewDynamicScheme(source.ToHct(),
 			cfg.Variant, cfg.Constrast, cfg.Dark,
@@ -85,7 +80,7 @@ rong color green --dry-run --json | jq
 		}
 
 		// dynamic base16 generation is not possible with single source color
-		viper.Set("base16.method", "static")
+		config.Base16Method.SetValue(enums.Base16MethodStatic)
 		based, err := base16.Generate(colorMap, nil)
 		if err != nil {
 			return err
@@ -93,24 +88,24 @@ rong color green --dry-run --json | jq
 
 		output := models.NewOutput("", based, colorMap, customs)
 
-		if viper.GetBool("json") {
+		if config.JSON.Value() {
 			err := json.NewEncoder(cmd.OutOrStdout()).Encode(output)
 			if err != nil {
 				slog.Error("Failed to encode output", "error", err)
 			}
 		}
 
-		if viper.GetBool("simple-json") {
+		if config.SimpleJSON.Value() {
 			err := models.WriteSimpleJSON(cmd.OutOrStdout(), output)
 			if err != nil {
 				slog.Error("Failed to encode output", "error", err)
 			}
 		}
 
-		if !viper.GetBool("dry-run") {
-			return templates.Execute(ctx, output)
+		if config.DryRun.Value() {
+			return nil
 		}
 
-		return nil
+		return templates.Execute(ctx, output)
 	},
 }
