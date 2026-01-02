@@ -11,8 +11,6 @@ import (
 )
 
 func init() {
-	config.FFmpegFrames.RegisterFlag(Command.Flags())
-	config.FFmpegDuration.RegisterFlag(Command.Flags())
 	config.Workers.RegisterFlag(Command.Flags())
 }
 

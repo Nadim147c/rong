@@ -76,8 +76,10 @@ func init() {
 		cmd.Flags().AddFlagSet(commonFlags)
 	}
 
-	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
-	config.PreviewFormat.RegisterFlag(previewFlagSet)
+	videoFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
+	config.PreviewFormat.RegisterFlag(videoFlagSet)
+	config.FFmpegDuration.RegisterFlag(videoFlagSet)
+	config.FFmpegFrames.RegisterFlag(videoFlagSet)
 
 	carapace.Gen(color.Command).FlagCompletion(actions)
 
@@ -85,12 +87,12 @@ func init() {
 	imageComp.FlagCompletion(actions)
 	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	video.Command.Flags().AddFlagSet(previewFlagSet)
+	video.Command.Flags().AddFlagSet(videoFlagSet)
 	videoComp := carapace.Gen(video.Command)
 	videoComp.FlagCompletion(actions)
 	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
 
-	cache.Command.Flags().AddFlagSet(previewFlagSet)
+	cache.Command.Flags().AddFlagSet(videoFlagSet)
 	cacheComp := carapace.Gen(cache.Command)
 	cacheComp.FlagCompletion(actions)
 	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())

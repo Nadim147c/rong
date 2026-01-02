@@ -17,11 +17,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	config.FFmpegFrames.RegisterFlag(Command.Flags())
-	config.FFmpegDuration.RegisterFlag(Command.Flags())
-}
-
 // Command is the video command.
 var Command = &cobra.Command{
 	Use:   "video <video>",
