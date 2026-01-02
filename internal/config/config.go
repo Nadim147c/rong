@@ -6,10 +6,16 @@ import (
 
 	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/rong/v4/internal/config/enums"
+	"github.com/carapace-sh/carapace"
 )
 
 // Global configuration options.
 var (
+	CarapaceAction = carapace.ActionMap{
+		Config.Key():  carapace.ActionFiles(),
+		LogFile.Key(): carapace.ActionFiles(),
+	}
+
 	Dark       = newBoolOption("D", "dark", true, "Generate dark theme")
 	DryRun     = newBoolOption("d", "dry-run", false, "Generate color without state and templates")
 	JSON       = newBoolOption("j", "json", false, "Print output colors as json")

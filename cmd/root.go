@@ -12,7 +12,6 @@ import (
 	"syscall"
 
 	"github.com/Nadim147c/fang"
-	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/rong/v4/cmd/cache"
 	"github.com/Nadim147c/rong/v4/cmd/color"
 	"github.com/Nadim147c/rong/v4/cmd/image"
@@ -35,12 +34,6 @@ func init() {
 	Command.AddCommand(video.Command)
 	Command.AddCommand(cache.Command)
 	Command.AddCommand(regen.Command)
-
-	actions := carapace.ActionMap{
-		"variant":  carapace.ActionValues(dynamic.VariantNames()...),
-		"version":  carapace.ActionValues(dynamic.VersionNames()...),
-		"platform": carapace.ActionValues(dynamic.PlatformNames()...),
-	}
 
 	commonFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
 	config.Dark.RegisterFlag(commonFlags)
@@ -74,6 +67,7 @@ func init() {
 	}
 	for cmd := range slices.Values(generateCmds) {
 		cmd.Flags().AddFlagSet(commonFlags)
+		carapace.Gen(cmd).FlagCompletion(config.CarapaceAction)
 	}
 
 	videoFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
@@ -81,24 +75,16 @@ func init() {
 	config.FFmpegDuration.RegisterFlag(videoFlagSet)
 	config.FFmpegFrames.RegisterFlag(videoFlagSet)
 
-	carapace.Gen(color.Command).FlagCompletion(actions)
-
-	imageComp := carapace.Gen(image.Command)
-	imageComp.FlagCompletion(actions)
-	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
+	carapace.Gen(image.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	video.Command.Flags().AddFlagSet(videoFlagSet)
-	videoComp := carapace.Gen(video.Command)
-	videoComp.FlagCompletion(actions)
-	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
+	carapace.Gen(video.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	cache.Command.Flags().AddFlagSet(videoFlagSet)
-	cacheComp := carapace.Gen(cache.Command)
-	cacheComp.FlagCompletion(actions)
-	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())
+	carapace.Gen(cache.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	colorComp := carapace.Gen(color.Command)
-	colorComp.FlagCompletion(actions)
+	colorComp.FlagCompletion(config.CarapaceAction)
 	nameCompletions := make([]string, 0, len(color.Names)*2)
 	for name, value := range color.Names {
 		r, g, b := value.Red(), value.Green(), value.Blue()
@@ -108,19 +94,11 @@ func init() {
 			style.TrueColor(r, g, b),
 		)
 	}
-	colorComp.PositionalAnyCompletion(
-		carapace.ActionStyledValues(nameCompletions...),
-	)
-
-	regenComp := carapace.Gen(regen.Command)
-	regenComp.FlagCompletion(actions)
+	colorComp.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
 
 	rootComp := carapace.Gen(Command)
 	rootComp.Standalone()
-	rootComp.FlagCompletion(carapace.ActionMap{
-		"config":   carapace.ActionFiles(),
-		"log-file": carapace.ActionFiles(),
-	})
+	rootComp.FlagCompletion(config.CarapaceAction)
 
 	persFlags := Command.PersistentFlags()
 	config.Verbose.RegisterFlag(persFlags)
