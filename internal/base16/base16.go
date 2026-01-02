@@ -1,11 +1,11 @@
 package base16
 
 import (
-	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v4/internal/config/enums"
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/viper"
 )
@@ -25,21 +25,19 @@ func Generate(
 	quantized []color.ARGB,
 ) (Base16, error) {
 	var static SourceColors
+	// TODO: Chane this please
 	if err := viper.UnmarshalKey("base16.colors", &static, opt); err != nil {
 		return Base16{}, err
 	}
 
-	switch method := strings.ToLower(viper.GetString("base16.method")); method {
-	case "static":
+	switch config.Base16Method.Value() {
+	case enums.Base16MethodStatic:
 		return GenerateStatic(material["primary"], static), nil
-	case "dynamic":
+	case enums.Base16MethodDynamic:
 		fg, bg := material["on_background"], material["background"]
 		return GenerateDynamic(fg, bg, quantized), nil
 	default:
-		return Base16{}, fmt.Errorf( //nolint
-			"invalid base16 color generating method: %v",
-			method,
-		)
+		panic("unreachable")
 	}
 }
 

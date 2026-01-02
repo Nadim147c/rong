@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
@@ -31,6 +33,10 @@ var (
 		"p", "preview-format", enums.PreviewFormatJpg, "Format of video preview image",
 		enums.PreviewFormatNames(), enums.ParsePreviewFormat,
 	)
+
+	FFmpegFrames   = newIntOption("", "frames", 5, "Number of frames ffmpeg should process")
+	FFmpegDuration = newDurationOption("", "duration", 5*time.Second, "Max number of time ffmpeg should process")
+	Workers        = newIntOption("", "workers", runtime.GOMAXPROCS(runtime.NumCPU()), "Number for concurate thread to use")
 
 	MaterialVersion = newEnumOption(
 		"", "material.version", dynamic.Version2025, "Material spec version",
@@ -233,6 +239,31 @@ func newBoolOption(short, key string, defval bool, desc string) *boolOption {
 // newStringOption creates a new string configuration option.
 func newStringOption(short, key string, defval string, desc string) *option[string] {
 	return newOption(short, key, defval, desc, "string", cast.ToStringE)
+}
+
+// newStringOption creates a new string configuration option.
+func newIntOption(short, key string, defval int, desc string) *option[int] {
+	return newOption(short, key, defval, desc, "int", cast.ToIntE)
+}
+
+// castDuration casts the type to time.duration. The differenace between
+// castDuration and cast.ToDurationE is the default duration unit is second in
+// castDuration where cast.ToDurationE uses nanoseocond. It make sense to go dev
+// to use nanoseocond but everyone else expect second as default time.
+func castDuration(a any) (time.Duration, error) {
+	s, ok := a.(string)
+	if !ok {
+		return 0, fmt.Errorf("failed to convert %v to duration", a) //nolint
+	}
+	if !strings.ContainsAny(s, "nsuµmh") {
+		s += "s"
+	}
+	return time.ParseDuration(s)
+}
+
+// newStringOption creates a new string configuration option.
+func newDurationOption(short, key string, defval time.Duration, desc string) *option[time.Duration] {
+	return newOption(short, key, defval, desc, "duration", castDuration)
 }
 
 // formatFloat formats float with 2 decimal precision.

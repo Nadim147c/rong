@@ -7,10 +7,10 @@ import (
 	"sync"
 
 	"github.com/Nadim147c/rong/v4/internal/cache"
+	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/Nadim147c/rong/v4/internal/ffmpeg"
 	"github.com/Nadim147c/rong/v4/internal/material"
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/spf13/viper"
 )
 
 type job struct {
@@ -99,15 +99,15 @@ func cacheRec(ctx context.Context, inputs []string, ch chan<- state) {
 		close(paths)
 	}()
 
-	workers := viper.GetInt("workers")
+	workers := config.Workers.Value()
 	if workers == 0 {
 		workers = 4
 	}
-	frames := viper.GetInt("frames")
+	frames := config.FFmpegFrames.Value()
 	if frames == 0 {
 		frames = 4
 	}
-	duration := viper.GetDuration("duration").Seconds()
+	duration := config.FFmpegDuration.Value().Seconds()
 	if duration == 0 {
 		duration = 5
 	}
