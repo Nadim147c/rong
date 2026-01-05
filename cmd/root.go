@@ -156,16 +156,8 @@ var Command = &cobra.Command{
 
 		level := slog.LevelInfo
 
-		if verbose, err := cmd.Flags().GetCount("verbose"); err == nil {
-			if verbose == 0 {
-				level = slog.LevelError
-			} else if verbose == 1 {
-				level = slog.LevelWarn
-			} else if verbose == 2 {
-				level = slog.LevelInfo
-			} else if verbose >= 3 {
-				level = slog.Level(math.MinInt)
-			}
+		if config.Verbose.Changed() {
+			level = slog.LevelWarn - slog.Level(config.Verbose.Value()*4)
 		}
 
 		quiet := should(cmd.Flags().GetBool("quiet"))

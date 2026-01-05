@@ -30,18 +30,42 @@ func (o *option[T]) Default() T {
 	return o.defval
 }
 
+// Default returns the default value of the option.
+func (o *option[T]) Changed() bool {
+	return viper.IsSet(o.name)
+}
+
 // SetValue sets the current value in the configuration store.
 func (o *option[T]) SetValue(v T) {
 	viper.Set(o.name, v)
+}
+
+func isBool(a any) bool {
+	if _, ok := a.(bool); ok {
+		return true
+	}
+	s := cast.ToString(a)
+	return s == "true" || s == "false"
 }
 
 // Value retrieves the current value from the configuration store. Returns the
 // default value if conversion fails.
 func (o *option[T]) Value() T {
 	viperValue := viper.Get(o.name)
+	slog.Debug("Config key accessed", "key", o.Key(), "raw-value", viperValue)
 	if v, ok := viperValue.(T); ok {
 		return v
 	}
+
+	if o.Key() == Base16Blend.Key() && isBool(viperValue) {
+		slog.Error("Config option has been changed. Use 0 to disable blending.",
+			"option", o.Key(),
+			"used", viperValue,
+			"want", "a float between 0 to 1",
+		)
+		viperValue = Base16Blend.Default()
+	}
+
 	v, err := o.caster(viperValue)
 	if err != nil {
 		slog.Error(
@@ -52,6 +76,7 @@ func (o *option[T]) Value() T {
 		)
 		return o.defval // Don't exit on error, return default
 	}
+	slog.Debug("Config value returned", "key", o.Key(), "value", v)
 	return v
 }
 

@@ -1,38 +1,20 @@
 package base16
 
 import (
-	"reflect"
-
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/Nadim147c/rong/v4/internal/config/enums"
-	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/viper"
 )
-
-var opt = viper.DecodeHook(mapstructure.DecodeHookFuncValue(
-	func(from, _ reflect.Value) (any, error) {
-		if from.Kind() == reflect.String {
-			return color.ARGBFromHex(from.String())
-		}
-		return from.Interface(), nil
-	},
-))
 
 // Generate generates colors from material color name and quantized colors.
 func Generate(
 	material map[string]color.ARGB,
 	quantized []color.ARGB,
 ) (Base16, error) {
-	var static SourceColors
-	// TODO: Chane this please
-	if err := viper.UnmarshalKey("base16.colors", &static, opt); err != nil {
-		return Base16{}, err
-	}
-
 	switch config.Base16Method.Value() {
 	case enums.Base16MethodStatic:
-		return GenerateStatic(material["primary"], static), nil
+		return GenerateStatic(material["primary"]), nil
 	case enums.Base16MethodDynamic:
 		fg, bg := material["on_background"], material["background"]
 		return GenerateDynamic(fg, bg, quantized), nil
