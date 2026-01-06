@@ -155,11 +155,7 @@ var Command = &cobra.Command{
 			return nil
 		}
 
-		level := slog.LevelInfo
-
-		if config.Verbose.Changed() {
-			level = slog.LevelWarn - slog.Level(config.Verbose.Value()*4)
-		}
+		level := slog.LevelWarn - slog.Level(config.Verbose.Value()*4)
 
 		quiet := should(cmd.Flags().GetBool("quiet"))
 		if quiet {
@@ -175,11 +171,7 @@ var Command = &cobra.Command{
 
 			err := os.MkdirAll(filepath.Dir(logFilePath), 0o750)
 			if err != nil {
-				slog.Error(
-					"Failed to create parent directory for log file",
-					"error",
-					err,
-				)
+				slog.Error("Failed to create parent directory for log file", "error", err)
 			}
 
 			mod := os.O_CREATE | os.O_APPEND | os.O_WRONLY
@@ -192,8 +184,7 @@ var Command = &cobra.Command{
 			} else {
 				fileHanlder := slog.NewJSONHandler(file, &slog.HandlerOptions{
 					AddSource: true,
-					// Manually enabling file logs indicates user is trying to
-					// debug
+					// Manually enabling file logs indicates user is trying to debug
 					Level: slog.LevelDebug,
 				})
 
@@ -209,16 +200,19 @@ var Command = &cobra.Command{
 			viper.SetOptions(viper.WithLogger(logger))
 		}
 
-		viper.AddConfigPath("/etc/rong")
-		viper.AddConfigPath(pathutil.ConfigDir)
-		viper.SetConfigName("config")
-
 		viper.SetEnvPrefix("rong")
 		viper.AutomaticEnv()
 
-		cfgFlag := cmd.Flags().Lookup("config")
-		if cfgFlag != nil && cfgFlag.Changed {
-			viper.SetConfigFile(cfgFlag.Value.String())
+		if value := config.Config.Value(); value != "" {
+			slog.Info("Cofniguration path has been set", "value", value)
+			if slices.Contains([]string{"no", "0", "false"}, value) {
+				return nil
+			}
+			viper.SetConfigFile(value)
+		} else {
+			viper.AddConfigPath("/etc/rong")
+			viper.AddConfigPath(pathutil.ConfigDir)
+			viper.SetConfigName("config")
 		}
 
 		return viper.ReadInConfig()

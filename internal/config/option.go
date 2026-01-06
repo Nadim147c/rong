@@ -30,11 +30,6 @@ func (o *option[T]) Default() T {
 	return o.defval
 }
 
-// Default returns the default value of the option.
-func (o *option[T]) Changed() bool {
-	return viper.IsSet(o.key)
-}
-
 // SetValue sets the current value in the configuration store.
 func (o *option[T]) SetValue(v T) {
 	viper.Set(o.key, v)
