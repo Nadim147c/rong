@@ -4,7 +4,6 @@ import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/Nadim147c/rong/v4/internal/config/enums"
-	"github.com/spf13/viper"
 )
 
 // Generate generates colors from material color name and quantized colors.
@@ -38,9 +37,7 @@ type Base16 struct {
 
 // NewBase16 creates a new Base16.
 func NewBase16() Base16 {
-	b := Base16{}
-	b.dark = viper.GetBool("dark")
-	return b
+	return Base16{dark: config.Dark.Value()}
 }
 
 // SetBlack sets the Black and Bright Black color.
