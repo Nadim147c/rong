@@ -61,25 +61,29 @@ func Execute(ctx context.Context, colors models.Output) error {
 			allErrors = append(allErrors, err)
 			slog.Error(
 				"Error executing built-in template",
-				"template",
-				tmpl.Name(),
-				"error",
-				err,
+				"template", tmpl.Name(),
+				"error", err,
 			)
 		}
 	}
 
 	templateRoot := filepath.Join(pathutil.ConfigDir, "templates")
 	templatePaths, err := filepath.Glob(templateRoot + "/*.tmpl")
-	if err != nil { //nolint:nestif
+	if err != nil {
 		slog.Error("Failed to find templates", "error", err)
 		allErrors = append(
 			allErrors,
 			fmt.Errorf("failed to find user templates: %w", err),
 		)
-	} else if len(templatePaths) == 0 {
+		goto hooks
+	}
+
+	if len(templatePaths) == 0 {
 		slog.Info("No user defined templates")
-	} else {
+		goto hooks
+	}
+
+	{
 		userTmpl := template.New("").Funcs(funcs)
 		userTmpls, err := userTmpl.ParseFiles(templatePaths...)
 		if err != nil {
@@ -88,22 +92,24 @@ func Execute(ctx context.Context, colors models.Output) error {
 				allErrors,
 				fmt.Errorf("failed to parse user templates: %w", err),
 			)
-		} else {
-			// Execute user templates and collect errors
-			for _, tmpl := range userTmpls.Templates() {
-				if err := execute(tmpl, colors); err != nil {
-					allErrors = append(allErrors, err)
-					slog.Error(
-						"Error executing user template",
-						"template",
-						tmpl.Name(),
-						"error",
-						err,
-					)
-				}
+		}
+
+		// Execute user templates and collect errors
+		for tmpl := range slices.Values(userTmpls.Templates()) {
+			if err := execute(tmpl, colors); err != nil {
+				allErrors = append(allErrors, err)
+				slog.Error(
+					"Error executing user template",
+					"template",
+					tmpl.Name(),
+					"error",
+					err,
+				)
 			}
 		}
 	}
+
+hooks: // control flow easier to understand
 
 	// Run post-hook and collect any errors
 	postHookErrs := postHook(ctx, colors)
