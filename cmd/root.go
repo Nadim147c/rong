@@ -43,6 +43,7 @@ func init() {
 
 	config.MaterialContrast.RegisterFlag(commonFlags)
 	config.MaterialCustomBlend.RegisterFlag(commonFlags)
+	config.MaterialCustomColors.RegisterFlag(commonFlags)
 	config.MaterialPlatformt.RegisterFlag(commonFlags)
 	config.MaterialVariant.RegisterFlag(commonFlags)
 	config.MaterialVersion.RegisterFlag(commonFlags)

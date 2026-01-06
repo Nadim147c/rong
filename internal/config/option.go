@@ -18,7 +18,7 @@ import (
 // option represents a configuration option with a specific type.
 type option[T any] struct {
 	short   string
-	name    string
+	key     string
 	defval  T
 	desc    string
 	typeStr string
@@ -32,12 +32,12 @@ func (o *option[T]) Default() T {
 
 // Default returns the default value of the option.
 func (o *option[T]) Changed() bool {
-	return viper.IsSet(o.name)
+	return viper.IsSet(o.key)
 }
 
 // SetValue sets the current value in the configuration store.
 func (o *option[T]) SetValue(v T) {
-	viper.Set(o.name, v)
+	viper.Set(o.key, v)
 }
 
 func isBool(a any) bool {
@@ -51,7 +51,7 @@ func isBool(a any) bool {
 // Value retrieves the current value from the configuration store. Returns the
 // default value if conversion fails.
 func (o *option[T]) Value() T {
-	viperValue := viper.Get(o.name)
+	viperValue := viper.Get(o.key)
 	slog.Debug("Config key accessed", "key", o.Key(), "raw-value", viperValue)
 	if v, ok := viperValue.(T); ok {
 		return v
@@ -70,7 +70,7 @@ func (o *option[T]) Value() T {
 	if err != nil {
 		slog.Error(
 			"Failed to convert config value",
-			"key", o.name,
+			"key", o.key,
 			"value", viperValue,
 			"error", err,
 		)
@@ -82,7 +82,7 @@ func (o *option[T]) Value() T {
 
 // RegisterFlag registers the option with a flag set.
 func (o *option[T]) RegisterFlag(set *pflag.FlagSet) {
-	set.VarP(o, o.name, o.short, o.desc)
+	set.VarP(o, o.key, o.short, o.desc)
 }
 
 // Set implements pflag.Value interface.
@@ -93,7 +93,7 @@ func (o *option[T]) Set(s string) error {
 		return err
 	}
 
-	viper.Set(o.name, v)
+	viper.Set(o.key, v)
 	return nil
 }
 
@@ -111,7 +111,7 @@ func (o *option[T]) Type() string {
 
 // Key returns the configuration key name.
 func (o *option[T]) Key() string {
-	return o.name
+	return o.key
 }
 
 // Track registered keys to prevent duplicates.
@@ -145,7 +145,7 @@ func newOption[T any](
 
 	viper.SetDefault(key, defval)
 	return &option[T]{
-		name:    key,
+		key:     key,
 		short:   short,
 		defval:  defval,
 		desc:    desc,
@@ -159,11 +159,11 @@ type boolOption struct{ *option[bool] }
 
 // RegisterFlag registers boolean flag with "no-" counterpart for negation.
 func (c *boolOption) RegisterFlag(set *pflag.FlagSet) {
-	f := set.VarPF(c, c.name, c.short, c.desc)
+	f := set.VarPF(c, c.key, c.short, c.desc)
 	f.NoOptDefVal = "<bool>"
 
 	// Add "no-" prefix flag for negation
-	noflag := "no-" + c.name
+	noflag := "no-" + c.key
 	if set.Lookup(noflag) != nil {
 		return
 	}
@@ -268,7 +268,7 @@ type colorOption struct{ *option[color.ARGB] }
 // RegisterFlag registers count flag with special handling for incremental
 // counting.
 func (c *colorOption) RegisterFlag(set *pflag.FlagSet) {
-	set.VarP(c, c.name, c.short, c.desc)
+	set.VarP(c, c.key, c.short, c.desc)
 }
 
 // String returns the color as an ANSI-formatted string
@@ -299,7 +299,7 @@ type countOption struct{ *option[int] }
 // RegisterFlag registers count flag with special handling for incremental
 // counting.
 func (c *countOption) RegisterFlag(set *pflag.FlagSet) {
-	f := set.VarPF(c, c.name, c.short, c.desc)
+	f := set.VarPF(c, c.key, c.short, c.desc)
 	f.NoOptDefVal = "<count>"
 }
 
@@ -307,7 +307,7 @@ func (c *countOption) RegisterFlag(set *pflag.FlagSet) {
 func (c *countOption) Set(s string) error {
 	if s == "<count>" {
 		// Increment the current value
-		c.SetValue(viper.GetInt(c.name) + 1)
+		c.SetValue(viper.GetInt(c.key) + 1)
 		return nil
 	}
 	i, err := c.caster(s)
@@ -369,4 +369,62 @@ func joinWithOr(items []string) string {
 	}
 
 	return strings.Join(items[:n-1], ", ") + " or " + items[n-1]
+}
+
+type kvOption[T any] struct {
+	*option[map[string]T]
+	caster func(string) (T, error)
+}
+
+func (o *kvOption[T]) RegisterFlag(set *pflag.FlagSet) {
+	set.VarP(o, o.key, o.short, o.desc)
+}
+
+// Set sets a value from name=value.
+func (o *kvOption[T]) Set(s string) error {
+	name, value, found := strings.Cut(s, "=")
+	if !found {
+		return fmt.Errorf("Failed to convert %q to map of string, %s", s, o.typeStr) //nolint
+	}
+
+	v, err := o.caster(value)
+	if err != nil {
+		return err
+	}
+
+	viper.Set(o.key+"."+name, v)
+	return nil
+}
+
+// newKvOption creates a new enumeration configuration option.
+func newKvOption[T any](
+	short, key string,
+	defval map[string]T,
+	desc string,
+	typeStr string,
+	parser func(s string) (T, error),
+) *kvOption[T] {
+	return &kvOption[T]{
+		caster: parser,
+		option: newOption(short, key, defval, desc, "name="+typeStr, func(a any) (map[string]T, error) {
+			rawData, err := cast.ToStringMapE(a)
+			if err != nil {
+				return nil, err
+			}
+
+			if v, ok := any(rawData).(map[string]T); ok {
+				return v, nil
+			}
+
+			m := make(map[string]T, len(rawData))
+			for key, value := range rawData {
+				v, err := parser(cast.ToString(value))
+				if err != nil {
+					return nil, err
+				}
+				m[key] = v
+			}
+			return m, nil
+		}),
+	}
 }

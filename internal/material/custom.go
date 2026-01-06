@@ -2,12 +2,12 @@ package material
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 
 	blendPkg "github.com/Nadim147c/material/v2/blend"
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/spf13/viper"
 )
 
 // CustomColor is colors generated from user defined colors.
@@ -22,7 +22,7 @@ var nameRe = regexp.MustCompile("^[A-Za-z0-9][A-Za-z0-9_]+$")
 
 // GenerateCustomColors returns all custom colors.
 func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
-	defined := viper.GetStringMapString("material.custom.colors")
+	defined := config.MaterialCustomColors.Value()
 	if len(defined) == 0 {
 		return map[string]CustomColor{}, nil
 	}
@@ -35,13 +35,8 @@ func GenerateCustomColors(primary color.ARGB) (map[string]CustomColor, error) {
 			//nolint
 			return nil, fmt.Errorf("custom color name should only contains alphanumeric values or underscore: name=%s", name)
 		}
-
-		argb, err := color.ARGBFromHex(col)
-		if err != nil {
-			return nil, err
-		}
-
-		m[name] = createCustomColor(argb, primary, dark, blend)
+		slog.Debug("Making custom color", "name", name, "color", col.String())
+		m[name] = createCustomColor(col, primary, dark, blend)
 	}
 	return m, nil
 }

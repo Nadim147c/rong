@@ -4,6 +4,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/rong/v4/internal/config/enums"
 	"github.com/carapace-sh/carapace"
@@ -47,8 +48,9 @@ var (
 		"", "material.platform", dynamic.PlatformPhone, "Material spec variant",
 		dynamic.PlatformNames(), dynamic.ParsePlatform,
 	)
-	MaterialContrast    = newRangeFloatOption("", "material.contrast", 0.0, 1, -1, "Material colors contrast")
-	MaterialCustomBlend = newRangeFloatOption("", "material.custom.blend", 0.50, 1, 0, "Custom material color blend ratio")
+	MaterialContrast     = newRangeFloatOption("", "material.contrast", 0.0, 1, -1, "Material colors contrast")
+	MaterialCustomBlend  = newRangeFloatOption("", "material.custom.blend", 0.50, 1, 0, "Custom material color blend ratio")
+	MaterialCustomColors = newKvOption("", "material.custom.colors", nil, "Custom material colors", "color", color.ARGBFromHex)
 
 	Base16Blend  = newRangeFloatOption("", "base16.blend", 0.50, 1, 0, "Base16 color blend ratio")
 	Base16Method = newEnumOption(
