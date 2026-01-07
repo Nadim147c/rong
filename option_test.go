@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"slices"
 	"testing"
 
@@ -50,6 +51,8 @@ func TestOptions(t *testing.T) {
 			_cmd := *icmd.Command
 			cmd := &_cmd
 			cmd.SetArgs(command.Strings())
+			cmd.SetOut(io.Discard)
+			cmd.SetErr(io.Discard)
 			cmd.ExecuteContext(t.Context())
 
 			viperValue := viper.Get(tt.key)
