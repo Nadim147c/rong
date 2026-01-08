@@ -6,7 +6,7 @@ import (
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
-	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
 // Config is configuration used to generate colors.

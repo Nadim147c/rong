@@ -9,7 +9,7 @@ import (
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/rong/v4/internal/models"
+	"github.com/Nadim147c/rong/v5/internal/models"
 )
 
 var funcs = template.FuncMap{

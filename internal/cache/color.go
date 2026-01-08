@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/Nadim147c/rong/v4/internal/material"
-	"github.com/Nadim147c/rong/v4/internal/pathutil"
+	"github.com/Nadim147c/rong/v5/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/material"
+	"github.com/Nadim147c/rong/v5/internal/pathutil"
 )
 
 // Hash returns md5 sum.

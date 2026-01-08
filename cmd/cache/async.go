@@ -6,10 +6,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Nadim147c/rong/v4/internal/cache"
-	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/Nadim147c/rong/v4/internal/ffmpeg"
-	"github.com/Nadim147c/rong/v4/internal/material"
+	"github.com/Nadim147c/rong/v5/internal/cache"
+	"github.com/Nadim147c/rong/v5/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/ffmpeg"
+	"github.com/Nadim147c/rong/v5/internal/material"
 	"github.com/gabriel-vasile/mimetype"
 )
 

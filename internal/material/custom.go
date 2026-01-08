@@ -7,7 +7,7 @@ import (
 
 	blendPkg "github.com/Nadim147c/material/v2/blend"
 	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
 // CustomColor is colors generated from user defined colors.

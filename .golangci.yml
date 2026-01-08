@@ -60,7 +60,7 @@ linters:
 
     importas:
       alias:
-        - pkg: github.com/Nadim147c/rong/v4/internal/material
+        - pkg: github.com/Nadim147c/rong/v5/internal/material
           alias: imaterial
         - pkg: github.com/charmbracelet/bubbletea
           alias: tea

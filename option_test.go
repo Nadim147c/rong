@@ -7,9 +7,9 @@ import (
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
-	icmd "github.com/Nadim147c/rong/v4/cmd"
-	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/Nadim147c/rong/v4/internal/config/enums"
+	icmd "github.com/Nadim147c/rong/v5/cmd"
+	"github.com/Nadim147c/rong/v5/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config/enums"
 	shlex "github.com/carapace-sh/carapace-shlex"
 	"github.com/spf13/viper"
 )

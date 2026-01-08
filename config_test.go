@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/Nadim147c/material/v2/color"
-	icmd "github.com/Nadim147c/rong/v4/cmd"
-	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/Nadim147c/rong/v4/internal/config/enums"
+	icmd "github.com/Nadim147c/rong/v5/cmd"
+	"github.com/Nadim147c/rong/v5/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config/enums"
 )
 
 func writeTempFile(t *testing.T, filename string, content string) string {

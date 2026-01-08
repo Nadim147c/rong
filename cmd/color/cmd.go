@@ -8,12 +8,12 @@ import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/dynamic"
 	"github.com/Nadim147c/material/v2/palettes"
-	"github.com/Nadim147c/rong/v4/internal/base16"
-	"github.com/Nadim147c/rong/v4/internal/config"
-	"github.com/Nadim147c/rong/v4/internal/config/enums"
-	"github.com/Nadim147c/rong/v4/internal/material"
-	"github.com/Nadim147c/rong/v4/internal/models"
-	"github.com/Nadim147c/rong/v4/internal/templates"
+	"github.com/Nadim147c/rong/v5/internal/base16"
+	"github.com/Nadim147c/rong/v5/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config/enums"
+	"github.com/Nadim147c/rong/v5/internal/material"
+	"github.com/Nadim147c/rong/v5/internal/models"
+	"github.com/Nadim147c/rong/v5/internal/templates"
 	"github.com/spf13/cobra"
 
 	_ "image/jpeg" // for jpeg encoding

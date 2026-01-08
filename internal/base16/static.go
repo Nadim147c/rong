@@ -3,7 +3,7 @@ package base16
 import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/num"
-	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
 // SourceColors is all source colors for static generation and fallback for

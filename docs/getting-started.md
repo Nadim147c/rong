@@ -12,7 +12,7 @@ colors.
 You need `go` to install `rong`. Run:
 
 ```bash
-go install github.com/Nadim147c/rong/v4@latest
+go install github.com/Nadim147c/rong/v5@latest
 ```
 
 To ensure you've properly installed `rong`, run:

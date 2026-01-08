@@ -19,8 +19,8 @@ import (
 	"unicode"
 
 	"github.com/MatusOllah/stripansi"
-	"github.com/Nadim147c/rong/v4/internal/models"
-	"github.com/Nadim147c/rong/v4/internal/pathutil"
+	"github.com/Nadim147c/rong/v5/internal/models"
+	"github.com/Nadim147c/rong/v5/internal/pathutil"
 	"github.com/spf13/viper"
 )
 

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/Nadim147c/rong/v4/internal/config"
+	"github.com/Nadim147c/rong/v5/internal/config"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
