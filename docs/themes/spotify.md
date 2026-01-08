@@ -1,6 +1,6 @@
 # Spotify
 
-Discord doesn't support theming by default. You need to modify the Spotify client to
+Spotify doesn't support theming by default. You need to modify the Spotify client to
 apply a material theme. This guide is for [spicetify](https://spicetify.app/) mod.
 
 ::: danger STOP
