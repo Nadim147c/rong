@@ -39,3 +39,7 @@ generate:
     go-enum --values --names --marshal --no-iota \
       --output-suffix _generated \
       -f ./internal/config/enums/enums.go
+
+docs:
+    bun i
+    bun run dev
