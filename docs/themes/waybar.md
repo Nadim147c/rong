@@ -9,12 +9,10 @@ Waybar is a status bar for Wayland compositors. It uses `GTK-CSS` for styling.
 Add the following line to the [configuration](/configuration#linking-generated-files):
 
 ```toml{5}
-[links]
-# ...
-"gtk-css.css" = [
-  # ...
-  "~/.config/waybar/colors.css"
-]
+[[themes]]
+target = "gtk-css.css"
+links = "~/.config/waybar/colors.css"
+# cmds = "killall -SIGUSR2 waybar"
 ```
 
 <!--@include: ./_regen.md-->

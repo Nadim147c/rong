@@ -16,16 +16,19 @@ Add the following lines to the
 
 - With base16 terminal colors
 
-```toml{4-6}
-[links]
-"kitty-full.conf" = "~/.config/kitty/colors.conf"
+```toml
+[[themes]]
+target = "kitty-full.conf"
+links = "~/.config/kitty/colors.conf"
+cmds = "pidof kitty | xargs kill -SIGUSR1"
 ```
 
 - Without base16 terminal colors
 
 ```toml{4-6}
 [links]
-"kitty.conf" = "~/.config/kitty/colors.conf"
+target = "kitty-full.conf" // [!code --]
+target = "kitty.conf" // [!code ++]
 ```
 
 <!--@include: ./_regen.md-->
@@ -36,12 +39,4 @@ Add the following line to your `kitty.conf`:
 
 ```bash
 include colors.conf
-```
-
-## Reload
-
-You can live reload kitty theme via sending signal:
-
-```bash
-pidof kitty | xargs kill -SIGUSR1
 ```

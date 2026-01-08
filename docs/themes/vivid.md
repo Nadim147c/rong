@@ -13,11 +13,6 @@ the colorized output of
 Install [vivid](https://github.com/sharkdp/vivid?tab=readme-ov-file#installation)
 from your preferred package manager.
 
-```bash
-# With pacman
-sudo pacman -S vivid
-```
-
 ## Apply
 
 Add following snippets to your preferred shell's init script.

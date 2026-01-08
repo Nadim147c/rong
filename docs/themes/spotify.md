@@ -60,28 +60,29 @@ spotify. In that case, you can do the following step.
 
 - Start spotify:
 
-```bash
-flatpak run com.spotify.Client \
-  --remote-debugging-port=9222 \
-  --remote-allow-origins='*'
-```
+  ```bash
+  flatpak run com.spotify.Client \
+    --remote-debugging-port=9222 \
+    --remote-allow-origins='*'
+  ```
 
 - Live reload after generating colors color:
 
-```bash
-spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
-```
+  ```bash
+  spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
+  ```
 
-> `sed '/Reloaded Spotify/q'` exits whenever it match output `Reloaded Spotify`.
+  > `sed '/Reloaded Spotify/q'` exits whenever it match output `Reloaded Spotify`.
 
-- Final `config.yaml`:
+- Final `config.toml`:
 
-```yaml
-links:
-  spicetify-sleek.ini: ~/.config/spicetify/Themes/Sleek/color.ini
-post-cmds:
-  spicetify-sleek.ini: |
-    spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
-```
+  ```toml
+  [[themes]]
+  target = "spicetify-sleek.ini"
+  links = "~/.config/spicetify/Themes/Sleek/color.ini"
+  cmds = """
+  spicetify watch -s 2>&1 | sed '/Reloaded Spotify/q'
+  """
+  ```
 
 :::

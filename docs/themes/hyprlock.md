@@ -34,7 +34,3 @@ input-field {
     # ...
 }
 ```
-
-## Reload
-
-You don't need to reload Hyprlock as it will auto load the new theme on next startup.

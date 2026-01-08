@@ -10,12 +10,10 @@ theming, allowing you to style notifications css.
 Add the following line to the [configuration](/configuration#linking-generated-files):
 
 ```toml{5}
-[links]
-# ...
-"gtk-css.css" = [
-  # ...
-  "~/.config/swaync/style.css"
-]
+[[themes]]
+target = "gtk-css.css"
+links = "~/.config/swaync/style.css"
+cmds = "swaync-client --reload-css"
 ```
 
 <!--@include: ./_regen.md-->
@@ -33,18 +31,9 @@ Create the SwayNC style file at `~/.config/swaync/style.css` with the following 
 
 ## Reload
 
-To apply style changes without restarting the daemon, run:
-
-```bash
-swaync-client --reload-css
-```
-
-::: warning
 Reloading via `--reload-css` may not work sometimes. Restarting the service manually might be required.
 
 ```bash
 pkill swaync
-swaync &
+setid swaync & disown
 ```
-
-:::

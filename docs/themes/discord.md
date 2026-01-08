@@ -16,11 +16,14 @@ theming.
 
 ## Install
 
-Install one of the pre-modified clients:
+Install a pre-modified clients or mod yourself. Here is a list of pre-modified
+client:
 
 - [Goofcord](https://github.com/Milkshiift/GoofCord)
 - [Vesktop](https://github.com/Vencord/Vesktop)
 - [Equibop](https://github.com/Equicord/Equibop)
+
+You can use any client mod that support loading custom css.
 
 ## Link
 

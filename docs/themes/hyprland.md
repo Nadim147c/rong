@@ -3,14 +3,15 @@
 Hyprland is a dynamic tiling Wayland compositor with modern features and flexible
 configuration. It uses custom configuration language called **Hyprlang**.
 
-## Link
+## Configuration
 
 Add the following line to the [configuration](/configuration#linking-generated-files):
 
 ```toml{3}
-[links]
-# ...
-"hyprland.conf" = "~/.config/hypr/colors.conf"
+[[themes]]
+target = "hyprland.conf"
+links = "~/.config/hypr/colors.conf"
+cmds = "hyprctl reload"
 ```
 
 <!--@include: ./_regen.md-->
@@ -20,7 +21,7 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 In your main config file (`~/.config/hypr/hyprland.conf`), source the theme file and
 define your layout:
 
-```txt{1,5,6}
+```txty1,5,6y
 source = colors.conf
 
 general {
@@ -29,12 +30,4 @@ general {
     col.inactive_border = $on_primary $on_secondary 45deg
     # ...
 }
-```
-
-## Reload
-
-While Hyprland auto reloads, you might need to run:
-
-```bash
-hyprctl reload
 ```

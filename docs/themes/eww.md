@@ -3,17 +3,15 @@
 Eww is a highly customizable widget system for Wayland/X11. It supports CSS or SCSS
 for theming. SCSS is recommended since it has more features and flexibility.
 
-## Link
+## Configuration
 
 Add the following line to the [configuration](/configuration#linking-generated-files):
 
-```toml{5}
-[links]
-# ...
-"colors.scss" = [
-  # ...
-  "~/.config/eww/colors.scss"
-]
+```toml
+[[themes]]
+target = "colors.css"
+links = "~/.config/eww/colors.scss"
+cmds = "eww reload"
 ```
 
 <!--@include: ./_regen.md-->
@@ -34,13 +32,4 @@ variables:
   background-color: $background;
   color: $onBackground;
 }
-```
-
-## Reload
-
-Eww auto reloads styles on change. But if you're generating for the first time you
-need to run:
-
-```bash
-eww reload
 ```
