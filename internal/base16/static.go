@@ -3,7 +3,7 @@ package base16
 import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/num"
-	"github.com/spf13/viper"
+	"github.com/Nadim147c/rong/v4/internal/config"
 )
 
 // SourceColors is all source colors for static generation and fallback for
@@ -39,19 +39,19 @@ var defaultSrcColors = SourceColors{
 }
 
 // GenerateStatic generates base16 colors from pre-defined colors.
-func GenerateStatic(primary color.ARGB, src SourceColors) Base16 {
+func GenerateStatic(primary color.ARGB) Base16 {
 	primaryLab := primary.ToXYZ().ToOkLab()
 
-	ratio := viper.GetFloat64("base16.blend")
+	ratio := config.Base16Blend.Value()
 
-	black := blend(src.Black.ToXYZ().ToOkLab(), primaryLab, ratio)
-	red := blend(src.Red.ToXYZ().ToOkLab(), primaryLab, ratio)
-	green := blend(src.Green.ToXYZ().ToOkLab(), primaryLab, ratio)
-	yellow := blend(src.Yellow.ToXYZ().ToOkLab(), primaryLab, ratio)
-	blue := blend(src.Blue.ToXYZ().ToOkLab(), primaryLab, ratio)
-	magenta := blend(src.Magenta.ToXYZ().ToOkLab(), primaryLab, ratio)
-	cyan := blend(src.Cyan.ToXYZ().ToOkLab(), primaryLab, ratio)
-	white := blend(src.White.ToXYZ().ToOkLab(), primaryLab, ratio)
+	black := blend(config.Base16Black.Default().ToOkLab(), primaryLab, ratio)
+	red := blend(config.Base16Red.Value().ToOkLab(), primaryLab, ratio)
+	green := blend(config.Base16Green.Value().ToOkLab(), primaryLab, ratio)
+	yellow := blend(config.Base16Yellow.Value().ToOkLab(), primaryLab, ratio)
+	blue := blend(config.Base16Blue.Value().ToOkLab(), primaryLab, ratio)
+	magenta := blend(config.Base16Magenta.Value().ToOkLab(), primaryLab, ratio)
+	cyan := blend(config.Base16Cyan.Value().ToOkLab(), primaryLab, ratio)
+	white := blend(config.Base16White.Value().ToOkLab(), primaryLab, ratio)
 
 	if num.DifferenceDegrees(blue.Hue, white.Hue) < 60 {
 		white.Hue = blue.Hue - 60

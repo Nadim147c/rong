@@ -17,8 +17,7 @@ import (
 	"github.com/Nadim147c/rong/v4/cmd/image"
 	"github.com/Nadim147c/rong/v4/cmd/regen"
 	"github.com/Nadim147c/rong/v4/cmd/video"
-	"github.com/Nadim147c/rong/v4/internal/base16"
-	"github.com/Nadim147c/rong/v4/internal/material"
+	"github.com/Nadim147c/rong/v4/internal/config"
 	"github.com/Nadim147c/rong/v4/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	"github.com/carapace-sh/carapace/pkg/style"
@@ -36,25 +35,30 @@ func init() {
 	Command.AddCommand(cache.Command)
 	Command.AddCommand(regen.Command)
 
-	actions := carapace.ActionMap{
-		"variant": carapace.ActionValues(
-			"monochrome", "neutral", "tonal_spot",
-			"vibrant", "expressive", "fidelity",
-			"content", "rainbow", "fruit_salad",
-		),
-		"version":  carapace.ActionValues("2021", "2025"),
-		"platform": carapace.ActionValues("phone", "watch"),
-	}
+	commonFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
+	config.Dark.RegisterFlag(commonFlags)
+	config.JSON.RegisterFlag(commonFlags)
+	config.SimpleJSON.RegisterFlag(commonFlags)
+	config.DryRun.RegisterFlag(commonFlags)
 
-	commonGenerate := pflag.NewFlagSet("generate", pflag.ContinueOnError)
-	commonGenerate.BoolP("dark", "D", false, "generate dark color palette")
-	commonGenerate.BoolP("json", "j", false, "print generated colors as json")
-	commonGenerate.
-		BoolP("simple-json", "s", false, "print generated colors as json")
-	commonGenerate.BoolP(
-		"dry-run", "d", false,
-		"generate colors without applying templates",
-	)
+	config.MaterialContrast.RegisterFlag(commonFlags)
+	config.MaterialCustomBlend.RegisterFlag(commonFlags)
+	config.MaterialCustomColors.RegisterFlag(commonFlags)
+	config.MaterialPlatformt.RegisterFlag(commonFlags)
+	config.MaterialVariant.RegisterFlag(commonFlags)
+	config.MaterialVersion.RegisterFlag(commonFlags)
+
+	config.Base16Blend.RegisterFlag(commonFlags)
+	config.Base16Method.RegisterFlag(commonFlags)
+
+	config.Base16Black.RegisterFlag(commonFlags)
+	config.Base16Blue.RegisterFlag(commonFlags)
+	config.Base16Cyan.RegisterFlag(commonFlags)
+	config.Base16Green.RegisterFlag(commonFlags)
+	config.Base16Magenta.RegisterFlag(commonFlags)
+	config.Base16Red.RegisterFlag(commonFlags)
+	config.Base16White.RegisterFlag(commonFlags)
+	config.Base16Yellow.RegisterFlag(commonFlags)
 
 	generateCmds := []*cobra.Command{
 		color.Command,
@@ -63,35 +67,25 @@ func init() {
 		video.Command,
 	}
 	for cmd := range slices.Values(generateCmds) {
-		cmd.Flags().AddFlagSet(commonGenerate)
-		cmd.Flags().AddFlagSet(material.Flags)
-		cmd.Flags().AddFlagSet(base16.Flags)
+		cmd.Flags().AddFlagSet(commonFlags)
+		carapace.Gen(cmd).FlagCompletion(config.CarapaceAction)
 	}
 
-	previewFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
-	previewFlagSet.StringP("preview-format", "p",
-		"jpg", "format of video preview image",
-	)
-	viper.SetDefault("preview-format", "jpg")
+	videoFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
+	config.PreviewFormat.RegisterFlag(videoFlagSet)
+	config.FFmpegDuration.RegisterFlag(videoFlagSet)
+	config.FFmpegFrames.RegisterFlag(videoFlagSet)
 
-	carapace.Gen(color.Command).FlagCompletion(actions)
+	carapace.Gen(image.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
-	imageComp := carapace.Gen(image.Command)
-	imageComp.FlagCompletion(actions)
-	imageComp.PositionalAnyCompletion(carapace.ActionFiles())
+	video.Command.Flags().AddFlagSet(videoFlagSet)
+	carapace.Gen(video.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
-	video.Command.Flags().AddFlagSet(previewFlagSet)
-	videoComp := carapace.Gen(video.Command)
-	videoComp.FlagCompletion(actions)
-	videoComp.PositionalAnyCompletion(carapace.ActionFiles())
-
-	cache.Command.Flags().AddFlagSet(previewFlagSet)
-	cacheComp := carapace.Gen(cache.Command)
-	cacheComp.FlagCompletion(actions)
-	cacheComp.PositionalAnyCompletion(carapace.ActionFiles())
+	cache.Command.Flags().AddFlagSet(videoFlagSet)
+	carapace.Gen(cache.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	colorComp := carapace.Gen(color.Command)
-	colorComp.FlagCompletion(actions)
+	colorComp.FlagCompletion(config.CarapaceAction)
 	nameCompletions := make([]string, 0, len(color.Names)*2)
 	for name, value := range color.Names {
 		r, g, b := value.Red(), value.Green(), value.Blue()
@@ -101,26 +95,17 @@ func init() {
 			style.TrueColor(r, g, b),
 		)
 	}
-	colorComp.PositionalAnyCompletion(
-		carapace.ActionStyledValues(nameCompletions...),
-	)
-
-	regenComp := carapace.Gen(regen.Command)
-	regenComp.FlagCompletion(actions)
+	colorComp.PositionalAnyCompletion(carapace.ActionStyledValues(nameCompletions...))
 
 	rootComp := carapace.Gen(Command)
 	rootComp.Standalone()
-	rootComp.FlagCompletion(carapace.ActionMap{
-		"config":   carapace.ActionFiles(),
-		"log-file": carapace.ActionFiles(),
-	})
+	rootComp.FlagCompletion(config.CarapaceAction)
 
-	Command.PersistentFlags().CountP("verbose", "v", "enable verbose logging")
-	Command.PersistentFlags().BoolP("quiet", "q", false, "suppress all logs")
-	Command.PersistentFlags().StringP("log-file", "l", "", "file to save logs")
-	Command.PersistentFlags().
-		StringP("config", "c", "$XDG_CONFIG_HOME/rong/config.{toml,yaml,yml}", "path to config (.toml|.yaml|.yml) file")
-	Command.MarkFlagsMutuallyExclusive("verbose", "quiet")
+	persFlags := Command.PersistentFlags()
+	config.Verbose.RegisterFlag(persFlags)
+	config.Quiet.RegisterFlag(persFlags)
+	config.LogFile.RegisterFlag(persFlags)
+	config.Config.RegisterFlag(persFlags)
 }
 
 func handleError(w io.Writer, styles fang.Styles, err error) {
@@ -170,19 +155,7 @@ var Command = &cobra.Command{
 			return nil
 		}
 
-		level := slog.LevelInfo
-
-		if verbose, err := cmd.Flags().GetCount("verbose"); err == nil {
-			if verbose == 0 {
-				level = slog.LevelError
-			} else if verbose == 1 {
-				level = slog.LevelWarn
-			} else if verbose == 2 {
-				level = slog.LevelInfo
-			} else if verbose >= 3 {
-				level = slog.Level(math.MinInt)
-			}
-		}
+		level := slog.LevelWarn - slog.Level(config.Verbose.Value()*4)
 
 		quiet := should(cmd.Flags().GetBool("quiet"))
 		if quiet {
@@ -198,11 +171,7 @@ var Command = &cobra.Command{
 
 			err := os.MkdirAll(filepath.Dir(logFilePath), 0o750)
 			if err != nil {
-				slog.Error(
-					"Failed to create parent directory for log file",
-					"error",
-					err,
-				)
+				slog.Error("Failed to create parent directory for log file", "error", err)
 			}
 
 			mod := os.O_CREATE | os.O_APPEND | os.O_WRONLY
@@ -215,8 +184,7 @@ var Command = &cobra.Command{
 			} else {
 				fileHanlder := slog.NewJSONHandler(file, &slog.HandlerOptions{
 					AddSource: true,
-					// Manually enabling file logs indicates user is trying to
-					// debug
+					// Manually enabling file logs indicates user is trying to debug
 					Level: slog.LevelDebug,
 				})
 
@@ -232,16 +200,19 @@ var Command = &cobra.Command{
 			viper.SetOptions(viper.WithLogger(logger))
 		}
 
-		viper.AddConfigPath("/etc/rong")
-		viper.AddConfigPath(pathutil.ConfigDir)
-		viper.SetConfigName("config")
-
 		viper.SetEnvPrefix("rong")
 		viper.AutomaticEnv()
 
-		cfgFlag := cmd.Flags().Lookup("config")
-		if cfgFlag != nil && cfgFlag.Changed {
-			viper.SetConfigFile(cfgFlag.Value.String())
+		if value := config.Config.Value(); value != "" {
+			slog.Info("Cofniguration path has been set", "value", value)
+			if slices.Contains([]string{"no", "0", "false"}, value) {
+				return nil
+			}
+			viper.SetConfigFile(value)
+		} else {
+			viper.AddConfigPath("/etc/rong")
+			viper.AddConfigPath(pathutil.ConfigDir)
+			viper.SetConfigName("config")
 		}
 
 		return viper.ReadInConfig()

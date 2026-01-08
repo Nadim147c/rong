@@ -3,21 +3,15 @@ package cache
 import (
 	"context"
 	"log/slog"
-	"runtime"
 	"sync"
-	"time"
 
+	"github.com/Nadim147c/rong/v4/internal/config"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func init() {
-	Command.Flags().Int("frames", 5, "number of frames of video to process")
-	Command.Flags().
-		Duration("duration", 5*time.Second, "maxium number of duration to process")
-	Command.Flags().
-		Int("workers", runtime.NumCPU(), "number of concurrent workers")
+	config.Workers.RegisterFlag(Command.Flags())
 }
 
 // Command is cache command.
@@ -38,9 +32,6 @@ rong cache path/to/*.png
 rong cache path/to/directory
   `,
 	Args: cobra.MinimumNArgs(1),
-	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		return viper.BindPFlags(cmd.Flags())
-	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithCancel(cmd.Context())
 
