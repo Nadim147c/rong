@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/Nadim147c/rong/v5/internal/config"
+	ilog "github.com/Nadim147c/rong/v5/internal/log"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
@@ -38,6 +39,9 @@ rong cache path/to/directory
 		states := make(chan state)
 		model := newModel(cancel)
 		p := tea.NewProgram(model)
+
+		writer := newTeaWriter(p)
+		ilog.SetWriter(writer)
 
 		var wg sync.WaitGroup
 

@@ -1,11 +1,13 @@
 package cache
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/adrg/xdg"
 	"github.com/charmbracelet/bubbles/progress"
@@ -26,7 +28,7 @@ type model struct {
 	done bool
 
 	active    []job
-	completed []job
+	completed int
 	queued    int
 
 	progress progress.Model
@@ -47,14 +49,6 @@ func newModel(exit context.CancelFunc) *model {
 func (m model) Init() tea.Cmd {
 	return m.spinner.Tick
 }
-
-var completedText = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(charmtone.Pickle.Hex())).
-	Render("Completed")
-
-var errorText = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(charmtone.Bengal.Hex())).
-	Render("Failed")
 
 func coloredTxt(txt string, c charmtone.Key) string {
 	return lipgloss.NewStyle().
@@ -122,23 +116,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case state:
 		var cmds []tea.Cmd
-		if len(msg.completed) > len(m.completed) {
-			for j := range slices.Values(msg.completed[len(m.completed):]) {
-				var cmd tea.Cmd
-				if j.err != nil {
-					cmd = tea.Printf("✓ %s %s\n  %v", errorText, prettyPath(j.filename), j.err)
-				} else {
-					cmd = tea.Printf("✓ %s %s", completedText, prettyPath(j.filename))
-				}
-				cmds = append(cmds, cmd)
-			}
-		}
 
 		m.completed = msg.completed
 		m.active = msg.active
 		m.queued = msg.queued
 
-		completed := len(m.completed)
+		completed := m.completed
 		total := completed + len(m.active) + m.queued
 		perc := float64(completed) / float64(total)
 		cmds = append(cmds, m.progress.SetPercent(perc))
@@ -163,7 +146,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.done {
-		return fmt.Sprintf("Done! Processed %d files\n", len(m.completed))
+		return fmt.Sprintf("Done! Processed %d files\n", m.completed)
 	}
 
 	s := m.spinner.View()
@@ -176,4 +159,49 @@ func (m model) View() string {
 	fmt.Fprintf(&buf, "\n%s%s\n", indent, m.progress.View())
 
 	return buf.String()
+}
+
+type teaWriter struct {
+	buf *bytes.Buffer
+	tea *tea.Program
+}
+
+func newTeaWriter(p *tea.Program) *teaWriter {
+	w := new(teaWriter)
+	w.tea = p
+	w.buf = bytes.NewBuffer(nil)
+	return w
+}
+
+func (w *teaWriter) safePrintln(s string) {
+	done := make(chan struct{})
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintln(os.Stderr, s)
+		}
+	}()
+	go func() {
+		w.tea.Println(s)
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// printed
+	case <-time.After(10 * time.Millisecond):
+		panic(s)
+	}
+}
+
+func (w *teaWriter) Write(p []byte) (n int, err error) {
+	for b := range slices.Values(p) {
+		if b == '\n' {
+			w.safePrintln(w.buf.String())
+			w.buf.Reset()
+		} else {
+			w.buf.WriteByte(b)
+		}
+	}
+	return len(p), nil
 }

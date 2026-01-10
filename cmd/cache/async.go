@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"log/slog"
 	"slices"
 	"strings"
 	"sync"
@@ -16,7 +17,6 @@ import (
 type job struct {
 	filename string
 	status   string
-	err      error
 }
 
 func (j *job) process(
@@ -78,7 +78,7 @@ func (j *job) process(
 type state struct {
 	done      bool
 	queued    int
-	completed []job
+	completed int
 	active    []job
 }
 
@@ -123,7 +123,7 @@ func cacheRec(ctx context.Context, inputs []string, ch chan<- state) {
 		defer mu.Unlock()
 		var state state
 		state.active = copyJobs(active)
-		state.completed = copyJobs(completed)
+		state.completed = len(completed)
 		state.queued = len(paths)
 		ch <- state
 	}
@@ -143,7 +143,12 @@ func cacheRec(ctx context.Context, inputs []string, ch chan<- state) {
 				mu.Unlock()
 				update()
 
-				j.err = j.process(ctx, update, frames, duration)
+				err := j.process(ctx, update, frames, duration)
+				if err != nil {
+					slog.Error("Failed to cache", "filename", j.filename, "error", err)
+				} else {
+					slog.Info("Successfully cached", "filename", j.filename)
+				}
 
 				mu.Lock()
 				active = slices.DeleteFunc(active, func(x *job) bool {
@@ -161,7 +166,7 @@ func cacheRec(ctx context.Context, inputs []string, ch chan<- state) {
 	var state state
 	state.done = true
 	state.active = copyJobs(active)
-	state.completed = copyJobs(completed)
+	state.completed = len(completed)
 	state.queued = len(paths)
 	ch <- state
 }

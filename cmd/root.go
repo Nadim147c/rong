@@ -18,6 +18,7 @@ import (
 	"github.com/Nadim147c/rong/v5/cmd/regen"
 	"github.com/Nadim147c/rong/v5/cmd/video"
 	"github.com/Nadim147c/rong/v5/internal/config"
+	ilog "github.com/Nadim147c/rong/v5/internal/log"
 	"github.com/Nadim147c/rong/v5/internal/pathutil"
 	"github.com/carapace-sh/carapace"
 	"github.com/carapace-sh/carapace/pkg/style"
@@ -162,9 +163,10 @@ var Command = &cobra.Command{
 			level = slog.Level(math.MaxInt)
 		}
 
-		stderrHandler := log.NewWithOptions(os.Stderr, log.Options{
+		stderrHandler := log.NewWithOptions(ilog.Writer, log.Options{
 			ReportTimestamp: false, Level: log.Level(level),
 		})
+		stderrHandler.SetColorProfile(ilog.ColorProfile())
 
 		if cmd.Flags().Changed("log-file") {
 			logFilePath := should(cmd.Flags().GetString("log-file"))
