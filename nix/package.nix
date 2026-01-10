@@ -33,18 +33,19 @@ buildGoModule rec {
   ];
   propagatedBuildInputs = [ ffmpeg ];
 
-  postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) /* bash */ ''
+  postInstall = ''
+    wrapProgram $out/bin/rong \
+        --prefix PATH : ${lib.makeBinPath [ ffmpeg ]}
+  ''
+  ++ lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd rong \
       --bash <($out/bin/rong _carapace bash) \
       --fish <($out/bin/rong _carapace fish) \
       --zsh <($out/bin/rong _carapace zsh)
-
-    wrapProgram $out/bin/rong \
-      --prefix PATH : ${lib.makeBinPath [ ffmpeg ]}
   '';
 
   meta = {
-    description = "A Material You and Base16 color generator";
+    description = "Material You and Base16 color generator";
     homepage = "https://github.com/Nadim147c/rong";
     license = lib.licenses.gpl3Only;
     mainProgram = "rong";
