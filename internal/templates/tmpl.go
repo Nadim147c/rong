@@ -16,6 +16,7 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"time"
 	"unicode"
 
 	"github.com/MatusOllah/stripansi"
@@ -271,7 +272,10 @@ func runHooks(
 	var errs []error
 
 	for hook := range slices.Values(hooks) {
-		cmd := exec.CommandContext(ctx, "sh", "-c", hook)
+		cmdCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+
+		cmd := exec.CommandContext(cmdCtx, "sh", "-c", hook)
 		cmd.Env = env
 
 		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
