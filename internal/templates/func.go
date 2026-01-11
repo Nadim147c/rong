@@ -27,19 +27,36 @@ func init() {
 	maps.Copy(funcs, sprig.TxtFuncMap())
 }
 
-func parse(s string) models.FormatedColor {
-	c := color.ARGBFromHexMust(s)
-	return models.NewFormatedColor(c)
+func parse(a any) models.FormatedColor {
+	switch a := a.(type) {
+	case models.FormatedColor:
+		return a
+	case models.NamedColor:
+		return a.Color
+	case color.Hct:
+		return models.NewFormatedColor(a.ToARGB())
+	case color.Lab:
+		return models.NewFormatedColor(a.ToARGB())
+	case color.OkLab:
+		return models.NewFormatedColor(a.ToARGB())
+	case color.XYZ:
+		return models.NewFormatedColor(a.ToARGB())
+	case string:
+		c := color.ARGBFromHexMust(a)
+		return models.NewFormatedColor(c)
+	default:
+		panic(fmt.Sprintf("invalid color format: %v", a))
+	}
 }
 
-func chroma(c models.FormatedColor, chroma float64) models.FormatedColor {
-	hct := c.Int.ToHct()
+func chroma(c any, chroma float64) models.FormatedColor {
+	hct := parse(c).Int.ToHct()
 	hct.Chroma = chroma
 	return models.NewFormatedColor(hct.ToARGB())
 }
 
-func tone(c models.FormatedColor, t float64) models.FormatedColor {
-	hct := c.Int.ToHct()
+func tone(c any, t float64) models.FormatedColor {
+	hct := parse(c).Int.ToHct()
 	hct.Tone = t
 	return models.NewFormatedColor(hct.ToARGB())
 }
