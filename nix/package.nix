@@ -37,7 +37,7 @@ buildGoModule rec {
     wrapProgram $out/bin/rong \
         --prefix PATH : ${lib.makeBinPath [ ffmpeg ]}
   ''
-  ++ lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+  + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd rong \
       --bash <($out/bin/rong _carapace bash) \
       --fish <($out/bin/rong _carapace fish) \
