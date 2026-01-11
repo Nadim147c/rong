@@ -74,14 +74,28 @@ Standard functions like `index`, `print`, and `printf` are supported.
 - **`upper`** – Converts a string to uppercase.
 - **`lower`** – Converts a string to lowercase.
 - **`replace`** – Replaces all occurrences of a substring with another substring.
-- **`parse`** – Parses a hex color string.
+- **`parse`** – Parses a color.
 - **`chroma`** – Adjusts the chroma (color intensity) of a color.
 - **`tone`** – Adjusts the tone (lightness/darkness) of a color.
+- **`blend`** – Blend to colors with given ratio.
 - **`quote`** – Wraps the given value in double quotes as a string.
 - **`json`** – Converts a value to its JSON string representation or `"null"` on error.
 - **`sprig`** - A big list of templates functions: https://masterminds.github.io/sprig.
 
 Examples:
+
+```go
+{{ (blend "#FF0000" "#00FF00" 0.5).RGB }} // blend red and grean and put it RGB
+{{ blend .Primary "#00FF00" 0.7 }} // blend primary toward grean
+```
+
+```go
+{{ tone .Primary 70 }}
+```
+
+```go
+{{ chroma .Primary 70 }}
+```
 
 ```go
 { "image": {{ .Image | json }} }

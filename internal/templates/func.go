@@ -17,6 +17,7 @@ var funcs = template.FuncMap{
 	"lower":   strings.ToLower,
 	"replace": strings.ReplaceAll,
 	"parse":   parse,
+	"blend":   blend,
 	"chroma":  chroma,
 	"tone":    tone,
 	"quote":   quote,
@@ -59,6 +60,17 @@ func tone(c any, t float64) models.FormatedColor {
 	hct := parse(c).Int.ToHct()
 	hct.Tone = t
 	return models.NewFormatedColor(hct.ToARGB())
+}
+
+func blend(from, to any, ratio float64) models.FormatedColor {
+	src := parse(from).Int.ToOkLab()
+	dst := parse(to).Int.ToOkLab()
+	c := color.OkLab{
+		L: src.L + (dst.L-src.L)*ratio,
+		A: src.A + (dst.A-src.A)*ratio,
+		B: src.B + (dst.B-src.B)*ratio,
+	}
+	return models.NewFormatedColor(c.ToARGB())
 }
 
 func quote(s any) string {
