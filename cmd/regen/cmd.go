@@ -32,7 +32,7 @@ var Command = &cobra.Command{
 
 		cfg := material.GetConfig()
 
-		colorMap, wu, err := material.GenerateFromQuantized(
+		colorMap, err := material.GenerateFromQuantized(
 			state.Quantized,
 			cfg,
 		)
@@ -45,10 +45,7 @@ var Command = &cobra.Command{
 			return err
 		}
 
-		based, err := base16.Generate(colorMap, wu)
-		if err != nil {
-			return err
-		}
+		based := base16.Generate(colorMap, state.Quantized)
 
 		path := state.Path
 		mtype, err := mimetype.DetectFile(state.Path)

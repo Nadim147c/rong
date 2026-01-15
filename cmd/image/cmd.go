@@ -78,7 +78,7 @@ var Command = &cobra.Command{
 
 		cfg := material.GetConfig()
 
-		colorMap, wu, err := material.GenerateFromQuantized(quantized, cfg)
+		colorMap, err := material.GenerateFromQuantized(quantized, cfg)
 		if err != nil {
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
@@ -88,11 +88,7 @@ var Command = &cobra.Command{
 			return err
 		}
 
-		based, err := base16.Generate(colorMap, wu)
-		if err != nil {
-			return err
-		}
-
+		based := base16.Generate(colorMap, quantized)
 		output := models.NewOutput(imagePath, based, colorMap, customs)
 
 		if config.JSON.Value() {

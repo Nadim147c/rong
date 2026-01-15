@@ -54,7 +54,7 @@ var (
 
 	Base16Blend  = newRangeFloatOption("", "base16.blend", 0.50, 1, 0, "Blend ratio for Base16 color generation")
 	Base16Method = newEnumOption(
-		"", "base16.method", enums.Base16MethodStatic, "Base16 color generation method",
+		"", "base16.method", enums.Base16MethodDynamic, "Base16 color generation method",
 		enums.Base16MethodNames(), enums.ParseBase16Method,
 	)
 	Base16Black   = newColorOption("", "base16.colors.black", "#222222", "Base16 black source color")

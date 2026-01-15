@@ -4,19 +4,20 @@ import (
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/config/enums"
+	"github.com/Nadim147c/rong/v5/internal/material"
 )
 
 // Generate generates colors from material color name and quantized colors.
 func Generate(
 	material map[string]color.ARGB,
-	quantized []color.ARGB,
-) (Base16, error) {
+	quantized material.Quantized,
+) Base16 {
 	switch config.Base16Method.Value() {
 	case enums.Base16MethodStatic:
-		return GenerateStatic(material["primary"]), nil
+		return GenerateStatic(material["primary"], quantized.Wu)
 	case enums.Base16MethodDynamic:
 		fg, bg := material["on_background"], material["background"]
-		return GenerateDynamic(fg, bg, quantized), nil
+		return GenerateDynamic(fg, bg, quantized.Wu)
 	default:
 		panic("unreachable")
 	}
@@ -124,10 +125,6 @@ const (
 func setToneChroma(c color.Hct, tone float64, chroma float64) color.ARGB {
 	c.Tone = tone
 	c.Chroma = chroma
-	if c.IsBlue() {
-		c.Tone *= 0.8
-		c.Chroma *= 1.1
-	}
 	return c.ToARGB()
 }
 

@@ -80,7 +80,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		cfg := material.GetConfig()
 
-		colorMap, wu, err := material.GenerateFromQuantized(quantized, cfg)
+		colorMap, err := material.GenerateFromQuantized(quantized, cfg)
 		if err != nil {
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}
@@ -90,10 +90,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 			return err
 		}
 
-		based, err := base16.Generate(colorMap, wu)
-		if err != nil {
-			return err
-		}
+		based := base16.Generate(colorMap, quantized)
 
 		path, err := cache.GetPreview(videoPath, hash)
 		if err != nil {

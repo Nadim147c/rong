@@ -81,11 +81,7 @@ rong color green --dry-run --json | jq
 
 		// dynamic base16 generation is not possible with single source color
 		config.Base16Method.SetValue(enums.Base16MethodStatic)
-		based, err := base16.Generate(colorMap, nil)
-		if err != nil {
-			return err
-		}
-
+		based := base16.Generate(colorMap, material.Quantized{})
 		output := models.NewOutput("", based, colorMap, customs)
 
 		if config.JSON.Value() {

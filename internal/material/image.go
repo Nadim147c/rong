@@ -49,7 +49,7 @@ func GenerateFromImage(
 	ctx context.Context,
 	img image.Image,
 	cfg Config,
-) (Colors, []color.ARGB, error) {
+) (Colors, error) {
 	pixels := GetPixelsFromImage(img)
 	return GenerateFromPixels(ctx, pixels, cfg)
 }

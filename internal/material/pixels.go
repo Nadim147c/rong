@@ -28,7 +28,7 @@ func Quantize(ctx context.Context, pixels []color.ARGB) (Quantized, error) {
 		colors[i] = c.ToLab()
 	}
 
-	celebi, err := quantizer.QuantizeWsMeansContext(ctx, pixels, colors, 4)
+	celebi, err := quantizer.QuantizeWsMeansContext(ctx, pixels, colors, 10)
 	if err != nil {
 		return Quantized{}, err
 	}
@@ -47,10 +47,10 @@ func GenerateFromPixels(
 	ctx context.Context,
 	pixels []color.ARGB,
 	cfg Config,
-) (Colors, []color.ARGB, error) {
+) (Colors, error) {
 	q, err := Quantize(ctx, pixels)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	return GenerateFromQuantized(q, cfg)
@@ -60,13 +60,13 @@ func GenerateFromPixels(
 func GenerateFromQuantized(
 	quantized Quantized,
 	cfg Config,
-) (Colors, []color.ARGB, error) {
-	celebi, wu := quantized.Celebi, quantized.Wu
+) (Colors, error) {
+	celebi := quantized.Celebi
 
 	scored := score.Score(celebi, score.WithFilter())
 
 	if len(scored) == 0 {
-		return nil, wu, ErrNoColorFound
+		return nil, ErrNoColorFound
 	}
 
 	scheme := dynamic.NewDynamicScheme(
@@ -83,5 +83,5 @@ func GenerateFromQuantized(
 			colorMap[key] = value.GetArgb(scheme)
 		}
 	}
-	return colorMap, wu, nil
+	return colorMap, nil
 }

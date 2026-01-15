@@ -8,6 +8,7 @@ import (
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/material/v2/num"
+	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
 // GenerateDynamic generates base16 colors from selecting quantizes color. It
@@ -68,7 +69,7 @@ func hueSpread(colors []color.Hct) float64 {
 
 func ensureHueVariety(colors []color.Hct) []color.Hct {
 	if len(colors) == 0 {
-		return []color.Hct{defaultSrcColors.Red.ToHct()}
+		return []color.Hct{config.Base16Red.Value().ToHct()}
 	}
 
 	out := make([]color.Hct, len(colors))

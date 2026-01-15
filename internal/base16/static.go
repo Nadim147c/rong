@@ -1,61 +1,27 @@
 package base16
 
 import (
+	"cmp"
+	"math"
+	"slices"
+
 	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/material/v2/num"
 	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
-// SourceColors is all source colors for static generation and fallback for
-// dynamic generation.
-type SourceColors struct {
-	// Black is terminal color 0,8
-	Black color.ARGB
-	// Red is terminal color 1,9
-	Red color.ARGB
-	// Green is terminal color 2,A
-	Green color.ARGB
-	// Yellow is terminal color 3,B
-	Yellow color.ARGB
-	// Blue is terminal color 4,C
-	Blue color.ARGB
-	// Magenta is terminal color 5,D
-	Magenta color.ARGB
-	// Cyan is terminal color 6,E
-	Cyan color.ARGB
-	// White is terminal color 7,F
-	White color.ARGB
-}
-
-var defaultSrcColors = SourceColors{
-	Black:   0xFF000000, // #000000
-	Red:     0xFF800000, // #800000
-	Green:   0xFF008000, // #008000
-	Yellow:  0xFF808000, // #808000
-	Blue:    0xFF0044FF, // #0044FF
-	Magenta: 0xFF800080, // #800080
-	Cyan:    0xFF008080, // #008080
-	White:   0xFFC0C0C0, // #C0C0C0
-}
-
 // GenerateStatic generates base16 colors from pre-defined colors.
-func GenerateStatic(primary color.ARGB) Base16 {
-	primaryLab := primary.ToXYZ().ToOkLab()
-
+func GenerateStatic(primary color.ARGB, wu []color.ARGB) Base16 {
 	ratio := config.Base16Blend.Value()
 
-	black := blend(config.Base16Black.Default().ToOkLab(), primaryLab, ratio)
-	red := blend(config.Base16Red.Value().ToOkLab(), primaryLab, ratio)
-	green := blend(config.Base16Green.Value().ToOkLab(), primaryLab, ratio)
-	yellow := blend(config.Base16Yellow.Value().ToOkLab(), primaryLab, ratio)
-	blue := blend(config.Base16Blue.Value().ToOkLab(), primaryLab, ratio)
-	magenta := blend(config.Base16Magenta.Value().ToOkLab(), primaryLab, ratio)
-	cyan := blend(config.Base16Cyan.Value().ToOkLab(), primaryLab, ratio)
-	white := blend(config.Base16White.Value().ToOkLab(), primaryLab, ratio)
-
-	if num.DifferenceDegrees(blue.Hue, white.Hue) < 60 {
-		white.Hue = blue.Hue - 60
-	}
+	blend := makeBlendFunc(ratio, primary, wu)
+	black := blend(config.Base16Black.Value())
+	red := blend(config.Base16Red.Value())
+	green := blend(config.Base16Green.Value())
+	yellow := blend(config.Base16Yellow.Value())
+	blue := blend(config.Base16Blue.Value())
+	magenta := blend(config.Base16Magenta.Value())
+	cyan := blend(config.Base16Cyan.Value())
+	white := blend(config.Base16White.Value())
 
 	based := NewBase16()
 	based.SetWhite(white)
@@ -70,18 +36,48 @@ func GenerateStatic(primary color.ARGB) Base16 {
 	return based
 }
 
-func blend(src, dst color.OkLab, ratio float64) color.Hct {
+func makeBlendFunc(ratio float64, primary color.ARGB, wu []color.ARGB) func(color.ARGB) color.Hct {
 	if ratio <= 0 {
-		return src.ToXYZ().ToHct()
+		return func(c color.ARGB) color.Hct { return c.ToHct() }
 	}
 	if ratio >= 1 {
-		return dst.ToXYZ().ToHct()
+		return func(color.ARGB) color.Hct { return primary.ToHct() }
 	}
 
-	b := color.OkLab{
-		L: src.L + (dst.L-src.L)*ratio,
-		A: src.A + (dst.A-src.A)*ratio,
-		B: src.B + (dst.B-src.B)*ratio,
+	dst := primary.ToOkLab()
+	if len(wu) == 0 {
+		return func(c color.ARGB) color.Hct {
+			src := c.ToOkLab()
+			return blend(src, dst, ratio).ToXYZ().ToHct()
+		}
 	}
-	return b.ToXYZ().ToHct()
+
+	colors := make([]color.OkLab, 0, len(wu)+1)
+	colors = append(colors, primary.ToOkLab())
+	for c := range slices.Values(wu) {
+		colors = append(colors, c.ToOkLab())
+	}
+
+	return func(c color.ARGB) color.Hct {
+		src := c.ToOkLab()
+		lowest := slices.MinFunc(colors, func(a, b color.OkLab) int {
+			return cmp.Compare(okLabDistance(src, a), okLabDistance(src, b))
+		})
+		return blend(src, lowest, ratio).ToXYZ().ToHct()
+	}
+}
+
+func blend(a, b color.OkLab, ratio float64) color.OkLab {
+	return color.OkLab{
+		L: a.L + (b.L-a.L)*ratio,
+		A: a.A + (b.A-a.A)*ratio,
+		B: a.B + (b.B-a.B)*ratio,
+	}
+}
+
+func okLabDistance(a, b color.OkLab) float64 {
+	dL := a.L - b.L
+	dA := a.A - b.A
+	dB := a.B - b.B
+	return math.Sqrt(dL*dL + dA*dA + dB*dB)
 }
