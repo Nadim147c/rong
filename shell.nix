@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 pkgs.mkShell {
   name = "rong";
   # Get dependencies from the main package
-  inputsFrom = [ (pkgs.callPackage ./package.nix { }) ];
+  inputsFrom = [ (pkgs.callPackage ./nix/package.nix { }) ];
   # Additional tooling
   buildInputs = with pkgs; [
     go
@@ -10,7 +12,7 @@ pkgs.mkShell {
     golangci-lint
     gotestsum
 
-    (pkgs.callPackage ./go-enum.nix { })
+    (pkgs.callPackage ./nix/go-enum.nix { })
 
     just
     just-lsp
@@ -19,6 +21,6 @@ pkgs.mkShell {
     prettier
 
     nixfmt-tree
-    nixfmt-rfc-style
+    nixfmt
   ];
 }

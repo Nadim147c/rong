@@ -23,7 +23,7 @@
       });
 
       devShells = perSystem (pkgs: {
-        default = pkgs.callPackage ./nix/shell.nix { };
+        default = pkgs.callPackage ./shell.nix { };
       });
 
       homeModules.rong = import ./nix/home-module.nix self;
