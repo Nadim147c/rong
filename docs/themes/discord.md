@@ -23,7 +23,7 @@ client:
 - [Vesktop](https://github.com/Vencord/Vesktop)
 - [Equibop](https://github.com/Equicord/Equibop)
 
-You can use any client mod that support loading custom css.
+You can use any client mod that support loading custom CSS.
 
 ## Link
 

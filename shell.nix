@@ -22,5 +22,7 @@ pkgs.mkShell {
 
     nixfmt-tree
     nixfmt
+
+    harper
   ];
 }

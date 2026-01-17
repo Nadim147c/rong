@@ -31,12 +31,12 @@ Check out the [documentation](https://nadim147c.github.io/rong).
 
 ## Hacking
 
-Contributions are welcomed `(including typo fixes)`. Consider making a issue making
+Contributions are welcomed `(including typo fixes)`. Consider making an issue making
 big changes!
 
 ## License and Credit
 
-Rong is licensed under [GNU GPL-3.0](./LICENSE). This cli uses [material](https://github.com/Nadim147c/material)
+Rong is licensed under [GNU GPL-3.0](./LICENSE). This CLI uses [material](https://github.com/Nadim147c/material)
 for generating colors.
 
 ### Thanks to

@@ -1,12 +1,12 @@
 # Integration
 
 The most common use case for `rong` is generating colors from wallpaper. Here we will
-to go through creating a simple script. This script will randomly select a image, set
+to go through creating a simple script. This script will randomly select an image, set
 that image as wallpaper and generate colors using `rong`.
 
-## The script
+## The Script
 
-1.  Let's start with listing all image out `~/Pictures/Wallpapers/` unix `find`
+1.  Let's start with listing all image out `~/Pictures/Wallpapers/` UNIX `find`
     command:
 
     ```bash
@@ -128,9 +128,9 @@ that image as wallpaper and generate colors using `rong`.
 
 ## Post-Change Commands
 
-Some applications need to be reloaded **after** their [config](./configuration.md) files are updated.
-Instead of handling this in your shell script, you can now define commands that run
-automatically after a template is rendered and copied.
+Some applications need to be reloaded **after** their [config](./configuration.md)
+files are updated. Instead of handling this in your shell script, you can now define
+commands that run automatically after a template is rendered and copied.
 
 This is done via a `[post-cmds]` section in your configuration:
 

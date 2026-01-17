@@ -1,7 +1,7 @@
 # Spotify
 
 Spotify doesn't support theming by default. You need to modify the Spotify client to
-apply a material theme. This guide is for [spicetify](https://spicetify.app/) mod.
+apply a material theme. This guide is for [Spicetify](https://spicetify.app/) mod.
 
 ::: danger STOP
 Using a modified client violates Spotify’s
@@ -14,7 +14,7 @@ only for theming.
 ## Install
 
 Follow the installation
-[guide](https://spicetify.app/docs/getting-started#linux-and-macos) of spicetify and
+[guide](https://spicetify.app/docs/getting-started#linux-and-macos) of Spicetify and
 continue.
 
 ## Link
@@ -31,7 +31,7 @@ Add the following line to the [configuration](/configuration#linking-generated-f
 
 ## Apply
 
-Download `Sleek` theme from spicetify GitHub repository:
+Download `Sleek` theme from Spicetify GitHub repository:
 
 ```bash
 mkdir -p ~/.config/spicetify/Themes/Sleek/
@@ -55,10 +55,10 @@ Live theme reload is possible by starting spicetify in watch mode
 
 ::: info
 
-For flatpak version of spotify, `spicetify watch -s` **might** fail to (re)start
-spotify. In that case, you can do the following step.
+For flatpak version of Spotify, `spicetify watch -s` **might** fail to (re)start
+Spotify. In that case, you can do the following step.
 
-- Start spotify:
+- Start Spotify:
 
   ```bash
   flatpak run com.spotify.Client \

@@ -1,4 +1,4 @@
-# Eww (ElKawor Wecky Widget)
+# Eww (ElKawor Wacky Widget)
 
 Eww is a highly customizable widget system for Wayland/X11. It supports CSS or SCSS
 for theming. SCSS is recommended since it has more features and flexibility.

@@ -2,7 +2,7 @@
 title: QT Applications
 ---
 
-# QT Applications (with `qt6ct-kde`)
+# QT Applications (With `qt6ct-kde`)
 
 QT is one of the most popular toolkits for creating Unix GUI applications. We can use
 `qt6ct-kde` to theme KDE applications like Dolphin.
@@ -54,5 +54,5 @@ env = QT_QPA_PLATFORMTHEME,qt6ct
 
 ## Reload
 
-The qt6ct settings auto-reload on generation, but you need to restart applications for them
-to apply the new theme.
+The `qt6ct` settings auto-reload on generation, but you have to restart individual
+applications for them to apply the new theme.

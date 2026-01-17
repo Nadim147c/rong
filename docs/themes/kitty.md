@@ -14,7 +14,7 @@ Install kitty from your preferred package manager or from
 Add the following lines to the
 [configuration](/configuration#linking-generated-files):
 
-- With base16 terminal colors
+- With Base16 terminal colors
 
 ```toml
 [[themes]]
@@ -23,7 +23,7 @@ links = "~/.config/kitty/colors.conf"
 cmds = "pidof kitty | xargs kill -SIGUSR1"
 ```
 
-- Without base16 terminal colors
+- Without Base16 terminal colors
 
 ```toml{4-6}
 [links]

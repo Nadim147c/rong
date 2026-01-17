@@ -12,8 +12,8 @@ You`](https://m3.material.io/)). **_Why do we need Base16?_** The Material You c
 scheme has three main colors (`primary`, `secondary`, and `tertiary`) with different
 variants. These are enough for most UI designs but not for terminals. Terminals
 require 16 colors, which cannot be derived directly from the Material You scheme.
-Thus, rong uses [clever tricks](#methods) to generate six additional colors and uses
-Material You’s `on_background` and `background` as white and black to get eight
+Thus, Rong uses [clever tricks](#methods) to generate six additional colors and uses
+Material You's `on_background` and `background` as white and black to get eight
 unique colors. We then adjust their shades to produce the full set of 16 colors for
 the terminal.
 

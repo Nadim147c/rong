@@ -1,0 +1,16 @@
+Base16
+ColorValue
+Eww
+GTK
+Hyprland
+Matugen
+N/A
+Rong
+SCSS
+Spicetify
+Waybar
+WezTerm
+Wofi
+flatpak
+hardlink
+unix

@@ -10,11 +10,11 @@ The following data is passed to Go's template engine to render the themes files.
 
 ## Top-Level Fields
 
-| Field Path  | Type       | Example Template     | Output Example   |
-| ----------- | ---------- | -------------------- | ---------------- |
-| `.Image`    | `string`   | `{{ .Image }}`       | `"material.png"` |
-| `.Material` | `Material` | N/A (use sub-fields) |                  |
-| `.Colors`   | `[]Color`  | See looping section  |                  |
+| Field Path  | Type       | Example Template    | Output Example   |
+| ----------- | ---------- | ------------------- | ---------------- |
+| `.Image`    | `string`   | `{{ .Image }}`      | `"material.png"` |
+| `.Material` | `Material` | N/A (use subfields) |                  |
+| `.Colors`   | `[]Color`  | See looping section |                  |
 
 ## Material Color Fields
 
@@ -95,7 +95,7 @@ You can use these suffixes on any `ColorValue` field (Material fields or `.Color
 | `Blue`              | `{{ .Primary.Blue }}`              | `252`                       |
 | `Alpha`             | `{{ .Primary.Alpha }}`             | `255`                       |
 
-## Color Name Cases (for `.Colors` elements)
+## Color Name Cases (for `.Colors` Elements)
 
 | Case     | Example Template     | Output Example |
 | -------- | -------------------- | -------------- |

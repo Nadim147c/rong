@@ -12,7 +12,7 @@ compilation and watch mode.
 
 SCSS supports `@use` and variables, which are useful because—after compilation—the
 output CSS becomes a single, flat file with all variables resolved. While GTK itself
-supports CSS imports via `@import`, many applications (such as wofi) do not handle
+supports CSS imports via `@import`, many applications (such as Wofi) do not handle
 relative paths correctly.
 
 ## Install the SCSS Compiler

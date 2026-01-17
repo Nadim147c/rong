@@ -8,7 +8,7 @@ Rong uses Go’s [text/template](https://pkg.go.dev/text/template) to render the
 from Material colors. Go's templates provide simple yet powerful syntax to generate
 templates.
 
-## Built-in
+## Built-In
 
 Rong has big enough list of built-in templates for various. After
 [generating](./getting-started#Generate-Colors) colors, `rong` will execute these
@@ -31,7 +31,7 @@ Go’s `text/template` syntax. You can learn more about Go templates from the [o
 docs](https://pkg.go.dev/text/template) or [here](./templates/basic).
 
 Templates are rendered using a data structure called the execution context. You can
-learn about Rong’s execution context [here](./templates/context).
+learn about Roeg's execution context [here](./templates/context).
 
 Once you're familiar with the template syntax and execution context, follow these
 steps:

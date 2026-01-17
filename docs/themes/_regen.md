@@ -11,7 +11,7 @@ to be created.
   ```bash
   rong video -vv path/to/image/or/video
   ```
-- Else re-generate colors from current image:
+- Else regenerate colors from current image:
   ```bash
   rong regen -vv
   ```

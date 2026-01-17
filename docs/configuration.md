@@ -8,7 +8,7 @@ Configuration can be loaded from a variety of sources, including files ( `json`,
 `toml`, `yaml`, `yml`, `properties`, `props`, `prop`, `hcl`, `tfvars`, `dotenv`,
 `env`, `ini`), command-line flags, and environment variables (prefixed with
 `RONG_`). Rong will automatically merge values from all sources. For sake of
-simplicity, I'm only going to show `toml` configuration. Checkout the
+simplicity, I'm only going to show `toml` configuration. Check out the
 [examples](#examples) for different format.
 
 ## Locations
@@ -47,7 +47,7 @@ method = "dynamic"
 
 - `dark`: Generate dark color palette (`true`) or light palette (`false`).
 - `dry-run`: Generate colors without applying templates.
-- `json`: Print generated colors as JSON to stdout.
+- `json`: Print generated colors as JSON to standard output.
 - `log-file`: File path to save logs.
 - `quiet`: Suppress all log output.
 - `verbose`: Verbose logging level (0-3, where 3 is most verbose).
@@ -109,7 +109,7 @@ The `[base16]` section controls Base16 color generation:
 
 - `method`: Color generation method (`"static"` or `"dynamic"`).
 - `blend`: Blend ratio toward the primary color (0.0 to 1.0).
-- `colors`: Source colors for base16 color generation (all hex colors):
+- `colors`: Source colors for Base16 color generation (all hex colors):
   - `black`, `blue`, `cyan`, `green`, `magenta`, `red`, `white`, `yellow`.
 
 Here is an example:
