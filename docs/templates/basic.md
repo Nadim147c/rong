@@ -113,6 +113,14 @@ Examples:
 {{ printf "%s: %s" .Name .Value }}
 ```
 
+```go
+{{ if .Dark }}
+MyColor: {{ tone "#FF0000" 80 }}
+{{ else }}
+MyColor: {{ tone "#FF0000" 10 }}
+{{ end }}
+```
+
 ## Pipelining
 
 You can chain multiple functions using the pipe `|`.

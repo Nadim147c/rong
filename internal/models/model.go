@@ -8,6 +8,7 @@ import (
 
 	"github.com/Nadim147c/material/v2/color"
 	"github.com/Nadim147c/rong/v5/internal/base16"
+	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/material"
 )
 
@@ -15,6 +16,7 @@ import (
 type Output struct {
 	Material `json:"material"`
 	Base16   `json:"base16"`
+	Dark     bool         `json:"dark"`
 	Image    string       `json:"image"`
 	Colors   []NamedColor `json:"colors"`
 }
@@ -50,10 +52,12 @@ func NewOutput(
 	})
 
 	m := NewMaterial(materialColors, customColors)
+	dark := config.Dark.Value()
 
 	return Output{
 		Material: m,
 		Base16:   b,
+		Dark:     dark,
 		Image:    source,
 		Colors:   colors,
 	}
