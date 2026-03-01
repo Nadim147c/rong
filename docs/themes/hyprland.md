@@ -21,7 +21,7 @@ cmds = "hyprctl reload"
 In your main config file (`~/.config/hypr/hyprland.conf`), source the theme file and
 define your layout:
 
-```txty1,5,6y
+```txt{1,5,6}
 source = colors.conf
 
 general {
