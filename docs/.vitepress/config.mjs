@@ -1,16 +1,19 @@
 import { defineConfig } from "vitepress";
 import { pagefindPlugin } from "vitepress-plugin-pagefind";
 
+const isGitHub = process.env.GITHUB === "true";
+const base = isGitHub ? "/rong" : "";
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   vite: {
     plugins: [pagefindPlugin()],
   },
   title: "Rong",
-  base: "/rong/",
+  base: `${base}/`,
   description: "A Material You color generator from image or video",
   lang: "en-US",
-  head: [["link", { rel: "icon", href: "/rong/logo.svg" }]],
+  head: [["link", { rel: "icon", href: `${base}/logo.svg` }]],
 
   themeConfig: {
     logo: "/logo.svg",
