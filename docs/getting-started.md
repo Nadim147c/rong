@@ -9,11 +9,40 @@ colors.
 
 ## Installation
 
-You need `go` to install `rong`. Run:
+#### Arch Linux (AUR)
+
+```bash
+yay -S rong
+```
+
+#### Nix (flake)
+
+```bash
+nix run github:Nadim147c/rong -- --help
+```
+
+For better nix integration check [nix page](./nix).
+
+#### Go Install
+
+> Needs: `go`.
 
 ```bash
 go install github.com/Nadim147c/rong/v5@latest
 ```
+
+#### Manual from source
+
+> Needs: `go`, `coreutils` and `just`.
+
+```bash
+# cd my-build-dir
+git clone https://github.com/Nadim147c/rong.git
+cd rong
+just build-install
+```
+
+---
 
 To ensure you've properly installed `rong`, run:
 
@@ -35,30 +64,31 @@ Available Commands:
 
 ## Generate Colors
 
-To extract Material You-compatible colors from an image:
+- To extract Material You compatible colors from an image:
+
+  ```bash
+  rong image /path/to/image
+  ```
+
+- To extract colors from a video:
+  ```bash
+  rong video /path/to/video
+  ```
+
+::: tip
+
+If you want to use both video and image, you can use the `video` command.
 
 ```bash
-rong image /path/to/image
+rong video /path/to/image/or/video
 ```
-
-To extract colors from a video:
-
-```bash
-rong video /path/to/video
-```
-
-::: info
-
-This command internally uses `ffmpeg` to extract frames. Only **5 frames** are
-sampled by default to ensure a balance between performance and accuracy. These frames
-are **evenly distributed** across the video duration—not just the first 5.
 
 :::
 
-The generated colors will be used to create theme files using built-in templates (or
-user-defined templates). These files will be stored in
-[`$XDG_STATE_DIR/rong/`](https://specifications.freedesktop.org/basedir-spec/latest/#variables)
-(usually `~/.local/state/rong/`):
+Generated colors will be used to generate theme files using templates. These
+generated files will be stored in
+[`<user-state-dir>/rong`](https://specifications.freedesktop.org/basedir-spec/latest/#variables)
+(usually `~/.local/state/rong`):
 
 ```bash
 $ ls ~/.local/state/rong/
@@ -68,16 +98,5 @@ colors.lua   ghostty      image.txt             qtct.conf
 colors.nu    gtk.css      kitty.conf            rofi.rasi
 ```
 
-See the [templates page](./templates.md).
-
-::: tip
-
-If you're not sure whether the file is an image or video—or if you want to use
-both—you can use the `video` command, as `ffmpeg` supports both image and video
-inputs:
-
-```bash
-rong video /path/to/image/or/video
-```
-
-:::
+**Rong** has a list of built-in templates for commonly used formats. You can also
+create your own theme templates. See the [templates page](./templates.md).
