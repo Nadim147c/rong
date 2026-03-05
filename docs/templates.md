@@ -10,50 +10,69 @@ templates.
 
 ## Built-In
 
-Rong has big enough list of built-in templates for various. After
-[generating](./getting-started#Generate-Colors) colors, `rong` will execute these
-templates and put them in
-[`$XDG_STATE_DIR/rong/`](https://specifications.freedesktop.org/basedir-spec/latest/#variables)
-(usually `~/.local/state/rong/`). Run:
+Rong has a list of built-in templates for common formats. Checks output of built-in
+templates:
 
 ```bash
+rong color teal
 ls ~/.local/state/rong/
 ```
 
-This command will show list of generate theme file ready to be used in your desired
-applications. To automatically copy/link these theme files to any desired location,
-check out [links](./configuration#linking-generated-files) in configuration files
+For example, there is a built-in template for **bash**. You can use that in your
+shell script:
+
+```bash
+source ~/.local/state/rong/colors.bash
+echo "$PRIMARY"
+```
 
 ## Custom Templates
 
-Built-in templates might not cover all use cases, so you can define your own using
-Go’s `text/template` syntax. You can learn more about Go templates from the [official
-docs](https://pkg.go.dev/text/template) or [here](./templates/basic).
+You can create your own templates use [Golang's templates syntax](./templates/basic).
+Templates are rendered using structured color data; you can find the available
+variables in the [template context](./templates/context).
 
-Templates are rendered using a data structure called the execution context. You can
-learn about Roeg's execution context [here](./templates/context).
+---
 
-Once you're familiar with the template syntax and execution context, follow these
+Once you're familiar with the template syntax and execution data, follow these
 steps:
 
-1. **Create a file**
+1. **Write the template**
 
-   Save it in the `rong` templates directory:
-   `$XDG_CONFIG_HOME/rong/templates/` (usually `~/.config/rong/templates/`)
-   File extension must be `.tmpl`
-   Example: `~/.config/rong/templates/mytemplate.tmpl`
+   Create your file in `~/.config/rong/templates/` using the `.tmpl` extension.
 
-2. **Write the template**
+   Example:
 
-   Use Go template syntax. Save the file.
+   ```bash
+   mkdir -p ~/.config/rong/templates
+   echo '
+   0: {{ .Primary }}
+   1: {{ .Secondary }}
+   2: {{ .Tertiary }}
+   ' > ~/.config/rong/templates/my_theme.ext.tmpl
+   ```
 
-3. **Generate the theme**
+2. **Generate the theme**
 
-   Run `rong <image|video>`
-   Output will be in `$XDG_STATE_HOME/rong/` (usually `~/.local/state/rong/`)
-   The output file will match your template filename, e.g., `mytemplate`
+   Generate themes from a color, image or video:
 
-4. **Link it**
+   ```bash
+   rong color cyan
+   ```
 
-   Add an entry in `config.toml` to link the theme to your desired location. More
-   info: [Configuration](./configuration#Links).
+   Inspect the output:
+
+   ```bash
+   cat ~/.local/state/rong/my_theme.ext
+   ```
+
+   ```text
+   0: #D19488
+   1: #E7BDB5
+   2: #FFF8F3
+   ```
+
+3. **Link it**
+
+   Add an entry in `config` to copy/link/install the theme to your desired location.
+   See [configuration](./configuration#Links).
