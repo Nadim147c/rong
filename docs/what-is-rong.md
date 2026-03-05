@@ -9,8 +9,8 @@ palettes** from images and videos. It processes visual input and extracts color
 values following the [Material Design 3 (Material You)](https://m3.material.io/)
 specification.
 
-This is useful for dynamically theming desktop environments, applications, or any
-system that supports Material You or customizable color schemes.
+This is made for dynamically theming unix desktop environments, applications, or any
+system that supports customizable color schemes.
 
 ### Preview
 
