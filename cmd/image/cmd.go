@@ -105,6 +105,13 @@ var Command = &cobra.Command{
 			}
 		}
 
+		if tmpl := config.Template.Value(); tmpl != "" {
+			err := templates.ExecuteInline(tmpl, output, cmd.OutOrStdout())
+			if err != nil {
+				slog.Error("Failed to execute inline template", "error", err)
+			}
+		}
+
 		if config.DryRun.Value() {
 			return nil
 		}

@@ -27,6 +27,7 @@ var (
 
 	Config        = newStringOption("c", "config", "", "Path to a configuration file")
 	LogFile       = newStringOption("l", "log-file", "", "Write logs to the specified file")
+	Template      = newStringOption("t", "template", "", "Execute inline template")
 	PreviewFormat = newEnumOption(
 		"p", "preview-format", enums.PreviewFormatJpg, "Output format for preview image",
 		enums.PreviewFormatNames(), enums.ParsePreviewFormat,

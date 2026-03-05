@@ -41,6 +41,7 @@ func init() {
 	config.JSON.RegisterFlag(commonFlags)
 	config.SimpleJSON.RegisterFlag(commonFlags)
 	config.DryRun.RegisterFlag(commonFlags)
+	config.Template.RegisterFlag(commonFlags)
 
 	config.MaterialContrast.RegisterFlag(commonFlags)
 	config.MaterialCustomBlend.RegisterFlag(commonFlags)

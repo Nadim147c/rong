@@ -6,6 +6,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"maps"
 	"os"
@@ -37,6 +38,15 @@ func (s successCounter) has(n string) bool {
 
 //go:embed built-in/*.tmpl
 var templates embed.FS
+
+// ExecuteInline runs the given template without executing post hooks
+func ExecuteInline(tmpl string, colors models.Output, w io.Writer) error {
+	inlineTemplate, err := template.New("").Funcs(funcs).Parse(tmpl)
+	if err != nil {
+		return err
+	}
+	return inlineTemplate.Execute(w, colors)
+}
 
 // Execute runs built-in and user-defined templates and links user defined
 // files.
