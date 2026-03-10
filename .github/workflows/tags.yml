@@ -1,0 +1,48 @@
+name: Sync tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update VERSION file
+        run: |
+          VERSION_TAG=${GITHUB_REF#refs/tags/}
+          echo "Updating VERSION file to $VERSION_TAG"
+          echo "$VERSION_TAG" > VERSION
+
+      - name: Commit and Push VERSION update
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: update VERSION to ${GITHUB_REF#refs/tags/}"
+
+          # Push back to the branch that the tag was created from
+          git push origin HEAD:${{ github.event.base_ref || 'main' }}
+
+      - name: Update Stable Branch
+        # Regex checks for absence of rc, dev, alpha, beta
+        if: |
+          !contains(github.ref, 'rc') &&
+          !contains(github.ref, 'dev') &&
+          !contains(github.ref, 'alpha') &&
+          !contains(github.ref, 'beta')
+        run: |
+          echo "Stable version detected. Updating 'stable' branch..."
+          git fetch origin stable:stable || git branch stable
+          git checkout stable
+          git reset --hard ${GITHUB_REF}
+          git push origin stable --force
