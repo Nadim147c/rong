@@ -1,12 +1,18 @@
-name: Sync tag
+name: Release Sync
 
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: "Manual version (e.g. v1.2.3). If empty, uses current tag."
+        required: false
+        default: ""
 
 jobs:
-  update-version:
+  update-and-sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,32 +23,61 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update VERSION file
+      - name: Determine Version
+        id: get_version
         run: |
-          VERSION_TAG=${GITHUB_REF#refs/tags/}
-          echo "Updating VERSION file to $VERSION_TAG"
-          echo "$VERSION_TAG" > VERSION
+          if [ -n "${{ github.event.inputs.version_override }}" ]; then
+            VERSION="${{ github.event.inputs.version_override }}"
+          elif [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0-manual")
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Commit and Push VERSION update
+      - name: Install Nix
+        uses: cachix/install-nix-action@v25
+
+      - name: Update Version and Flake
         run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          echo "$VERSION" > VERSION
+          # Update flake to point to this new version
+          nix run nixpkgs#nix-update -- --flake default --version "$VERSION"
+
+      - name: Commit and Push Updates
+        id: commit_step
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add VERSION
-          git commit -m "chore: update VERSION to ${GITHUB_REF#refs/tags/}"
 
-          # Push back to the branch that the tag was created from
-          git push origin HEAD:${{ github.event.base_ref || 'main' }}
+          git add VERSION nix/*
+
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "chore: bump version to $VERSION"
+            # Push to the branch that triggered the action (main/master/etc)
+            TARGET_BRANCH=${{ github.event.base_ref || github.ref_name }}
+            TARGET_BRANCH=${TARGET_BRANCH#refs/heads/}
+            git push origin HEAD:$TARGET_BRANCH
+
+            echo "bump_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "No changes to commit."
+            echo "bump_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          fi
 
       - name: Update Stable Branch
-        # Regex checks for absence of rc, dev, alpha, beta
+        # Matches if version DOES NOT contain rc, dev, alpha, or beta
         if: |
-          !contains(github.ref, 'rc') &&
-          !contains(github.ref, 'dev') &&
-          !contains(github.ref, 'alpha') &&
-          !contains(github.ref, 'beta')
+          !contains(steps.get_version.outputs.version, 'rc') &&
+          !contains(steps.get_version.outputs.version, 'dev') &&
+          !contains(steps.get_version.outputs.version, 'alpha') &&
+          !contains(steps.get_version.outputs.version, 'beta')
         run: |
-          echo "Stable version detected. Updating 'stable' branch..."
+          BUMP_SHA="${{ steps.commit_step.outputs.bump_sha }}"
+          echo "Stable version detected. Pointing 'stable' branch to $BUMP_SHA"
+
+          # Force the stable branch to the commit we just made
           git fetch origin stable:stable || git branch stable
-          git checkout stable
-          git reset --hard ${GITHUB_REF}
-          git push origin stable --force
+          git push origin $BUMP_SHA:refs/heads/stable --force
