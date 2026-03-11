@@ -15,7 +15,7 @@ Add Rong flake to your flake input.
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rong = {
-      url = "github:Nadim147c/rong";
+      url = "github:Nadim147c/rong?ref=stable";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
