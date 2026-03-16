@@ -40,6 +40,11 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
+      - name: Run Gofumpt
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          gofumpt -d -e .
+
       - name: Golangci Lint
         uses: golangci/golangci-lint-action@v9
         with:
