@@ -39,7 +39,7 @@ func (s successCounter) has(n string) bool {
 //go:embed built-in/*.tmpl
 var templates embed.FS
 
-// ExecuteInline runs the given template without executing post hooks
+// ExecuteInline runs the given template without executing post hooks.
 func ExecuteInline(tmpl string, colors models.Output, w io.Writer) error {
 	inlineTemplate, err := template.New("").Funcs(funcs).Parse(tmpl)
 	if err != nil {

@@ -7,7 +7,7 @@ on:
       - "cmd/**"
       - "internal/**"
       - "templates/**"
-      - "main.go"
+      - "*.go"
       - "go.*"
   pull_request:
     branches: [main]
@@ -15,7 +15,7 @@ on:
       - "cmd/**"
       - "internal/**"
       - "templates/**"
-      - "main.go"
+      - "*.go"
       - "go.*"
 
 permissions:
@@ -40,10 +40,18 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
+      - name: Run Gofumpt
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          gofumpt -d -e .
+
       - name: Golangci Lint
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.6
 
-      - name: Go tests
-        run: go test -v ./...
+      - name: Go Test
+        run: |
+          go vet ./...
+          go build ./...
+          go test ./...
