@@ -257,6 +257,11 @@ func newRangeFloatOption(short, key string, defval float64, up, low float64, des
 	})
 }
 
+// newFloatOption creates a float option with range validation.
+func newFloatOption(short, key string, defval float64, desc string) *option[float64] {
+	return newOption(short, key, defval, desc, "float", cast.ToFloat64E)
+}
+
 // colorOption represents a color configuration option.
 type colorOption struct{ *option[color.ARGB] }
 
@@ -275,7 +280,7 @@ func (c colorOption) String() string {
 }
 
 // newColorOption creates a new color configuration option.
-func newColorOption(short, key, defval, desc string) *colorOption { //nolint
+func newColorOption(short, key, defval, desc string) *colorOption {
 	return &colorOption{
 		option: newOption(short, key, color.ARGBFromHexMust(defval), desc, "color", func(a any) (color.ARGB, error) {
 			s, err := cast.ToStringE(a)

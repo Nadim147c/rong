@@ -1,25 +1,25 @@
-package video
+package score
 
 import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"os"
 
-	"github.com/Nadim147c/rong/v5/internal/base16"
+	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v2/score"
 	"github.com/Nadim147c/rong/v5/internal/cache"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/ffmpeg"
 	"github.com/Nadim147c/rong/v5/internal/material"
-	"github.com/Nadim147c/rong/v5/internal/models"
 	"github.com/Nadim147c/rong/v5/internal/pathutil"
-	"github.com/Nadim147c/rong/v5/internal/templates"
 	"github.com/spf13/cobra"
 )
 
 // Command is the video command.
 var Command = &cobra.Command{
-	Use:   "video <video>",
+	Use:   "score <media>",
 	Short: "Generate colors from a video",
 	Example: `
 # Generate from a video
@@ -78,59 +78,45 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		slog.Info("Generating colors from source")
 
-		cfg := material.GetConfig()
+		colors := score.Score(quantized.Celebi, score.WithFilter(), score.WithLimit(5))
 
-		colorMap, err := material.GenerateFromQuantized(quantized, cfg, config.SourceColor.Value())
-		if err != nil {
-			return fmt.Errorf("failed to generate colors: %w", err)
+		for i, color := range colors {
+			lab := color.ToOkLab()
+			lab.L = 50
+			colors[i] = lab.ToARGB()
 		}
 
-		customs, err := material.GenerateCustomColors(colorMap["primary"])
-		if err != nil {
-			return err
+		if config.MergeThreshold.Value() != 0 {
+			colors = mergeCloseColors(colors, config.MergeThreshold.Value())
 		}
 
-		based := base16.Generate(colorMap, quantized)
-
-		path, err := cache.GetPreview(videoPath, hash)
-		if err != nil {
-			slog.Warn("Failed to generate preview image", "error", err)
-			path = videoPath
-		} else {
-			slog.Info("Using generated preview", "path", path)
-		}
-
-		output := models.NewOutput(path, based, colorMap, customs)
-
-		if config.JSON.Value() {
-			err := json.NewEncoder(cmd.OutOrStdout()).Encode(output)
-			if err != nil {
-				slog.Error("Failed to encode output", "error", err)
-			}
-		}
-
-		if config.SimpleJSON.Value() {
-			err := models.WriteSimpleJSON(cmd.OutOrStdout(), output)
-			if err != nil {
-				slog.Error("Failed to encode output", "error", err)
-			}
-		}
-
-		if tmpl := config.Template.Value(); tmpl != "" {
-			err := templates.ExecuteInline(tmpl, output, cmd.OutOrStdout())
-			if err != nil {
-				slog.Error("Failed to execute inline template", "error", err)
-			}
-		}
-
-		if config.DryRun.Value() {
-			return nil
-		}
-
-		if err := cache.SaveState(videoPath, hash, quantized); err != nil {
-			slog.Warn("Failed to save colors to cache", "error", err)
-		}
-
-		return templates.Execute(ctx, output)
+		return json.NewEncoder(cmd.OutOrStdout()).Encode(colors)
 	},
+}
+
+func distance(a, b color.OkLab) float64 {
+	dL, dA, dB := a.L-b.L, a.A-b.A, a.B-b.B
+	return math.Cbrt(dL*dL + dA*dA + dB*dB)
+}
+
+func mergeCloseColors(colors []color.ARGB, threshold float64) []color.ARGB {
+	var merged []color.ARGB
+	for _, c := range colors {
+		cLab := c.ToOkLab()
+		isUnique := true
+
+		for _, m := range merged {
+			mLab := m.ToOkLab()
+			dist := distance(cLab, mLab)
+			if dist < threshold {
+				isUnique = false
+				break
+			}
+		}
+
+		if isUnique {
+			merged = append(merged, c)
+		}
+	}
+	return merged
 }
