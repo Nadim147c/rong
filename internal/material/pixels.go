@@ -47,30 +47,33 @@ func GenerateFromPixels(
 	ctx context.Context,
 	pixels []color.ARGB,
 	cfg Config,
+	sourceColor color.ARGB,
 ) (Colors, error) {
 	q, err := Quantize(ctx, pixels)
 	if err != nil {
 		return nil, err
 	}
 
-	return GenerateFromQuantized(q, cfg)
+	return GenerateFromQuantized(q, cfg, sourceColor)
 }
 
 // GenerateFromQuantized generates color from a cached quantized.
-func GenerateFromQuantized(
-	quantized Quantized,
-	cfg Config,
-) (Colors, error) {
+func GenerateFromQuantized(quantized Quantized, cfg Config, sourceColor color.ARGB) (Colors, error) {
 	celebi := quantized.Celebi
 
-	scored := score.Score(celebi, score.WithFilter())
-
-	if len(scored) == 0 {
-		return nil, ErrNoColorFound
+	var sourceHct color.Hct
+	if sourceColor.Alpha() != 0 {
+		sourceHct = sourceColor.ToHct()
+	} else {
+		scored := score.Score(celebi, score.WithFilter())
+		if len(scored) == 0 {
+			return nil, ErrNoColorFound
+		}
+		sourceHct = scored[0].ToHct()
 	}
 
 	scheme := dynamic.NewDynamicScheme(
-		scored[0].ToHct(),
+		sourceHct,
 		cfg.Variant, cfg.Constrast, cfg.Dark,
 		cfg.Platform, cfg.Version,
 	)

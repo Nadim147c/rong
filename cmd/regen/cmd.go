@@ -32,10 +32,7 @@ var Command = &cobra.Command{
 
 		cfg := material.GetConfig()
 
-		colorMap, err := material.GenerateFromQuantized(
-			state.Quantized,
-			cfg,
-		)
+		colorMap, err := material.GenerateFromQuantized(state.Quantized, cfg, config.SourceColor.Value())
 		if err != nil {
 			return fmt.Errorf("failed to generate colors: %w", err)
 		}

@@ -280,7 +280,7 @@ func (c colorOption) String() string {
 }
 
 // newColorOption creates a new color configuration option.
-func newColorOption(short, key, defval, desc string) *colorOption { //nolint
+func newColorOption(short, key, defval, desc string) *colorOption {
 	return &colorOption{
 		option: newOption(short, key, color.ARGBFromHexMust(defval), desc, "color", func(a any) (color.ARGB, error) {
 			s, err := cast.ToStringE(a)

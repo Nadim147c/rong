@@ -75,7 +75,11 @@ func init() {
 		carapace.Gen(cmd).FlagCompletion(config.CarapaceAction)
 	}
 
-	videoFlagSet := pflag.NewFlagSet("preview", pflag.ContinueOnError)
+	config.SourceColor.RegisterFlag(image.Command.Flags())
+	config.SourceColor.RegisterFlag(video.Command.Flags())
+	config.SourceColor.RegisterFlag(regen.Command.Flags())
+
+	videoFlagSet := pflag.NewFlagSet("video", pflag.ContinueOnError)
 	config.PreviewFormat.RegisterFlag(videoFlagSet)
 	config.FFmpegDuration.RegisterFlag(videoFlagSet)
 	config.FFmpegFrames.RegisterFlag(videoFlagSet)
