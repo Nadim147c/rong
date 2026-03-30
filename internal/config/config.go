@@ -23,6 +23,8 @@ var (
 	SimpleJSON = newBoolOption("s", "simple-json", false, "Output colors as simple key-value JSON")
 	Quiet      = newBoolOption("q", "quiet", false, "Disable all logs")
 
+	MergeThreshold = newFloatOption("m", "merge-threshold", 2, "Minimun distance to merge similar colors")
+
 	Verbose = newCountOption("v", "verbose", "Increase log verbosity level")
 
 	Config        = newStringOption("c", "config", "", "Path to a configuration file")

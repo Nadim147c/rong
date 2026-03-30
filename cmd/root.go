@@ -16,6 +16,7 @@ import (
 	"github.com/Nadim147c/rong/v5/cmd/color"
 	"github.com/Nadim147c/rong/v5/cmd/image"
 	"github.com/Nadim147c/rong/v5/cmd/regen"
+	"github.com/Nadim147c/rong/v5/cmd/score"
 	"github.com/Nadim147c/rong/v5/cmd/video"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	ilog "github.com/Nadim147c/rong/v5/internal/log"
@@ -35,6 +36,7 @@ func init() {
 	Command.AddCommand(video.Command)
 	Command.AddCommand(cache.Command)
 	Command.AddCommand(regen.Command)
+	Command.AddCommand(score.Command)
 
 	commonFlags := pflag.NewFlagSet("generate", pflag.ContinueOnError)
 	config.Dark.RegisterFlag(commonFlags)
@@ -78,6 +80,11 @@ func init() {
 	config.FFmpegDuration.RegisterFlag(videoFlagSet)
 	config.FFmpegFrames.RegisterFlag(videoFlagSet)
 
+	scoreFlagSet := pflag.NewFlagSet("score", pflag.ContinueOnError)
+	config.FFmpegDuration.RegisterFlag(scoreFlagSet)
+	config.FFmpegFrames.RegisterFlag(scoreFlagSet)
+	config.MergeThreshold.RegisterFlag(scoreFlagSet)
+
 	carapace.Gen(image.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	video.Command.Flags().AddFlagSet(videoFlagSet)
@@ -85,6 +92,9 @@ func init() {
 
 	cache.Command.Flags().AddFlagSet(videoFlagSet)
 	carapace.Gen(cache.Command).PositionalAnyCompletion(carapace.ActionFiles())
+
+	score.Command.Flags().AddFlagSet(scoreFlagSet)
+	carapace.Gen(score.Command).PositionalAnyCompletion(carapace.ActionFiles())
 
 	colorComp := carapace.Gen(color.Command)
 	colorComp.FlagCompletion(config.CarapaceAction)
