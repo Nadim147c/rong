@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"regexp"
 
-	blendPkg "github.com/Nadim147c/material/v2/blend"
-	"github.com/Nadim147c/material/v2/color"
+	blendPkg "github.com/Nadim147c/material/v3/blend"
+	"github.com/Nadim147c/material/v3/color"
 	"github.com/Nadim147c/rong/v5/internal/config"
 )
 

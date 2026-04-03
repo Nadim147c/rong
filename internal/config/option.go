@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v3/color"
 	"github.com/carapace-sh/carapace"
 	"github.com/spf13/cast"
 	"github.com/spf13/pflag"

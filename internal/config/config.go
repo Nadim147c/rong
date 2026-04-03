@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/material/v2/dynamic"
+	"github.com/Nadim147c/material/v3/color"
+	"github.com/Nadim147c/material/v3/dynamic"
 	"github.com/Nadim147c/rong/v5/internal/config/enums"
 	"github.com/carapace-sh/carapace"
 )

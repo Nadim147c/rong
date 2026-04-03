@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/material/v2/dynamic"
-	"github.com/Nadim147c/material/v2/palettes"
+	"github.com/Nadim147c/material/v3/color"
+	"github.com/Nadim147c/material/v3/dynamic"
+	"github.com/Nadim147c/material/v3/palettes"
 	"github.com/Nadim147c/rong/v5/internal/base16"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/config/enums"
