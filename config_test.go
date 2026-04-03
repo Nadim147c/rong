@@ -8,7 +8,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Nadim147c/material/v2/color"
+	"github.com/Nadim147c/material/v3/color"
 	icmd "github.com/Nadim147c/rong/v5/cmd"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/config/enums"

@@ -7,8 +7,8 @@ import (
 	"math"
 	"os"
 
-	"github.com/Nadim147c/material/v2/color"
-	"github.com/Nadim147c/material/v2/score"
+	"github.com/Nadim147c/material/v3/color"
+	"github.com/Nadim147c/material/v3/score"
 	"github.com/Nadim147c/rong/v5/internal/cache"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/ffmpeg"
