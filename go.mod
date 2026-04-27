@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/MatusOllah/stripansi v1.1.0
 	github.com/Nadim147c/fang v0.5.1-0.20260101141117-90f3f8f4a14d
-	github.com/Nadim147c/material/v3 v3.0.0
+	github.com/Nadim147c/material/v3 v3.1.0
 	github.com/adrg/xdg v0.5.3
 	github.com/carapace-sh/carapace v1.10.1
 	github.com/carapace-sh/carapace-shlex v1.1.1
