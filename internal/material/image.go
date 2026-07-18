@@ -22,7 +22,7 @@ func GetConfig() Config {
 	return Config{
 		Variant:   config.MaterialVariant.Value(),
 		Version:   config.MaterialVersion.Value(),
-		Platform:  config.MaterialPlatformt.Value(),
+		Platform:  config.MaterialPlatform.Value(),
 		Constrast: config.MaterialContrast.Value(),
 		Dark:      config.Dark.Value(),
 	}

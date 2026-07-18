@@ -48,7 +48,7 @@ var (
 		"", "material.variant", dynamic.VariantTonalSpot, "Material color generation variant",
 		dynamic.VariantNames(), dynamic.ParseVariant,
 	)
-	MaterialPlatformt = newEnumOption(
+	MaterialPlatform = newEnumOption(
 		"", "material.platform", dynamic.PlatformPhone, "Target Material platform",
 		dynamic.PlatformNames(), dynamic.ParsePlatform,
 	)
