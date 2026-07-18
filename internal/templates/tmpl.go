@@ -285,7 +285,7 @@ func runHooks(
 		cmdCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
 
-		cmd := exec.CommandContext(cmdCtx, "sh", "-c", hook)
+		cmd := exec.CommandContext(cmdCtx, "bash", "-c", hook)
 		cmd.Env = env
 
 		hook = strings.TrimRightFunc(hook, unicode.IsSpace)
