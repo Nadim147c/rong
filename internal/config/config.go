@@ -55,6 +55,7 @@ var (
 	MaterialContrast     = newRangeFloatOption("", "material.contrast", 0.0, 1, -1, "Adjust contrast of Material colors")
 	MaterialCustomBlend  = newRangeFloatOption("", "material.custom.blend", 0.50, 1, 0, "Blend ratio for custom Material colors")
 	MaterialCustomColors = newKvOption("", "material.custom.colors", nil, "Add custom Material colors", "color", color.ARGBFromHex)
+	MaterialAutoVariant  = newBoolOption("", "material.auto-variant", false, "Automatically set the best variant based on source color")
 
 	Base16Blend  = newRangeFloatOption("", "base16.blend", 0.50, 1, 0, "Blend ratio for Base16 color generation")
 	Base16Method = newEnumOption(

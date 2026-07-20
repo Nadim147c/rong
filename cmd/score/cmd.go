@@ -78,7 +78,7 @@ rong video path/to/image.mp4 --dry-run --json | jq
 
 		slog.Info("Generating colors from source")
 
-		colors := score.Score(quantized.Celebi, score.WithFilter(), score.WithLimit(5))
+		colors := score.Score(quantized.Celebi, score.WithLimit(10))
 
 		for i, color := range colors {
 			lab := color.ToOkLab()
