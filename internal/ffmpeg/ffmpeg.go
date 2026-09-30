@@ -104,8 +104,8 @@ func GetPixels(
 // returns its duration.
 func GetDuration(src string) (float64, error) {
 	//nolint // its too fast
-	out, err := exec.Command("ffprobe",
-		"-v", "error",
+	out, err := exec.Command(
+		"ffprobe", "-v", "error",
 		"-show_entries", "format=duration",
 		"-of", "default=noprint_wrappers=1:nokey=1",
 		src,
@@ -130,6 +130,7 @@ func GeneratePreview(ctx context.Context, src, dst string) error {
 		"-ss", seek,
 		"-i", src,
 		"-vframes", "1",
+		"-vf", "scale=iw*sar:ih",
 		"-y",
 		dst,
 	)

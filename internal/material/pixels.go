@@ -8,6 +8,7 @@ import (
 	"github.com/Nadim147c/material/v3/dynamic"
 	"github.com/Nadim147c/material/v3/quantizer"
 	"github.com/Nadim147c/material/v3/score"
+	"github.com/Nadim147c/rong/v5/internal/config"
 )
 
 // Quantized is quantized colors.
@@ -65,17 +66,27 @@ func GenerateFromQuantized(quantized Quantized, cfg Config, sourceColor color.AR
 	if sourceColor.Alpha() != 0 {
 		sourceHct = sourceColor.ToHct()
 	} else {
-		scored := score.Score(celebi, score.WithFilter())
+		scored := score.Score(celebi)
 		if len(scored) == 0 {
 			return nil, ErrNoColorFound
 		}
 		sourceHct = scored[0].ToHct()
 	}
 
+	variant := cfg.Variant
+	if config.MaterialAutoVariant.Value() {
+		if sourceHct.Chroma < 10 {
+			variant = dynamic.VariantNeutral
+		} else if sourceHct.Chroma < 20 {
+			variant = dynamic.VariantContent
+		} else {
+			variant = dynamic.VariantTonalSpot
+		}
+	}
+
 	scheme := dynamic.NewDynamicScheme(
-		sourceHct,
-		cfg.Variant, cfg.Constrast, cfg.Dark,
-		cfg.Platform, cfg.Version,
+		sourceHct, variant, cfg.Constrast,
+		cfg.Dark, cfg.Platform, cfg.Version,
 	)
 
 	dcs := scheme.ToColorMap()

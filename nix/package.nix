@@ -1,4 +1,5 @@
 {
+  bash,
   buildGoModule,
   fetchFromGitHub,
   ffmpeg,
@@ -7,14 +8,14 @@
   makeWrapper,
   stdenv,
 }:
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "rong";
   version = "5.2.0";
 
   src = fetchFromGitHub {
     owner = "Nadim147c";
     repo = "rong";
-    rev = "v${version}";
+    rev = "v${finalAttrs.version}";
     hash = "sha256-3wfaB3zqLCK0rmN2VBFnBkyJuv3vnOCXUptcAcQohd4=";
   };
 
@@ -24,18 +25,22 @@ buildGoModule rec {
     "-s"
     "-w"
     "-X"
-    "main.Version=${version}"
+    "main.Version=${finalAttrs.version}"
   ];
 
   nativeBuildInputs = [
     installShellFiles
     makeWrapper
   ];
-  propagatedBuildInputs = [ ffmpeg ];
+
+  propagatedBuildInputs = [
+    ffmpeg
+    bash
+  ];
 
   postInstall = ''
     wrapProgram $out/bin/rong \
-        --prefix PATH : ${lib.makeBinPath [ ffmpeg ]}
+        --prefix PATH : ${lib.makeBinPath finalAttrs.propagatedBuildInputs}
   ''
   + lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd rong \
@@ -50,4 +55,4 @@ buildGoModule rec {
     license = lib.licenses.gpl3Only;
     mainProgram = "rong";
   };
-}
+})

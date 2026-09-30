@@ -7,7 +7,6 @@ import (
 
 	"github.com/Nadim147c/material/v3/color"
 	"github.com/Nadim147c/material/v3/dynamic"
-	"github.com/Nadim147c/material/v3/palettes"
 	"github.com/Nadim147c/rong/v5/internal/base16"
 	"github.com/Nadim147c/rong/v5/internal/config"
 	"github.com/Nadim147c/rong/v5/internal/config/enums"
@@ -55,14 +54,24 @@ rong color green --dry-run --json | jq
 
 		slog.Info("Generating color", "from", source)
 
-		primary := palettes.NewFromARGB(source)
-
+		sourceHct := source.ToHct()
 		cfg := material.GetConfig()
 
-		scheme := dynamic.NewDynamicScheme(source.ToHct(),
-			cfg.Variant, cfg.Constrast, cfg.Dark,
-			cfg.Platform, cfg.Version, primary,
-			nil, nil, nil, nil, nil,
+		variant := cfg.Variant
+		if config.MaterialAutoVariant.Value() {
+			if sourceHct.Chroma < 10 {
+				variant = dynamic.VariantNeutral
+			} else if sourceHct.Chroma < 20 {
+				variant = dynamic.VariantContent
+			} else {
+				variant = dynamic.VariantTonalSpot
+			}
+		}
+
+		scheme := dynamic.NewDynamicScheme(
+			source.ToHct(), variant, cfg.Constrast,
+			cfg.Dark, cfg.Platform, cfg.Version,
+			nil, nil, nil, nil, nil, nil,
 		)
 
 		dcs := scheme.ToColorMap()
