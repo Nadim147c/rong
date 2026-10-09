@@ -60,8 +60,8 @@ func toStringSlice(s any) []string {
 	switch s := s.(type) {
 	case string:
 		return []string{s}
-	case []string:
-		return s
+	case []any:
+		return cast.ToStringSlice(s)
 	}
 	return []string{}
 }

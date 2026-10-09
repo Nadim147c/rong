@@ -175,7 +175,6 @@ func postHook(ctx context.Context, colors models.Output) error {
 	// cmds should override old post-cmds
 	maps.Copy(cmds, newCmds)
 
-	// convert themes blocks simple config
 	convertThemes(links, installs, cmds)
 
 	exe, err := os.Executable()
@@ -221,17 +220,14 @@ func postHook(ctx context.Context, colors models.Output) error {
 			cmdEnv := make([]string, 0, len(baseEnv)+len(baseEnviron)+5)
 			cmdEnv = append(cmdEnv, baseEnv...)
 
-			// Add base environment variables
 			for k, v := range baseEnviron {
 				cmdEnv = addEnv(cmdEnv, k, v)
 			}
 
-			// Set source file information
 			sourcePath := filepath.Join(pathutil.StateDir, name)
 			cmdEnv = addEnv(cmdEnv, "RONG_SOURCE", sourcePath)
 			cmdEnv = addEnv(cmdEnv, "RONG_SOURCE_NAME", name)
 
-			// Track installed and linked paths
 			var installedPaths, linkedPaths []string
 
 			// Process links
@@ -260,9 +256,7 @@ func postHook(ctx context.Context, colors models.Output) error {
 			// Run hooks with the complete environment
 			if hooks, ok := cmds[name]; ok && hooks != nil {
 				if err := runHooks(ctx, name, hooks, cmdEnv); err != nil {
-					addErrs(
-						fmt.Errorf("failed to run hooks for %s: %w", name, err),
-					)
+					addErrs(fmt.Errorf("failed to run hooks for %s: %w", name, err))
 				}
 			}
 		})
@@ -376,6 +370,7 @@ func install(src string, targets []string) ([]string, error) {
 func link(src string, targets []string) ([]string, error) {
 	var errs []error
 	linkedPaths := make([]string, 0, len(targets))
+	slog.Debug("attempting to link", "src", src, "dst", targets)
 
 	for _, path := range targets {
 		dst, err := pathutil.FindPath(pathutil.ConfigDir, path)
