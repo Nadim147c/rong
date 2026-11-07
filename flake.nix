@@ -13,7 +13,7 @@
         "aarch64-darwin"
       ];
 
-      perSystem = f: nixpkgs.lib.genAttrs systems (system: f (import nixpkgs { inherit system; }));
+      perSystem = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
       packages = perSystem (pkgs: {
