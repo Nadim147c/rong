@@ -11,8 +11,7 @@ pkgs.mkShell {
     gopls
     golangci-lint
     gotestsum
-
-    (pkgs.callPackage ./nix/go-enum.nix { })
+    go-enum
 
     just
     just-lsp
